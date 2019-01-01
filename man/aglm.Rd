@@ -4,19 +4,25 @@
 \alias{aglm}
 \title{fit an AGLM model}
 \usage{
-aglm(x, x_UD, y, family = c("gaussian", "binomial", "poisson"), weights,
-  offset = NULL, alpha = 1, nlambda = 100, lambda = NULL,
-  standardize = TRUE, intercept = TRUE, thresh = 1e-07,
-  dfmax = nvars + 1, exclude, lower.limits = -Inf,
+aglm(x, y, x_UD = NULL, UD_vars = NULL, family = c("gaussian",
+  "binomial", "poisson"), weights, offset = NULL, alpha = 1,
+  nlambda = 100, lambda = NULL, standardize = TRUE,
+  intercept = TRUE, thresh = 1e-07, exclude, lower.limits = -Inf,
   upper.limits = Inf, maxit = 1e+05, type.logistic = c("Newton",
   "modified.Newton"), standardize.response = FALSE)
 }
 \arguments{
 \item{x}{input matrix or data.frame of size (nobs, _). Each row shold be an integer or numeric vector.}
 
-\item{x_UD}{additional input matrix of size (nbos, _). Each row should be an integer or character or factor vector.}
-
 \item{y}{response variable.}
+
+\item{x_UD}{additional input matrix of size (nbos, _). optional. Each row of \code{x_UD} should be an integer,
+character, or factor vector and this function replaces it with U-dummy matrix before fitting.}
+
+\item{UD_vars}{integer or character vector. If an integer vector is set, this function replaces columns whose
+indices are in \code{UD_vars} into U-dummy matrices before inference. If a character vector is set, this function
+replaces each column whose name is in \code{UD_vars} with U-dummy matrix before inference.
+\code{UD_vars} is ignored when \code{x_UD} is not NULL.}
 
 \item{family}{response type. Currently gaussian, binomial, and poisson are supported.}
 
