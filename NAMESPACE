@@ -2,3 +2,4 @@
 
 export(createEvenBins)
 export(executeBinning)
+importFrom(assertthat,assert_that)

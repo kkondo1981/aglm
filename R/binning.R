@@ -10,6 +10,7 @@
 #' @return a numeric vector which indicates the boundaries of bins, with (number of bins + 1) elements.
 #'
 #' @export
+#' @importFrom assertthat assert_that
 createEvenBins <- function(left, right, nbin){
   nbin <- as.integer(nbin)
   assert_that(length(nbin) == 1 & nbin > 1)
@@ -41,6 +42,7 @@ isBinningFeasible <- function(x_vec) {
 #'   This vector can be different from the `breaks` argument when `breaks` is not set or `allow_na` is FALSE.
 #'
 #' @export
+#' @importFrom assertthat assert_that
 executeBinning <- function(x_vec, breaks=NULL, nbin=20, allow_na=FALSE) {
   # Check arguments
   assert_that(isBinningFeasible(x_vec))
