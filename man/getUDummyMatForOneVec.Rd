@@ -4,19 +4,23 @@
 \alias{getUDummyMatForOneVec}
 \title{Get U-dummy matrix for one-dimensional vector}
 \usage{
-getUDummyMatForOneVec(x_vec, drop_last = TRUE)
+getUDummyMatForOneVec(x_vec, drop_last = TRUE, only_info = FALSE)
 }
 \arguments{
 \item{x_vec}{non-numeric vector to be converted into dummy matrix.}
 
-\item{drop_last}{boolean value. If TRUE, the last column of dummy matrix is dropped to avoid colinearity (default is TRUE).}
+\item{drop_last}{boolean value. If TRUE, the last column of dummy matrix is dropped to avoid colinear}
+
+\item{only_info}{boolean value. If TRUE, actual creation of dummy matrix is omitted.}
 }
 \value{
 a list with two members \code{levels} and \code{dummy_mat}.
 \itemize{
 \item \code{levels}: a character vector. unique set of possible values. sorted.
+\item \code{drop_last}: same as input
 \item \code{dummy_mat}: an integer matrix with size (length of \code{x_vec}, length of \code{levels} or minus 1 when \code{drop_last=TRUE}).
 \code{dummy_mat[i, j]} is 1 if and only if \code{x_vec[i] == levels[j]}, and 0 otherwise.
+Omitted if \code{only_info=TRUE}
 }
 }
 \description{

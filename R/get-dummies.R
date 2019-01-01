@@ -4,16 +4,19 @@
 #' Get U-dummy matrix for one-dimensional vector
 #'
 #' @param x_vec non-numeric vector to be converted into dummy matrix.
-#' @param drop_last boolean value. If TRUE, the last column of dummy matrix is dropped to avoid colinearity (default is TRUE).
+#' @param drop_last boolean value. If TRUE, the last column of dummy matrix is dropped to avoid colinear
+#' @param only_info boolean value. If TRUE, actual creation of dummy matrix is omitted.
 #'
 #' @return a list with two members `levels` and `dummy_mat`.
 #' * `levels`: a character vector. unique set of possible values. sorted.
+#' * `drop_last`: same as input
 #' * `dummy_mat`: an integer matrix with size (length of `x_vec`, length of `levels` or minus 1 when `drop_last=TRUE`).
 #'   `dummy_mat[i, j]` is 1 if and only if `x_vec[i] == levels[j]`, and 0 otherwise.
+#'   Omitted if `only_info=TRUE`
 #'
 #' @export
 #' @importFrom assertthat assert_that
-getUDummyMatForOneVec <- function(x_vec, drop_last=TRUE) {
+getUDummyMatForOneVec <- function(x_vec, drop_last=TRUE, only_info=FALSE) {
   # Check arguments. numerical vectors are not allowed.
   assert_that(class(x_vec) == "integer" | class(x_vec) == "character" | class(x_vec) == "factor")
 
@@ -29,7 +32,8 @@ getUDummyMatForOneVec <- function(x_vec, drop_last=TRUE) {
   if (drop_last) ncol <- ncol - 1
   dummy_mat <- 1 * (int_labels == t(matrix(1:ncol, ncol, nrow)))
 
-  return(list(levels=levels(x_vec), dummy_mat=dummy_mat))
+  if (only_info) return(list(levels=levels(x_vec), drop_last=drop_last))
+  else return(list(levels=levels(x_vec), drop_last=drop_last, dummy_mat=dummy_mat))
 }
 
 
@@ -39,6 +43,7 @@ getUDummyMatForOneVec <- function(x_vec, drop_last=TRUE) {
 #' @param breaks a numeric vector which indicates the boundaries of bins, of length (number of bins + 1).
 #'   If NULL is set, evenly cut bins are generated and used.
 #' @param nbin a number of bins which is used. Only used when `breaks` is not set.
+#' @param only_info boolean value. If TRUE, actual creation of dummy matrix is omitted.
 #'
 #' @return a list with two members `breaks` and `dummy_mat`.
 #' * `breaks`: a numeric vector which indicates the boundaries of bins, of length (number of bins + 1).
@@ -47,10 +52,11 @@ getUDummyMatForOneVec <- function(x_vec, drop_last=TRUE) {
 #'   Note that, in case where `x_vec[i]` is outside of `(breaks[1], breaks[length(breaks)]]`,
 #'   `x_vec[i]` is considered to be in the first bin if `x_vec[i] <= breaks[1]`, and
 #'   be in the last bin if `x_vec[i] > breaks[length(breaks)]`.
+#'   Omitted if `only_info=TRUE`
 #'
 #' @export
 #' @importFrom assertthat assert_that
-getODummyMatForOneVec <- function(x_vec, breaks=NULL, nbin=20) {
+getODummyMatForOneVec <- function(x_vec, breaks=NULL, nbin=20, only_info=FALSE) {
   # Check arguments. only integer or numerical vectors are allowed.
   assert_that(class(x_vec) == "integer" | class(x_vec) == "numeric")
 
@@ -62,5 +68,6 @@ getODummyMatForOneVec <- function(x_vec, breaks=NULL, nbin=20) {
   ncol <- length(binned_x$breaks) - 1
   dummy_mat <- 1 * (binned_x$labels <= t(matrix(1:ncol, ncol, nrow)))
 
-  return(list(breaks=binned_x$breaks, dummy_mat=dummy_mat))
+  if (only_info) return(list(breaks=binned_x$breaks))
+  else return(list(breaks=binned_x$breaks, dummy_mat=dummy_mat))
 }

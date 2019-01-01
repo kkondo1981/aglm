@@ -4,7 +4,8 @@
 \alias{getODummyMatForOneVec}
 \title{Get O-dummy matrix for one-dimensional vector}
 \usage{
-getODummyMatForOneVec(x_vec, breaks = NULL, nbin = 20)
+getODummyMatForOneVec(x_vec, breaks = NULL, nbin = 20,
+  only_info = FALSE)
 }
 \arguments{
 \item{x_vec}{integer or numeric vector to be converted into dummy matrix.}
@@ -13,6 +14,8 @@ getODummyMatForOneVec(x_vec, breaks = NULL, nbin = 20)
 If NULL is set, evenly cut bins are generated and used.}
 
 \item{nbin}{a number of bins which is used. Only used when \code{breaks} is not set.}
+
+\item{only_info}{boolean value. If TRUE, actual creation of dummy matrix is omitted.}
 }
 \value{
 a list with two members \code{breaks} and \code{dummy_mat}.
@@ -23,6 +26,7 @@ a list with two members \code{breaks} and \code{dummy_mat}.
 Note that, in case where \code{x_vec[i]} is outside of \code{(breaks[1], breaks[length(breaks)]]},
 \code{x_vec[i]} is considered to be in the first bin if \code{x_vec[i] <= breaks[1]}, and
 be in the last bin if \code{x_vec[i] > breaks[length(breaks)]}.
+Omitted if \code{only_info=TRUE}
 }
 }
 \description{
