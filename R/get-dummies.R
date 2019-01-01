@@ -52,7 +52,7 @@ getUDummyMatForOneVec <- function(x_vec, drop_last=TRUE) {
 #' @importFrom assertthat assert_that
 getODummyMatForOneVec <- function(x_vec, breaks=NULL, nbin=20) {
   # Check arguments. only integer or numerical vectors are allowed.
-  assert_that(class(x_vec) == "integer" | class(x_vec) == "character")
+  assert_that(class(x_vec) == "integer" | class(x_vec) == "numeric")
 
   # Execute binning
   binned_x <- executeBinning(x_vec, breaks=breaks, nbin=nbin, allow_na=FALSE)
