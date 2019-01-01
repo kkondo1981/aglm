@@ -61,9 +61,9 @@ aglm <- function(x, x_UD, y,
 
     var_name <- names(x)[i]
     if (is.null(var_name)) var_name <- paste0("X_", i)
-    var_info <- list(name <- var_name,
-                     type <- "O",
-                     breaks <- res$breaks)
+    var_info <- list(name=var_name,
+                     type="O",
+                     breaks=res$breaks)
     vars_info[[i]] <- var_info
 
     x_for_glmnet <- cbind(x_for_glmnet, res$dummy_mat)
@@ -75,9 +75,9 @@ aglm <- function(x, x_UD, y,
 
     var_name <- names(x_UD)[i]
     if (is.null(var_name)) var_name <- paste0("X_UD_", i)
-    var_info <- list(name <- var_name,
-                     type <- "U",
-                     levels <- res$levels)
+    var_info <- list(name=var_name,
+                     type="U",
+                     levels=res$levels)
     vars_info[[nvar - nvar_UD + i]] <- var_info
 
     x_for_glmnet <- cbind(x_for_glmnet, res$dummy_mat)
@@ -106,5 +106,7 @@ aglm <- function(x, x_UD, y,
                           type.logistic=type.logistic,
                           standardize.response=standardize.response)
 
-  return(list(backend_result=glmnet_result, vars_info=vars_info))
+  ret <- list(backend_result=glmnet_result, vars_info=vars_info)
+  class(ret) <- c(class(ret), "aglm")
+  return(ret)
 }
