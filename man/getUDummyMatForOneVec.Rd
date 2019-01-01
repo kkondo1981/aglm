@@ -8,6 +8,8 @@ getUDummyMatForOneVec(x_vec, drop_last = TRUE)
 }
 \arguments{
 \item{x_vec}{non-numeric vector to be converted into dummy matrix.}
+
+\item{drop_last}{boolean value. If TRUE, the last column of dummy matrix is dropped to avoid colinearity (default is TRUE).}
 }
 \value{
 a list with two members \code{levels} and \code{dummy_mat}.

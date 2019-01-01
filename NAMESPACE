@@ -2,5 +2,6 @@
 
 export(createEvenBins)
 export(executeBinning)
+export(getODummyMatForOneVec)
 export(getUDummyMatForOneVec)
 importFrom(assertthat,assert_that)
