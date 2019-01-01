@@ -20,9 +20,12 @@ sliceByColWithoutDrop <- function(x, idx) {
 #' @param x_UD additional input matrix of size (nbos, _). optional. Each row of `x_UD` should be an integer,
 #'   character, or factor vector and this function replaces it with U-dummy matrix before fitting.
 #' @param UD_vars integer or character vector. If an integer vector is set, this function replaces columns whose
-#'   indices are in `UD_vars` into U-dummy matrices before inference. If a character vector is set, this function
-#'   replaces each column whose name is in `UD_vars` with U-dummy matrix before inference.
-#'   `UD_vars` is ignored when `x_UD` is not NULL.
+#'   indices are in `UD_vars` into U-dummy matrices before fitting. If a character vector is set, this function
+#'   replaces each column whose name is in `UD_vars` with U-dummy matrix before fitting.
+#'   Note that the columns of `x` are rearanged internally and could affect on outputs of print() and
+#'   plot() when `UD_vars` is set. `UD_vars` is ignored when `x_UD` is not NULL.
+#'   If both `x_UD` and `UD_vars` are NULL, columns with character types and factor types are automatically
+#'   replaced with U-dummy matrices before fitting. The columns of `x` are also rearanged internally in this case.
 #' @param family response type. Currently gaussian, binomial, and poisson are supported.
 #' @param standardize logical flag for x variable standardization, prior to fitting the model sequence.
 #'   Note that aglm() standardizes only x and never x_UD.
@@ -69,6 +72,13 @@ aglm <- function(x, y, x_UD=NULL,
   nobs <- length(y)
 
 
+  # Create UD_vars automatically if both UD_vars and x_UD are not given
+  if (is.null(UD_vars) & is.null(x_UD)) {
+    UD_vars <- (1:dim(x)[2])[(sapply(x, class) == "factor") | (sapply(x, class) == "character")]
+    if (length(UD_vars) == 0) UD_vars <- NULL  # For following process
+  }
+
+
   # Create x_UD from UD_vars if UD_vars is given
   if (!is.null(UD_vars)) {
     assert_that(is.null(x_UD))
@@ -88,6 +98,7 @@ aglm <- function(x, y, x_UD=NULL,
 
   # Number of variables
   nvar <- 0
+  nvar_UD <- 0
   if (!is.null(x)) nvar <- dim(x)[2]
   if (!is.null(x_UD)) {
     nvar_UD <- dim(x_UD)[2]

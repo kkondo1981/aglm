@@ -20,9 +20,12 @@ aglm(x, y, x_UD = NULL, UD_vars = NULL, family = c("gaussian",
 character, or factor vector and this function replaces it with U-dummy matrix before fitting.}
 
 \item{UD_vars}{integer or character vector. If an integer vector is set, this function replaces columns whose
-indices are in \code{UD_vars} into U-dummy matrices before inference. If a character vector is set, this function
-replaces each column whose name is in \code{UD_vars} with U-dummy matrix before inference.
-\code{UD_vars} is ignored when \code{x_UD} is not NULL.}
+indices are in \code{UD_vars} into U-dummy matrices before fitting. If a character vector is set, this function
+replaces each column whose name is in \code{UD_vars} with U-dummy matrix before fitting.
+Note that the columns of \code{x} are rearanged internally and could affect on outputs of print() and
+plot() when \code{UD_vars} is set. \code{UD_vars} is ignored when \code{x_UD} is not NULL.
+If both \code{x_UD} and \code{UD_vars} are NULL, columns with character types and factor types are automatically
+replaced with U-dummy matrices before fitting. The columns of \code{x} are also rearanged internally in this case.}
 
 \item{family}{response type. Currently gaussian, binomial, and poisson are supported.}
 
