@@ -35,10 +35,10 @@ isBinningFeasible <- function(x_vec) {
 #'   If set TRUE, the leftmost and rightmost boundaries of bins are enhanced to -Inf and +Inf, respectively.
 #'
 #' @return a list which has two members `labels` and `breaks`.
-#'   `labels`: an integer vector of `length(x_vec)`.
-#'     `(labels[i]==k)` indicates the i-th element of x_vec is in the k-th bin.
-#'   `breaks`: a numeric vector which indicates the boundaries of bins, of length (number of bins + 1).
-#'     This vector can be different from the `breaks` argument when `breaks` is not set or `allow_na` is FALSE.
+#' * `labels`: an integer vector of `length(x_vec)`.
+#'   `(labels[i]==k)` indicates the i-th element of x_vec is in the k-th bin.
+#' * `breaks`: a numeric vector which indicates the boundaries of bins, of length (number of bins + 1).
+#'   This vector can be different from the `breaks` argument when `breaks` is not set or `allow_na` is FALSE.
 #'
 #' @export
 executeBinning <- function(x_vec, breaks=NULL, nbin=20, allow_na=FALSE) {
