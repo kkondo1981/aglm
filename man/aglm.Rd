@@ -7,10 +7,10 @@
 aglm(x, y, x_UD = NULL, UD_vars = NULL, family = c("gaussian",
   "binomial", "poisson"), weights, offset = NULL, alpha = 1,
   nlambda = 100, lambda.min.ratio = NULL, lambda = NULL,
-  standardize = TRUE, intercept = TRUE, thresh = 1e-07,
-  dfmax = NULL, pmax = NULL, exclude, penalty.factor = NULL,
-  lower.limits = -Inf, upper.limits = Inf, maxit = 1e+05,
-  type.gaussian = NULL, type.logistic = c("Newton", "modified.Newton"),
+  intercept = TRUE, thresh = 1e-07, dfmax = NULL, pmax = NULL,
+  exclude, penalty.factor = NULL, lower.limits = -Inf,
+  upper.limits = Inf, maxit = 1e+05, type.gaussian = NULL,
+  type.logistic = c("Newton", "modified.Newton"),
   standardize.response = FALSE)
 }
 \arguments{
@@ -32,8 +32,12 @@ only if a non-PredVar value are given as \code{x}.}
 Note that columns of \code{x_UD} and columns of \code{x} specified by \code{UD_vars} are not standardized
 even if \code{standardize=TRUE}, because this function considers these columns as quantitative.}
 
-\item{...}{Other arguments are passed directly to backend API (currently glmnet() is used),
-and if not given, backend API's default values are used.}
+\item{...}{Other arguments other than standardize flags are passed directly to backend API
+(currently glmnet() is used), and if not given, backend API's default values are used.
+For standardize flags, this function simply ignore them if flags for standardizing explanatory
+variables. This is because this function converts all the columns of \code{x} and \code{x_UD} into dummy
+variables internally, so standardizing before making dummies is nothing than confusing.
+Flags for standardizing response variables are not ignored and passed to the backend.}
 }
 \value{
 An AccurateGLM object, fitted to the data (x, y)

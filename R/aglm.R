@@ -17,8 +17,12 @@
 #' @param standardize A boolean value which indicates whether standardizes each column of `x`.
 #'   Note that columns of `x_UD` and columns of `x` specified by `UD_vars` are not standardized
 #'   even if `standardize=TRUE`, because this function considers these columns as quantitative.
-#' @param ... Other arguments are passed directly to backend API (currently glmnet() is used),
-#'   and if not given, backend API's default values are used.
+#' @param ... Other arguments other than standardize flags are passed directly to backend API
+#'   (currently glmnet() is used), and if not given, backend API's default values are used.
+#'   For standardize flags, this function simply ignore them if flags for standardizing explanatory
+#'   variables. This is because this function converts all the columns of `x` and `x_UD` into dummy
+#'   variables internally, so standardizing before making dummies is nothing than confusing.
+#'   Flags for standardizing response variables are not ignored and passed to the backend.
 #'
 #' @return An AccurateGLM object, fitted to the data (x, y)
 #'
@@ -33,7 +37,6 @@ aglm <- function(x, y, x_UD=NULL,UD_vars=NULL,
                  nlambda=100,
                  lambda.min.ratio=NULL,
                  lambda=NULL,
-                 standardize=TRUE,
                  intercept=TRUE,
                  thresh=1e-7,
                  dfmax=NULL,
@@ -78,7 +81,7 @@ aglm <- function(x, y, x_UD=NULL,UD_vars=NULL,
                           nlambda=nlambda,
                           lambda.min.ratio=lambda.min.ratio,
                           lambda=lambda,
-                          standardize=standardize,
+                          standardize=FALSE,
                           intercept=intercept,
                           thresh=thresh,
                           dfmax=dfmax,
