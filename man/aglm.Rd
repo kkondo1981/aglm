@@ -6,36 +6,37 @@
 \usage{
 aglm(x, y, x_UD = NULL, UD_vars = NULL, family = c("gaussian",
   "binomial", "poisson"), weights, offset = NULL, alpha = 1,
-  nlambda = 100, lambda = NULL, standardize = TRUE,
-  intercept = TRUE, thresh = 1e-07, exclude, lower.limits = -Inf,
-  upper.limits = Inf, maxit = 1e+05, type.logistic = c("Newton",
-  "modified.Newton"), standardize.response = FALSE)
+  nlambda = 100, lambda.min.ratio = NULL, lambda = NULL,
+  standardize = TRUE, intercept = TRUE, thresh = 1e-07,
+  dfmax = NULL, pmax = NULL, exclude, penalty.factor = NULL,
+  lower.limits = -Inf, upper.limits = Inf, maxit = 1e+05,
+  type.gaussian = NULL, type.logistic = c("Newton", "modified.Newton"),
+  standardize.response = FALSE)
 }
 \arguments{
-\item{x}{input matrix or data.frame of size (nobs, _). Each row shold be an integer or numeric vector.}
+\item{x}{Explanatory or predictor variables used for fitting AGLM.
+Although this function expects \code{x} would a PredVars object, it also can be matrix or data.frame.
+Is such cases, this function automatically convert it to a PredVars object by calling
+\code{newPredVars(x, x_UD, UD_vars)} and use that PredVars object as it is initially given.
+Furthermore, \code{x} could be NULL in case where \code{x_UD} is given.
+See descriptions of \code{newPredVars()} for details of non-PredVars cases.}
 
-\item{y}{response variable.}
+\item{y}{An integer or numeric vector which represents response variable.}
 
-\item{x_UD}{additional input matrix of size (nbos, _). optional. Each row of \code{x_UD} should be an integer,
-character, or factor vector and this function replaces it with U-dummy matrix before fitting.}
+\item{x_UD, UD_vars}{See descriptions of \code{x} for details. Note that these values are required
+only if a non-PredVar value are given as \code{x}.}
 
-\item{UD_vars}{integer or character vector. If an integer vector is set, this function replaces columns whose
-indices are in \code{UD_vars} into U-dummy matrices before fitting. If a character vector is set, this function
-replaces each column whose name is in \code{UD_vars} with U-dummy matrix before fitting.
-Note that the columns of \code{x} are rearanged internally and could affect on outputs of print() and
-plot() when \code{UD_vars} is set. \code{UD_vars} is ignored when \code{x_UD} is not NULL.
-If both \code{x_UD} and \code{UD_vars} are NULL, columns with character types and factor types are automatically
-replaced with U-dummy matrices before fitting. The columns of \code{x} are also rearanged internally in this case.}
+\item{family}{Response type. Currently "gaussian", "binomial", and "poisson" are supported.}
 
-\item{family}{response type. Currently gaussian, binomial, and poisson are supported.}
+\item{standardize}{A boolean value which indicates whether standardizes each column of \code{x}.
+Note that columns of \code{x_UD} and columns of \code{x} specified by \code{UD_vars} are not standardized
+even if \code{standardize=TRUE}, because this function considers these columns as quantitative.}
 
-\item{standardize}{logical flag for x variable standardization, prior to fitting the model sequence.
-Note that aglm() standardizes only x and never x_UD.}
-
-\item{...}{other arguments are passed directly to glmnet() and have same default values.}
+\item{...}{Other arguments are passed directly to backend API (currently glmnet() is used),
+and if not given, backend API's default values are used.}
 }
 \value{
-list with two elements \code{backend_result} and \code{vars_info}.
+An AccurateGLM object, fitted to the data (x, y)
 }
 \description{
 fit an AGLM model
