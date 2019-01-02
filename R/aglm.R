@@ -52,14 +52,14 @@ aglm <- function(x, y, x_UD=NULL,UD_vars=NULL,
   # Check y
   y <- drop(y)
   assert_that(class(y) == "integer" | class(y) == "numeric")
-  assert_that(length(y) == dim(x)[1])
+  assert_that(length(y) == dim(x@data)[1])
 
   # Create a design matrix which is passed to backend API
   x_for_backend <- getDesignMatrix(x)
 
   # Data size
   nobs <- dim(x_for_backend)[1]
-  nvar <- dim(x_for_backend)[2]
+  nvars <- dim(x_for_backend)[2]
   assert_that(length(y) == nobs)
 
   # Set default values to some parameters if not given
@@ -92,5 +92,5 @@ aglm <- function(x, y, x_UD=NULL,UD_vars=NULL,
                           type.logistic=type.logistic,
                           standardize.response=standardize.response)
 
-  return(new("AccurateGLM", backend_result=glmnet_result, vars_info=x@vars_info))
+  return(new("AccurateGLM", backend_models=list(glmnet=glmnet_result), vars_info=x@vars_info))
 }

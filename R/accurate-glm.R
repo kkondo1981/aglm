@@ -11,4 +11,4 @@
 #'
 #' @export
 setClass("AccurateGLM",
-         representation=representation(backend_model="glmnet", vars_info="list"))
+         representation=representation(backend_models="list", vars_info="list"))
