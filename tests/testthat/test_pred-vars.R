@@ -145,4 +145,5 @@ test_that("Check getDesignMatrix().", {
 
   expect_equal(dim(dm), c(nobs, 20 * 2 + 9))
   expect_equal(unique(as.numeric(dm)), c(0, 1))
+  expect_equal(colnames(dm)[1], "Var_1_dummy_1")
 })

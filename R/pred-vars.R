@@ -136,9 +136,11 @@ getDesignMatrix <- function(preds) {
       z <- getUDummyMatForOneVec(preds@data[, var_info$data_column],
                                  levels=var_info$dummy_info$levels,
                                  drop_last=var_info$dummy_info$drop_last)$dummy_mat
+      colnames(z) <- paste0(var_info$name, "_dummy_", seq(dim(z)[2]))
     } else if (var_info$type == "O") {
       z <- getODummyMatForOneVec(preds@data[, var_info$data_column],
                                  breaks=var_info$dummy_info$breaks)$dummy_mat
+      colnames(z) <- paste0(var_info$name, "_dummy_", seq(dim(z)[2]))
     } else {
       assert_true(FALSE)  # never expects to come here
     }
