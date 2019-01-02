@@ -101,6 +101,8 @@ test_that("Check the creation of PredVars objects when only x_UD is specified.",
   expect_equal(res@vars_info[[1]]$type, "U")
   expect_equal(res@vars_info[[1]]$dummy_info$levels, sort(paste0("", 1:10)))
 })
+
+
 test_that("Check the creation of PredVars objects when only x is specified.", {
   set.seed(12345)
   nobs <- 100
@@ -120,4 +122,27 @@ test_that("Check the creation of PredVars objects when only x is specified.", {
   expect_equal(res@vars_info[[1]]$name, var_names[1])
   expect_equal(res@vars_info[[1]]$data_column, 1)
   expect_equal(res@vars_info[[1]]$type, "O")
+})
+
+
+test_that("Check getDesignMatrix().", {
+  set.seed(12345)
+  nobs <- 100
+  nvar_OD <- 2
+  nvar_UD <- 1
+  nvar <- nvar_OD + nvar_UD
+
+  var_names <- paste0("Var_", 1:nvar)
+
+  x <- matrix(rnorm(nobs * nvar_OD), nobs, nvar_OD)
+  colnames(x) <- var_names[1:nvar_OD]
+
+  x_UD <- matrix(paste0("", sample(1:10, nobs * nvar_UD, replace=TRUE)))
+  colnames(x_UD) <- var_names[-(1:nvar_OD)]
+
+  preds <- newPredVars(x=x, x_UD=x_UD)
+  dm <- getDesignMatrix(preds)
+
+  expect_equal(dim(dm), c(nobs, 20 * 2 + 9))
+  expect_equal(unique(as.numeric(dm)), c(0, 1))
 })

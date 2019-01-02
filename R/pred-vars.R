@@ -4,9 +4,11 @@
 
 #' S4 class for predictors
 #'
-#' @slot vars_info A list of class VarInfo. Each element represents one predictor and contains information
+#' @slot vars_info A list of lists. Each element represents one predictor and contains information
 #'   of it and how to create its matrix representation from `data` slot.
 #' @slot data A data.frame which contains numerical values for creation of matrix representation of predictors.
+#'
+#' @export
 setClass("PredVars",
          representation=representation(vars_info="list", data="data.frame"))
 
@@ -107,4 +109,43 @@ newPredVars <- function(x=NULL, x_UD=NULL, UD_vars=NULL) {
   }
 
   new("PredVars", vars_info=vars_info, data=x_all)
+}
+
+
+#' Get design-matrix representation of PredVars objects
+#'
+#' @param preds A PredVars object
+#'
+#' @return A data.frame which represents the matrix representation of `preds`.
+#'
+#' @export
+#' @importFrom assertthat assert_that
+getDesignMatrix <- function(preds) {
+  # Check arguments
+  assert_that(class(preds) == "PredVars")
+
+  # Data size
+  nobs <- dim(preds@data)[1]
+  nvar <- length(preds@vars_info)
+  x <- NULL
+
+  for (i in 1:nvar) {
+    var_info <- preds@vars_info[[i]]
+    z <- NULL
+    if (var_info$type == "U") {
+      z <- getUDummyMatForOneVec(preds@data[, var_info$data_column],
+                                 levels=var_info$dummy_info$levels,
+                                 drop_last=var_info$dummy_info$drop_last)$dummy_mat
+    } else if (var_info$type == "O") {
+      z <- getODummyMatForOneVec(preds@data[, var_info$data_column],
+                                 breaks=var_info$dummy_info$breaks)$dummy_mat
+    } else {
+      assert_true(FALSE)  # never expects to come here
+    }
+
+    if (is.null(x)) x <- z
+    else x <- cbind(x, z)
+  }
+
+  return(x)
 }
