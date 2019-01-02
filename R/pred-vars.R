@@ -1,26 +1,37 @@
-# Creation of aglm.input object
-# written by Kenji Kondo @ 2019/1/1
+# S4 class for predictors used in aglm()
+# written by Kenji Kondo @ 2019/1/2
 
 
-#' Create aglm.input object
+#' S4 class for predictors
 #'
-#' @param x input matrix or data.frame of size (nobs, _). Each row shold be an integer or numeric vector.
-#' @param x_UD additional and optional input matrix of size (nobs, _), whose columns are replaced with U-dummy
-#'   matrices before fitting. Each row of `x_UD` should be an integer, character, or factor vector.
-#' @param UD_vars integer or character optional vector. If an integer vector is given, this function replaces
-#'   columns whose indices are in `UD_vars` with U-dummy matrices before fitting. If a character vector is given,
-#'   this function replaces each column whose name is in `UD_vars` with U-dummy matrices before fitting.
-#'   `UD_vars` is ignored when `x_UD` is not NULL.
-#'   If both `UD_vars` and `x_UD` are not given (NULL values), columns with character types or factor types are
-#'   automatically handled as in `UD_vars`.
+#' @slot vars_info A list of class VarInfo. Each element represents one predictor and contains information
+#'   of it and how to create its matrix representation from `data` slot.
+#' @slot data A data.frame which contains numerical values for creation of matrix representation of predictors.
+setClass("PredVars",
+         representation=representation(vars_info="list", data="data.frame"))
+
+
+#' Create a new PredVars object
 #'
-#' @return a list with two elements `x_all` and `vars_info`
-#'  * `x_all`: a data.frame which hold the whole data of x and x_UD
-#'  * `vars_info`: a list of length dim(x_all)[2]. `vars_info[[i]]` represents some information of `x_all[, i]`.
+#' @param x (optional) An input matrix or data.frame of size (nobs, _). Each row should be an integer or numeric vector.
+#'   All the values in `x` are interpreted as quantitative data if `UD_vars` is not given (NULL), so they are
+#'   converted into O-dummy matrices when fitting or predicting for new data are executed.
+#'   For behaviours when `UD_vars` is given (not NULL), see the descriptions of `UD_vars`.
+#'   When `x` is not given (NULL), `x_UD` should be given (not NULL).
+#' @param x_UD (optional) An additional input matrix of size (nobs, _). Each row should be an integer, character,
+#'   or factor object. All the values in `x_UD` are interpreted as qualitative data, so they are
+#'   converted into U-dummy matrices when fitting or predicting for new data are executed.
+#' @param UD_vars (optional) An integer or character optional vector.
+#'   If an integer vector is given, all the values of `x[, UD_vars]` are interpreted as qualitative data,
+#'   so they are converted into O-dummy matrices when fitting or predicting for new data are executed.
+#'   Else if a character vector is given, all the values of `x[, names(x) %in% UD_vars]` are interpreted as
+#'   qualitative data instead.
+#'
+#' @return A new PredVars object which hold entire information of `x` and `x_UD`
 #'
 #' @export
 #' @importFrom assertthat assert_that
-createAglmInput <- function(x=NULL, x_UD=NULL, UD_vars=NULL) {
+newPredVars <- function(x=NULL, x_UD=NULL, UD_vars=NULL) {
   # Check and process arguments
   assert_that(!is.null(x) | !is.null(x_UD))
   if (!is.null(x)) {
@@ -77,6 +88,7 @@ createAglmInput <- function(x=NULL, x_UD=NULL, UD_vars=NULL) {
       var_info <- list(idx=i,
                        name=names(x_all)[i],
                        type="O",
+                       data_column=i,
                        dummy_info=getODummyMatForOneVec(x_all[, i], only_info=TRUE))
       vars_info[[i]] <- var_info
     }
@@ -88,12 +100,11 @@ createAglmInput <- function(x=NULL, x_UD=NULL, UD_vars=NULL) {
       var_info <- list(idx=i,
                        name=names(x_all)[i],
                        type="U",
+                       data_column=i,
                        dummy_info=getUDummyMatForOneVec(x_all[, i], only_info=TRUE))
       vars_info[[i]] <- var_info
     }
   }
 
-  ret <- list(x_all=x_all, vars_info=vars_info)
-  class(ret) <- "aglm.input"
-  return(ret)
+  new("PredVars", vars_info=vars_info, data=x_all)
 }
