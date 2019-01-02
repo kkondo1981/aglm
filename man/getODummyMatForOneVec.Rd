@@ -8,20 +8,20 @@ getODummyMatForOneVec(x_vec, breaks = NULL, nbin = 20,
   only_info = FALSE)
 }
 \arguments{
-\item{x_vec}{integer or numeric vector to be converted into dummy matrix.}
+\item{x_vec}{An integer or numeric vector to be converted into dummy matrix.}
 
-\item{breaks}{a numeric vector which indicates the boundaries of bins, of length (number of bins + 1).
-If NULL is set, evenly cut bins are generated and used.}
+\item{breaks}{A numeric vector which indicates the boundaries of bins, of length (number of bins + 1).
+If NULL, evenly cut bins are automatically generated and used.}
 
-\item{nbin}{a number of bins which is used. Only used when \code{breaks} is not set.}
+\item{nbin}{A number of bins which is used. Only used when \code{breaks} is not set.}
 
-\item{only_info}{boolean value. If TRUE, actual creation of dummy matrix is omitted.}
+\item{only_info}{A boolean value. If TRUE, actual creation of dummy matrix is omitted.}
 }
 \value{
 a list with two members \code{breaks} and \code{dummy_mat}.
 \itemize{
-\item \code{breaks}: a numeric vector which indicates the boundaries of bins, of length (number of bins + 1).
-\item \code{dummy_mat}: an integer matrix with size (length of \code{x_vec}, length of \code{breaks} minus 1).
+\item \code{breaks}: Same as input
+\item \code{dummy_mat}: An integer matrix with size (length of \code{x_vec}, length of \code{breaks} minus 1).
 \code{dummy_mat[i, j]} is 1 if and only if \code{breaks[i] < x_vec[i] <= breaks[i+1]}, and 0 otherwise.
 Note that, in case where \code{x_vec[i]} is outside of \code{(breaks[1], breaks[length(breaks)]]},
 \code{x_vec[i]} is considered to be in the first bin if \code{x_vec[i] <= breaks[1]}, and
