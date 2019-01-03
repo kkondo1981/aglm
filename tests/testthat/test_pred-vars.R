@@ -159,4 +159,21 @@ test_that("Check getDesignMatrix().", {
   expect_equal(dim(dm), c(nobs, nvar_OD * (1 + 20) + nvar_UD * 9 + nvar_OD * (nvar_OD - 1) / 2 + nvar_OD * nvar_UD * 9 + nvar_UD * (nvar_UD - 1) / 2 * 9 * 9))
   expect_equal(dm[, "Var_1_x_Var_2"], dm[, "Var_1"] * dm[, "Var_2"])
   expect_equal(dm[, "Var_1_x_Var_3_1_1"], dm[, "Var_1"] * dm[, "Var_3_dummy_1"])
+
+
+  # test for creations of practical size design matrixnobs <- 100
+  nobs <- 100
+  nvar_OD <- 20
+  nvar_UD <- 20
+  nvar <- nvar_OD + nvar_UD
+
+  x <- matrix(rnorm(nobs * nvar_OD), nobs, nvar_OD)
+  colnames(x) <- var_names[1:nvar_OD]
+
+  x_UD <- matrix(paste0("", sample(1:10, nobs * nvar_UD, replace=TRUE)), nobs, nvar_UD)
+  colnames(x_UD) <- var_names[-(1:nvar_OD)]
+
+  preds <- newPredVars(x=x, x_UD=x_UD, append_interaction_vars=TRUE)
+  dm <- getDesignMatrix(preds)
+  expect_equal(dim(dm), c(nobs, nvar_OD * (1 + 20) + nvar_UD * 9 + nvar_OD * (nvar_OD - 1) / 2 + nvar_OD * nvar_UD * 9 + nvar_UD * (nvar_UD - 1) / 2 * 9 * 9))
 })
