@@ -15,7 +15,7 @@ test_that("Check the types and forms of return value of aglm() in case where x i
 
   expect_true("AccurateGLM" %in% class(res))
   expect_true("glmnet" %in% class(res@backend_models$glmnet))
-  expect_equal(length(res@vars_info), nvar)
+  expect_equal(length(res@vars_info), nvar + nvar * (nvar - 1) / 2)
   expect_equal(res@vars_info[[1]]$name, "X1")
   expect_equal(res@vars_info[[1]]$type, "O")
   expect_equal(res@vars_info[[3]]$name, "x_UD")
@@ -38,7 +38,7 @@ test_that("Check the types and forms of return value of aglm() in case where x i
 
   expect_true("AccurateGLM" %in% class(res))
   expect_true("glmnet" %in% class(res@backend_models$glmnet))
-  expect_equal(length(res@vars_info), nvar)
+  expect_equal(length(res@vars_info), nvar + nvar * (nvar - 1) /2)
   expect_equal(res@vars_info[[1]]$name, "X1")
   expect_equal(res@vars_info[[1]]$type, "O")
   expect_equal(res@vars_info[[3]]$name, "x_UD")

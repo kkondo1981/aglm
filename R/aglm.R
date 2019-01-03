@@ -14,7 +14,7 @@
 #' @param x_UD,UD_vars See descriptions of `x` for details. Note that these values are required
 #'   only if a non-PredVar value are given as `x`.
 #' @param family Response type. Currently "gaussian", "binomial", and "poisson" are supported.
-#' @param standardize_qualitative_vars A boolean value indicating qualitative values should be standardized.
+#' @param standardize_quantitative_vars A boolean value indicating quantitative values should be standardized.
 #'   Note that this option does not affect creations of dummy values (both O-dummies and U-dummies).
 #' @param ... Other arguments other than standardize flags for explanatory variables are passed
 #'   directly to backend (currently glmnet() is used), and if not given, backend API's default
@@ -23,7 +23,7 @@
 #'   this function simply ignore them and doesn't pass them to backend functions.
 #'   This is because AGLM use design matrices with dummy columns and should standardize only
 #'   non-dummy columns, but usually there is no way to tell backend functions not to standardize
-#'   dummy columns. Use `standardize_qualitative_vars` option to control standardization of qualitative
+#'   dummy columns. Use `standardize_quantitative_vars` option to control standardization of qualitative
 #'   variables instead. Furtheromre, standardize flags for response variables are not ignored and passed
 #'   to the backend because there is no confusion related with dummies.
 #'
@@ -33,7 +33,7 @@
 #' @importFrom assertthat assert_that
 #' @importFrom glmnet glmnet
 aglm <- function(x, y, x_UD=NULL,UD_vars=NULL,
-                 standardize_qualitative_vars=TRUE,
+                 standardize_quantitative_vars=TRUE,
                  family=c("gaussian","binomial","poisson"),
                  weights,
                  offset=NULL,
@@ -62,7 +62,7 @@ aglm <- function(x, y, x_UD=NULL,UD_vars=NULL,
   assert_that(length(y) == dim(x@data)[1])
 
   # Create a design matrix which is passed to backend API
-  x_for_backend <- getDesignMatrix(x, standardize_qualitative_vars=standardize_qualitative_vars)
+  x_for_backend <- getDesignMatrix(x, standardize_quantitative_vars=standardize_quantitative_vars)
 
   # Data size
   nobs <- dim(x_for_backend)[1]

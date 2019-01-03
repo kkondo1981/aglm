@@ -5,7 +5,7 @@
 \title{fit an AGLM model}
 \usage{
 aglm(x, y, x_UD = NULL, UD_vars = NULL,
-  standardize_qualitative_vars = TRUE, family = c("gaussian",
+  standardize_quantitative_vars = TRUE, family = c("gaussian",
   "binomial", "poisson"), weights, offset = NULL, alpha = 1,
   nlambda = 100, lambda.min.ratio = NULL, lambda = NULL,
   intercept = TRUE, thresh = 1e-07, dfmax = NULL, pmax = NULL,
@@ -27,7 +27,7 @@ See descriptions of \code{newPredVars()} for details of non-PredVars cases.}
 \item{x_UD, UD_vars}{See descriptions of \code{x} for details. Note that these values are required
 only if a non-PredVar value are given as \code{x}.}
 
-\item{standardize_qualitative_vars}{A boolean value indicating qualitative values should be standardized.
+\item{standardize_quantitative_vars}{A boolean value indicating quantitative values should be standardized.
 Note that this option does not affect creations of dummy values (both O-dummies and U-dummies).}
 
 \item{family}{Response type. Currently "gaussian", "binomial", and "poisson" are supported.}
@@ -39,7 +39,7 @@ For standardize flags for explanatory variables (such as glmnet()'s standardize 
 this function simply ignore them and doesn't pass them to backend functions.
 This is because AGLM use design matrices with dummy columns and should standardize only
 non-dummy columns, but usually there is no way to tell backend functions not to standardize
-dummy columns. Use \code{standardize_qualitative_vars} option to control standardization of qualitative
+dummy columns. Use \code{standardize_quantitative_vars} option to control standardization of qualitative
 variables instead. Furtheromre, standardize flags for response variables are not ignored and passed
 to the backend because there is no confusion related with dummies.}
 }

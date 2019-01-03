@@ -4,12 +4,12 @@
 \alias{getDesignMatrix}
 \title{Get design-matrix representation of PredVars objects}
 \usage{
-getDesignMatrix(preds, standardize_qualitative_vars = TRUE)
+getDesignMatrix(preds, standardize_quantitative_vars = TRUE)
 }
 \arguments{
 \item{preds}{A PredVars object}
 
-\item{standardize_qualitative_vars}{A boolean value indicating qualitative values should be standardized.
+\item{standardize_quantitative_vars}{A boolean value indicating quantitative values should be standardized.
 Note that this option does not affect creations of dummy values (both O-dummies and U-dummies).}
 }
 \value{

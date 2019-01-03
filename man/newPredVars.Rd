@@ -4,7 +4,8 @@
 \alias{newPredVars}
 \title{Create a new PredVars object}
 \usage{
-newPredVars(x = NULL, x_UD = NULL, UD_vars = NULL)
+newPredVars(x = NULL, x_UD = NULL, UD_vars = NULL,
+  append_interaction_vars = TRUE)
 }
 \arguments{
 \item{x}{(optional) An input matrix or data.frame of size (nobs, _). Each row should be an integer or numeric vector.
@@ -19,6 +20,9 @@ or factor object. All the values in \code{x_UD} are interpreted as qualitative d
 If an integer vector is given, all the values of \code{x[, UD_vars]} are interpreted as qualitative data,
 Else if a character vector is given, all the values of \code{x[, names(x) \%in\% UD_vars]} are interpreted as
 qualitative data instead.}
+
+\item{append_interaction_vars}{(optional) A boolean flag. If this value is TRUE, interaction effects of
+all the pairs of single variables are added to the returned PredVars object. The default value is TRUE.}
 }
 \value{
 A new PredVars object which hold entire information of \code{x} and \code{x_UD}

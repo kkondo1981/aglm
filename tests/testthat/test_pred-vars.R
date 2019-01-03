@@ -17,8 +17,7 @@ test_that("Check the creation of PredVars objects when both x and x_UD are speci
   x_UD <- matrix(paste0("", sample(1:10, nobs * nvar_UD, replace=TRUE)))
   colnames(x_UD) <- var_names[-(1:nvar_OD)]
 
-  res <- newPredVars(x=x, x_UD=x_UD)
-
+  res <- newPredVars(x=x, x_UD=x_UD, append_interaction_vars=FALSE)
   expect_true("PredVars" %in% class(res))
   expect_equal(dim(res@data), c(nobs, nvar))
   expect_equal(length(res@vars_info), nvar)
@@ -49,7 +48,7 @@ test_that("Check the creation of PredVars objects when x and UD_vars are specifi
   x_UD <- matrix(paste0("", sample(1:10, nobs * nvar_UD, replace=TRUE)), nobs, nvar_UD)
   colnames(x_UD) <- var_names[-(1:nvar_OD)]
 
-  res <- newPredVars(x=data.frame(x, x_UD), UD_vars=3)
+  res <- newPredVars(x=data.frame(x, x_UD), UD_vars=3, append_interaction_vars=FALSE)
   expect_true("PredVars" %in% class(res))
   expect_equal(dim(res@data), c(nobs, nvar))
   expect_equal(length(res@vars_info), nvar)
@@ -63,7 +62,7 @@ test_that("Check the creation of PredVars objects when x and UD_vars are specifi
   expect_equal(res@vars_info[[3]]$type, "U")
   expect_equal(res@vars_info[[3]]$dummy_info$levels, sort(paste0("", 1:10)))
 
-  res <- newPredVars(x=data.frame(x, x_UD), UD_vars="Var_3")
+  res <- newPredVars(x=data.frame(x, x_UD), UD_vars="Var_3", append_interaction_vars=FALSE)
   expect_true("PredVars" %in% class(res))
   expect_equal(dim(res@data), c(nobs, nvar))
   expect_equal(length(res@vars_info), nvar)
@@ -89,7 +88,7 @@ test_that("Check the creation of PredVars objects when only x_UD is specified.",
   x_UD <- matrix(paste0("", sample(1:10, nobs * nvar, replace=TRUE)), nobs, nvar)
   colnames(x_UD) <- var_names
 
-  res <- newPredVars(x_UD=x_UD)
+  res <- newPredVars(x_UD=x_UD, append_interaction_vars=FALSE)
 
   expect_true("PredVars" %in% class(res))
   expect_equal(dim(res@data), c(nobs, nvar))
@@ -112,7 +111,7 @@ test_that("Check the creation of PredVars objects when only x is specified.", {
   x <- matrix(rnorm(nobs * nvar), nobs, nvar)
   colnames(x) <- var_names
 
-  res <- newPredVars(x=x)
+  res <- newPredVars(x=x, append_interaction_vars=FALSE)
 
   expect_true("PredVars" %in% class(res))
   expect_equal(dim(res@data), c(nobs, nvar))
@@ -139,9 +138,9 @@ test_that("Check getDesignMatrix().", {
   x_UD <- matrix(paste0("", sample(1:10, nobs * nvar_UD, replace=TRUE)))
   colnames(x_UD) <- var_names[-(1:nvar_OD)]
 
-  preds <- newPredVars(x=x, x_UD=x_UD)
+  preds <- newPredVars(x=x, x_UD=x_UD, append_interaction_vars=FALSE)
 
-  dm <- getDesignMatrix(preds, standardize_qualitative_vars=TRUE)
+  dm <- getDesignMatrix(preds, standardize_quantitative_vars=TRUE)
   expect_equal(dim(dm), c(nobs, nvar_OD * (1 + 20) + nvar_UD * 9))
   expect_equal(sort(unique(as.numeric(dm[, 2:21]))), c(0, 1))
   expect_equal(sort(unique(as.numeric(dm[, 23:42]))), c(0, 1))
@@ -150,7 +149,14 @@ test_that("Check getDesignMatrix().", {
   expect_equal(mean(dm[, 1]), 0)
   expect_equal(sd(dm[, 1]), 1)
 
-  dm <- getDesignMatrix(preds, standardize_qualitative_vars=FALSE)
+  dm <- getDesignMatrix(preds, standardize_quantitative_vars=FALSE)
   expect_equal(mean(dm[, 1]), mean(x[, 1]))
   expect_equal(sd(dm[, 1]), sd(x[, 1]))
+
+
+  preds <- newPredVars(x=x, x_UD=x_UD, append_interaction_vars=TRUE)
+  dm <- getDesignMatrix(preds)
+  expect_equal(dim(dm), c(nobs, nvar_OD * (1 + 20) + nvar_UD * 9 + nvar_OD * (nvar_OD - 1) / 2 + nvar_OD * nvar_UD * 9 + nvar_UD * (nvar_UD - 1) / 2 * 9 * 9))
+  expect_equal(dm[, "Var_1_x_Var_2"], dm[, "Var_1"] * dm[, "Var_2"])
+  expect_equal(dm[, "Var_1_x_Var_3_1_1"], dm[, "Var_1"] * dm[, "Var_3_dummy_1"])
 })
