@@ -1,0 +1,97 @@
+---
+title: "A Starting Guide for aglm package"
+author: "Kenji Kondo"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{A Starting Guide for aglm package}
+  %\VignetteEngine{knibtr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+## Introduction
+not provided yet
+
+## Installation
+not provided yet
+
+## Quick Start
+The purpose of this section is to give users a general understanding of aglm package and its usage.
+
+### Load Package
+First, we need to load aglm package.
+```{r}
+library(aglm)
+```
+
+### Handling Predictor Variables
+Next, we need data for fitting to AGLM. Here, we simply generate random data observations as following.
+```{r}
+# size of observations
+nobs <- 100
+
+# Randomly generate a quantitative explanatory variable
+quan_var <- matrix(rnorm(nobs), ncol=1)
+colnames(quan_var) <- "quantitative"
+
+# Randomly generate qalitative a explanatory variable with 4 levels
+qual_var <- matrix(paste0("level_", sample(1:4, nobs, replace=TRUE)), ncol=1)
+colnames(qual_var) <- "qualitative"
+```
+
+#### `PredVars` objects
+In aglm package, predictor variables (or explanatory variables) are represented by an object of class named `PredVars`. We can create a new PredVars object by calling `newPredVars` function. Please be noticed that we passed the quantitative variable and the qualitative variable separetely to `newPredVars` function so that aglm package can understand they are variables of different kinds. 
+```{r}
+preds <- newPredVars(x=quan_var, x_UD=qual_var)
+```
+
+Note that the abovementioned step can be omitted in practice, because aglm inference functions convert data into a `PredVars` object automatically if other types of data are given, and users do not need to care about `PredVars` objects at all. Howver, we continue to explain more about `PredVars` objects and `newPredVars` function in this section for better understanding of what aglm package does internally.
+
+#### Syntax sugars
+In this case, each of the following commented statements is OK and has same meanings as the above code. It might be surprising the third statement with no explicit instructions for distinguish quantitative and qualitative variables works. This is because the `PredVars` function has a feature to automatically judge which columns of `x` are quantitative and which are qualitative by classes of their values, so that columns with class "character" or "factor" are treated as qualitative variables and others are treated as quantitative variables. Note that this automatic feature is only used if and only if explicit instructions by `x_UD` or `UD_vars` options are not given.
+```{r}
+# x_all <- data.frame(quan_var, qual_var); preds <- newPredVars(x=all_vars, UD_vars=2)
+# x_all <- data.frame(quan_var, qual_var); preds <- newPredVars(x=all_vars, UD_vars="qualitative")
+# x_all <- data.frame(quan_var, qual_var); preds <- newPredVars(x=all_vars)
+```
+
+#### Informations held by `PredVars` objects
+The created `PredVars` object contains not only original data (say, quan_vars and qual_vars), but also some information for telling aglm package how to handle each predictor variable. To understanding that point, let's see the internal representation of `PredVars` object with the `str` function.
+```{r}
+str(preds)
+```
+
+First of all, we can see a `PredVars` object has two slots (or members) named `vars_info` and `data`, and may notice that the slot named `data` is just a data.frame object which contains all the values of predictor variables given when it is created. Next, please be noticed that the slot named `vars_info` consists of 3 lists of different lengths, each of which contains some meta-informations of one predictor variable as following:
+
+* The first list with length 7 (idx=1) contains information of `quan_var`.
+* The second list with length 5 (idx=2) contains information of `qual_var`.
+* The third list with length 5 (idx=3) contains information of an automatically added variable which represents a interaction term `quan_var * qual_var`. We can instruct not to add interaction terms by using `append_interactions_vars=FALSE` when calling `newPredVars`.
+
+These informations are used by aglm package for creating its internal design matrix representation of predictor variables. See [Appendix 0: How predictor variables are treated by aglm] for more details about the topic.
+
+### Fitting AGLM
+In this section, we show how to fit the AGLM with aglm package, using the following simple nonlinear response variables.
+```{r}
+resp_var <- abs(quan_var) ** 2
+```
+
+We can use the `aglm` function to fit the model as:
+```{r}
+fitted <- aglm(x=preds, y=resp_var, lambda=0.1)
+```
+
+The `lambda` option specifies the coefficient of regularization term in the loss function, and `aglm` function examined multiple different values if `lambda` is not explicitly given. Note that because the `aglm` function currently uses `glmnet` as its backend, and almost all the parameters for `glmnet` function also work when they are passed to `aglm` function, and meanings of such parameters are basically as same as `glmnet`.
+
+## non-Gaussian Models
+not provided yet
+
+## Appendix 0: How predictor variables are treated by aglm
+not provided yet
