@@ -61,6 +61,9 @@ aglm <- function(x, y, x_UD=NULL,UD_vars=NULL,
   assert_that(class(y) == "integer" | class(y) == "numeric")
   assert_that(length(y) == dim(x@data)[1])
 
+  # Check family
+  family <- match.arg(family)
+
   # Create a design matrix which is passed to backend API
   x_for_backend <- getDesignMatrix(x, standardize_quantitative_vars=standardize_quantitative_vars)
 
