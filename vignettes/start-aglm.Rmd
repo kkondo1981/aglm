@@ -5,7 +5,11 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{start-aglm}
+<<<<<<< HEAD:vignettes/start-aglm.Rmd
   %\VignetteEngine{knitr::rmarkdown}
+=======
+  %\VignetteEngine{knibtr::rmarkdown}
+>>>>>>> 0a2c9363e6771978e6bc99ef7b5600f2683e00a4:vignettes/start-aglm.Rmd
   %\VignetteEncoding{UTF-8}
 ---
 
