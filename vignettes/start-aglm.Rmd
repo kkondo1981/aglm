@@ -1,11 +1,11 @@
 ---
-title: "A Starting Guide for aglm package"
+title: "A Starting Guide for aglm"
 author: "Kenji Kondo"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{A Starting Guide for aglm package}
-  %\VignetteEngine{knibtr::rmarkdown}
+  %\VignetteIndexEntry{start-aglm}
+  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -22,7 +22,7 @@ not provided yet
 
 ## Installation
 To install the latest version from `github` :
-```{r}
+```{r, eval=FALSE}
 install.packages("devtools")
 devtools::install_github("kkondo1981/aglm")
 ```
