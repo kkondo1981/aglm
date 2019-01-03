@@ -88,6 +88,8 @@ newPredVars <- function(x=NULL, x_UD=NULL, UD_vars=NULL) {
                        name=names(x_all)[i],
                        type="O",
                        data_column=i,
+                       mu=mean(x_all[, i]),
+                       sigma=sd(x_all[, i]),
                        dummy_info=getODummyMatForOneVec(x_all[, i], only_info=TRUE))
       vars_info[[i]] <- var_info
     }
@@ -112,12 +114,14 @@ newPredVars <- function(x=NULL, x_UD=NULL, UD_vars=NULL) {
 #' Get design-matrix representation of PredVars objects
 #'
 #' @param preds A PredVars object
+#' @param standardize_qualitative_vars A boolean value indicating qualitative values should be standardized.
+#'   Note that this option does not affect creations of dummy values (both O-dummies and U-dummies).
 #'
 #' @return A data.frame which represents the matrix representation of `preds`.
 #'
 #' @export
 #' @importFrom assertthat assert_that
-getDesignMatrix <- function(preds) {
+getDesignMatrix <- function(preds, standardize_qualitative_vars=TRUE) {
   # Check arguments
   assert_that(class(preds) == "PredVars")
 
@@ -131,6 +135,8 @@ getDesignMatrix <- function(preds) {
     z <- NULL
     if (var_info$type == "O") {
       z_raw <- matrix(preds@data[, var_info$data_column], ncol=1)
+      if (standardize_qualitative_vars & var_info$sigma > 0)
+        z_raw <- (z_raw - var_info$mu) / var_info$sigma
       colnames(z_raw) <- var_info$name
       z_OD <- getODummyMatForOneVec(preds@data[, var_info$data_column],
                                     breaks=var_info$dummy_info$breaks)$dummy_mat

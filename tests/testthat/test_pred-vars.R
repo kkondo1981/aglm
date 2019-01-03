@@ -140,11 +140,17 @@ test_that("Check getDesignMatrix().", {
   colnames(x_UD) <- var_names[-(1:nvar_OD)]
 
   preds <- newPredVars(x=x, x_UD=x_UD)
-  dm <- getDesignMatrix(preds)
 
+  dm <- getDesignMatrix(preds, standardize_qualitative_vars=TRUE)
   expect_equal(dim(dm), c(nobs, nvar_OD * (1 + 20) + nvar_UD * 9))
   expect_equal(sort(unique(as.numeric(dm[, 2:21]))), c(0, 1))
   expect_equal(sort(unique(as.numeric(dm[, 23:42]))), c(0, 1))
   expect_equal(sort(unique(as.numeric(dm[, 43:51]))), c(0, 1))
   expect_equal(colnames(dm)[1:3], c("Var_1", "Var_1_dummy_1", "Var_1_dummy_2"))
+  expect_equal(mean(dm[, 1]), 0)
+  expect_equal(sd(dm[, 1]), 1)
+
+  dm <- getDesignMatrix(preds, standardize_qualitative_vars=FALSE)
+  expect_equal(mean(dm[, 1]), mean(x[, 1]))
+  expect_equal(sd(dm[, 1]), sd(x[, 1]))
 })

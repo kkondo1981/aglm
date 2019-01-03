@@ -14,15 +14,18 @@
 #' @param x_UD,UD_vars See descriptions of `x` for details. Note that these values are required
 #'   only if a non-PredVar value are given as `x`.
 #' @param family Response type. Currently "gaussian", "binomial", and "poisson" are supported.
-#' @param standardize A boolean value which indicates whether standardizes each column of `x`.
-#'   Note that columns of `x_UD` and columns of `x` specified by `UD_vars` are not standardized
-#'   even if `standardize=TRUE`, because this function considers these columns as quantitative.
-#' @param ... Other arguments other than standardize flags are passed directly to backend API
-#'   (currently glmnet() is used), and if not given, backend API's default values are used.
-#'   For standardize flags, this function simply ignore them if flags for standardizing explanatory
-#'   variables. This is because this function converts all the columns of `x` and `x_UD` into dummy
-#'   variables internally, so standardizing before making dummies is nothing than confusing.
-#'   Flags for standardizing response variables are not ignored and passed to the backend.
+#' @param standardize_qualitative_vars A boolean value indicating qualitative values should be standardized.
+#'   Note that this option does not affect creations of dummy values (both O-dummies and U-dummies).
+#' @param ... Other arguments other than standardize flags for explanatory variables are passed
+#'   directly to backend (currently glmnet() is used), and if not given, backend API's default
+#'   values are used to call backend functions.
+#'   For standardize flags for explanatory variables (such as glmnet()'s standardize argument),
+#'   this function simply ignore them and doesn't pass them to backend functions.
+#'   This is because AGLM use design matrices with dummy columns and should standardize only
+#'   non-dummy columns, but usually there is no way to tell backend functions not to standardize
+#'   dummy columns. Use `standardize_qualitative_vars` option to control standardization of qualitative
+#'   variables instead. Furtheromre, standardize flags for response variables are not ignored and passed
+#'   to the backend because there is no confusion related with dummies.
 #'
 #' @return An AccurateGLM object, fitted to the data (x, y)
 #'
@@ -30,6 +33,7 @@
 #' @importFrom assertthat assert_that
 #' @importFrom glmnet glmnet
 aglm <- function(x, y, x_UD=NULL,UD_vars=NULL,
+                 standardize_qualitative_vars=TRUE,
                  family=c("gaussian","binomial","poisson"),
                  weights,
                  offset=NULL,
@@ -58,7 +62,7 @@ aglm <- function(x, y, x_UD=NULL,UD_vars=NULL,
   assert_that(length(y) == dim(x@data)[1])
 
   # Create a design matrix which is passed to backend API
-  x_for_backend <- getDesignMatrix(x)
+  x_for_backend <- getDesignMatrix(x, standardize_qualitative_vars=standardize_qualitative_vars)
 
   # Data size
   nobs <- dim(x_for_backend)[1]
