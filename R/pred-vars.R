@@ -87,12 +87,20 @@ newPredVars <- function(x=NULL, x_UD=NULL, UD_vars=NULL) {
   # Get information of variable for each column of x in OD_vars
   if (length(OD_vars) > 0) {
     for (i in OD_vars) {
+      # add var_info for raw value representation
       var_info <- list(idx=i,
                        name=names(x_all)[i],
+                       type="R",
+                       data_column=i)
+      vars_info[[i]] <- var_info
+
+      # add var_info for O-dummy representation
+      var_info <- list(idx=nvar + i,
+                       name=paste0(names(x_all)[i], "_OD"),
                        type="O",
                        data_column=i,
                        dummy_info=getODummyMatForOneVec(x_all[, i], only_info=TRUE))
-      vars_info[[i]] <- var_info
+      vars_info[[nvar + i]] <- var_info
     }
   }
 
@@ -100,7 +108,7 @@ newPredVars <- function(x=NULL, x_UD=NULL, UD_vars=NULL) {
   if (length(UD_vars) > 0) {
     for (i in UD_vars) {
       var_info <- list(idx=i,
-                       name=names(x_all)[i],
+                       name=paste0(names(x_all)[i], "_UD"),
                        type="U",
                        data_column=i,
                        dummy_info=getUDummyMatForOneVec(x_all[, i], only_info=TRUE))
@@ -132,15 +140,18 @@ getDesignMatrix <- function(preds) {
   for (i in 1:nvar) {
     var_info <- preds@vars_info[[i]]
     z <- NULL
-    if (var_info$type == "U") {
+    if (var_info$type == "R") {
+      z <- matrix(preds@data[, var_info$data_column], ncol=1)
+      colnames(z) <- var_info$name
+    }else if (var_info$type == "U") {
       z <- getUDummyMatForOneVec(preds@data[, var_info$data_column],
                                  levels=var_info$dummy_info$levels,
                                  drop_last=var_info$dummy_info$drop_last)$dummy_mat
-      colnames(z) <- paste0(var_info$name, "_dummy_", seq(dim(z)[2]))
+      colnames(z) <- paste0(var_info$name, "_", seq(dim(z)[2]))
     } else if (var_info$type == "O") {
       z <- getODummyMatForOneVec(preds@data[, var_info$data_column],
                                  breaks=var_info$dummy_info$breaks)$dummy_mat
-      colnames(z) <- paste0(var_info$name, "_dummy_", seq(dim(z)[2]))
+      colnames(z) <- paste0(var_info$name, "_", seq(dim(z)[2]))
     } else {
       assert_true(FALSE)  # never expects to come here
     }
