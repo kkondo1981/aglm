@@ -16,16 +16,13 @@ setClass("PredVars",
 #' Create a new PredVars object
 #'
 #' @param x (optional) An input matrix or data.frame of size (nobs, _). Each row should be an integer or numeric vector.
-#'   All the values in `x` are interpreted as quantitative data if `UD_vars` is not given (NULL), so they are
-#'   converted into O-dummy matrices when fitting or predicting for new data are executed.
+#'   All the values in `x` are interpreted as quantitative data if `UD_vars` is not given (NULL).
 #'   For behaviours when `UD_vars` is given (not NULL), see the descriptions of `UD_vars`.
 #'   When `x` is not given (NULL), `x_UD` should be given (not NULL).
 #' @param x_UD (optional) An additional input matrix of size (nobs, _). Each row should be an integer, character,
-#'   or factor object. All the values in `x_UD` are interpreted as qualitative data, so they are
-#'   converted into U-dummy matrices when fitting or predicting for new data are executed.
+#'   or factor object. All the values in `x_UD` are interpreted as qualitative data.
 #' @param UD_vars (optional) An integer or character optional vector.
 #'   If an integer vector is given, all the values of `x[, UD_vars]` are interpreted as qualitative data,
-#'   so they are converted into O-dummy matrices when fitting or predicting for new data are executed.
 #'   Else if a character vector is given, all the values of `x[, names(x) %in% UD_vars]` are interpreted as
 #'   qualitative data instead.
 #'
@@ -87,20 +84,12 @@ newPredVars <- function(x=NULL, x_UD=NULL, UD_vars=NULL) {
   # Get information of variable for each column of x in OD_vars
   if (length(OD_vars) > 0) {
     for (i in OD_vars) {
-      # add var_info for raw value representation
       var_info <- list(idx=i,
                        name=names(x_all)[i],
-                       type="R",
-                       data_column=i)
-      vars_info[[i]] <- var_info
-
-      # add var_info for O-dummy representation
-      var_info <- list(idx=nvar + i,
-                       name=paste0(names(x_all)[i], "_OD"),
                        type="O",
                        data_column=i,
                        dummy_info=getODummyMatForOneVec(x_all[, i], only_info=TRUE))
-      vars_info[[nvar + i]] <- var_info
+      vars_info[[i]] <- var_info
     }
   }
 
@@ -108,7 +97,7 @@ newPredVars <- function(x=NULL, x_UD=NULL, UD_vars=NULL) {
   if (length(UD_vars) > 0) {
     for (i in UD_vars) {
       var_info <- list(idx=i,
-                       name=paste0(names(x_all)[i], "_UD"),
+                       name=names(x_all)[i],
                        type="U",
                        data_column=i,
                        dummy_info=getUDummyMatForOneVec(x_all[, i], only_info=TRUE))
@@ -140,23 +129,23 @@ getDesignMatrix <- function(preds) {
   for (i in 1:nvar) {
     var_info <- preds@vars_info[[i]]
     z <- NULL
-    if (var_info$type == "R") {
-      z <- matrix(preds@data[, var_info$data_column], ncol=1)
-      colnames(z) <- var_info$name
+    if (var_info$type == "O") {
+      z_raw <- matrix(preds@data[, var_info$data_column], ncol=1)
+      colnames(z_raw) <- var_info$name
+      z_OD <- getODummyMatForOneVec(preds@data[, var_info$data_column],
+                                    breaks=var_info$dummy_info$breaks)$dummy_mat
+      colnames(z_OD) <- paste0(var_info$name, "_dummy_", seq(dim(z_OD)[2]))
+      z <- cbind(z_raw, z_OD)
     }else if (var_info$type == "U") {
       z <- getUDummyMatForOneVec(preds@data[, var_info$data_column],
                                  levels=var_info$dummy_info$levels,
                                  drop_last=var_info$dummy_info$drop_last)$dummy_mat
-      colnames(z) <- paste0(var_info$name, "_", seq(dim(z)[2]))
-    } else if (var_info$type == "O") {
-      z <- getODummyMatForOneVec(preds@data[, var_info$data_column],
-                                 breaks=var_info$dummy_info$breaks)$dummy_mat
-      colnames(z) <- paste0(var_info$name, "_", seq(dim(z)[2]))
+      colnames(z) <- paste0(var_info$name, "_dummy_", seq(dim(z)[2]))
     } else {
       assert_true(FALSE)  # never expects to come here
     }
 
-    if (is.null(x)) x <- z
+    if (i == 1) x <- z
     else x <- cbind(x, z)
   }
 

@@ -8,18 +8,15 @@ newPredVars(x = NULL, x_UD = NULL, UD_vars = NULL)
 }
 \arguments{
 \item{x}{(optional) An input matrix or data.frame of size (nobs, _). Each row should be an integer or numeric vector.
-All the values in \code{x} are interpreted as quantitative data if \code{UD_vars} is not given (NULL), so they are
-converted into O-dummy matrices when fitting or predicting for new data are executed.
+All the values in \code{x} are interpreted as quantitative data if \code{UD_vars} is not given (NULL).
 For behaviours when \code{UD_vars} is given (not NULL), see the descriptions of \code{UD_vars}.
 When \code{x} is not given (NULL), \code{x_UD} should be given (not NULL).}
 
 \item{x_UD}{(optional) An additional input matrix of size (nobs, _). Each row should be an integer, character,
-or factor object. All the values in \code{x_UD} are interpreted as qualitative data, so they are
-converted into U-dummy matrices when fitting or predicting for new data are executed.}
+or factor object. All the values in \code{x_UD} are interpreted as qualitative data.}
 
 \item{UD_vars}{(optional) An integer or character optional vector.
 If an integer vector is given, all the values of \code{x[, UD_vars]} are interpreted as qualitative data,
-so they are converted into O-dummy matrices when fitting or predicting for new data are executed.
 Else if a character vector is given, all the values of \code{x[, names(x) \%in\% UD_vars]} are interpreted as
 qualitative data instead.}
 }
