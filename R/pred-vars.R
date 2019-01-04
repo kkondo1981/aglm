@@ -4,9 +4,8 @@
 
 #' S4 class for predictors
 #'
-#' @slot vars_info A list of lists. Each element represents one predictor and contains information
-#'   of it and how to create its matrix representation from `data` slot.
-#' @slot data A data.frame which contains numerical values for creation of matrix representation of predictors.
+#' @slot vars_info A list of list. Each element represents one predictor and contains various informations of it.
+#' @slot data A data.frame which contains original data itself.
 #'
 #' @export
 setClass("PredVars",
@@ -15,18 +14,21 @@ setClass("PredVars",
 
 #' Create a new PredVars object
 #'
-#' @param x (optional) An input matrix or data.frame of size (nobs, _). Each row should be an integer or numeric vector.
-#'   All the values in `x` are interpreted as quantitative data if `UD_vars` is not given (NULL).
-#'   For behaviours when `UD_vars` is given (not NULL), see the descriptions of `UD_vars`.
-#'   When `x` is not given (NULL), `x_UD` should be given (not NULL).
-#' @param x_UD (optional) An additional input matrix of size (nobs, _). Each row should be an integer, character,
-#'   or factor object. All the values in `x_UD` are interpreted as qualitative data.
-#' @param UD_vars (optional) An integer or character optional vector.
-#'   If an integer vector is given, all the values of `x[, UD_vars]` are interpreted as qualitative data,
-#'   Else if a character vector is given, all the values of `x[, names(x) %in% UD_vars]` are interpreted as
-#'   qualitative data instead.
-#' @param append_interaction_vars (optional) A boolean flag. If this value is TRUE, interaction effects of
-#'   all the pairs of single variables are added to the returned PredVars object. The default value is TRUE.
+#' @param x An input matrix or data.frame, each column of which represents one predictive variable (or explanatory variable).
+#'   Columns of `x` can contain both quantitative values (as integer or numeric) and qualitative values (as character or factor), but which variables are quantitative or qualitative is usually to be instructed by users.
+#'   * The common way is to give both `x` and `x_UD` arguments separately.
+#'     In this case, all the columns of `x` are treated as quantitative and all the columns of `x_UD` are treated as qualitative.
+#'   * Another way is to give only `x` but provide `UD_vars` for instructing which columns of `x` should be treated as qualitative.
+#'   * If only `x` is given and neither of `x_UD` nor `UD_vars` is not provided, all the columns of `x` are treated as quantitative.
+#'   * Moreover, users can give only `x_UD`. In this case, nothing is considered as quantitative.
+#' @param x_UD An input matrix or data.frame for qualitative data. See the descriptions of `x` for more details.
+#' @param UD_vars An integer or character optional vector.
+#'   If an integer vector is given, all the values of `x[, UD_vars]` are interpreted as qualitative.
+#'   Else if a character vector is given, all the values of `x[, names(x) %in% UD_vars]` are interpreted as qualitative instead.
+#'   See the descriptions of `x` for more details.
+#' @param append_interaction_vars A boolean flag. If `TRUE`, predictive variables of interaction effects are added to the returned `PredVars` object.
+#'   Each of such variable represents an interaction effect between one pair of columns of `x` and `x_UD`, and total number of variables are `nvar * (nvar - 1) /2` where `nvar=dim(x)[2] + dim(x_UD)[2]`.
+#'   The default value is `TRUE`.
 #'
 #' @return A new PredVars object which hold entire information of `x` and `x_UD`
 #'

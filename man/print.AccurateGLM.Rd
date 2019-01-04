@@ -4,8 +4,15 @@
 \alias{print.AccurateGLM}
 \title{Print an AccurateGLM object}
 \usage{
-\method{print}{AccurateGLM}(fitted, digits = max(3, getOption("digits") -
+\method{print}{AccurateGLM}(model, digits = max(3, getOption("digits") -
   3), ...)
+}
+\arguments{
+\item{model}{An AccurateGLM object.}
+
+\item{digits}{Significant digits in printout.}
+
+\item{...}{Other arguments are passed directly to \code{print} functions of \code{model@backend_models}.}
 }
 \description{
 Print an AccurateGLM object

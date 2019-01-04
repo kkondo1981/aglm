@@ -8,21 +8,26 @@ newPredVars(x = NULL, x_UD = NULL, UD_vars = NULL,
   append_interaction_vars = TRUE)
 }
 \arguments{
-\item{x}{(optional) An input matrix or data.frame of size (nobs, _). Each row should be an integer or numeric vector.
-All the values in \code{x} are interpreted as quantitative data if \code{UD_vars} is not given (NULL).
-For behaviours when \code{UD_vars} is given (not NULL), see the descriptions of \code{UD_vars}.
-When \code{x} is not given (NULL), \code{x_UD} should be given (not NULL).}
+\item{x}{An input matrix or data.frame, each column of which represents one predictive variable (or explanatory variable).
+Columns of \code{x} can contain both quantitative values (as integer or numeric) and qualitative values (as character or factor), but which variables are quantitative or qualitative is usually to be instructed by users.
+\itemize{
+\item The common way is to give both \code{x} and \code{x_UD} arguments separately.
+In this case, all the columns of \code{x} are treated as quantitative and all the columns of \code{x_UD} are treated as qualitative.
+\item Another way is to give only \code{x} but provide \code{UD_vars} for instructing which columns of \code{x} should be treated as qualitative.
+\item If only \code{x} is given and neither of \code{x_UD} nor \code{UD_vars} is not provided, all the columns of \code{x} are treated as quantitative.
+\item Moreover, users can give only \code{x_UD}. In this case, nothing is considered as quantitative.
+}}
 
-\item{x_UD}{(optional) An additional input matrix of size (nobs, _). Each row should be an integer, character,
-or factor object. All the values in \code{x_UD} are interpreted as qualitative data.}
+\item{x_UD}{An input matrix or data.frame for qualitative data. See the descriptions of \code{x} for more details.}
 
-\item{UD_vars}{(optional) An integer or character optional vector.
-If an integer vector is given, all the values of \code{x[, UD_vars]} are interpreted as qualitative data,
-Else if a character vector is given, all the values of \code{x[, names(x) \%in\% UD_vars]} are interpreted as
-qualitative data instead.}
+\item{UD_vars}{An integer or character optional vector.
+If an integer vector is given, all the values of \code{x[, UD_vars]} are interpreted as qualitative.
+Else if a character vector is given, all the values of \code{x[, names(x) \%in\% UD_vars]} are interpreted as qualitative instead.
+See the descriptions of \code{x} for more details.}
 
-\item{append_interaction_vars}{(optional) A boolean flag. If this value is TRUE, interaction effects of
-all the pairs of single variables are added to the returned PredVars object. The default value is TRUE.}
+\item{append_interaction_vars}{A boolean flag. If \code{TRUE}, predictive variables of interaction effects are added to the returned \code{PredVars} object.
+Each of such variable represents an interaction effect between one pair of columns of \code{x} and \code{x_UD}, and total number of variables are \code{nvar * (nvar - 1) /2} where \code{nvar=dim(x)[2] + dim(x_UD)[2]}.
+The default value is \code{TRUE}.}
 }
 \value{
 A new PredVars object which hold entire information of \code{x} and \code{x_UD}

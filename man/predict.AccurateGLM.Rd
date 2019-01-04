@@ -2,27 +2,41 @@
 % Please edit documentation in R/predict-aglm.R
 \name{predict.AccurateGLM}
 \alias{predict.AccurateGLM}
-\title{Predicts response variables for new explanatory variables.}
+\title{Make predictions from a fitted AccurateGLM}
 \usage{
-\method{predict}{AccurateGLM}(fitted, newx, newx_UD = NULL,
+\method{predict}{AccurateGLM}(model, newx, newx_UD = NULL,
   UD_vars = NULL, standardize_quantitative_vars = TRUE, s = NULL,
   type = c("link", "response", "coefficients", "nonzero", "class"),
   exact = FALSE, newoffset, ...)
 }
 \arguments{
-\item{fitted}{An AccurateGLM object fitted to data by aglm() function.}
+\item{model}{An AccurateGLM object.}
 
-\item{newx, newx_UD, UD_vars}{New data or predictor variables corresponding to response variables
-to be predicted. See descriptions of aglm() for more details of usages.}
+\item{newx}{New values for \code{x_UD} at which predictions are to be made.
+Although this function expects \code{newx} would be a \code{PredVars} object, it also can be matrix or data.frame.
+In such cases, this function automatically convert it to a PredVars object by calling \code{newPredVars(newx, newx_UD, UD_vars)}.
+See the descriptions of \code{newPredVars} function for more details.}
 
-\item{standardize_quantitative_vars}{same as aglm()'s \code{standardize_quantitative_vars}.}
+\item{newx_UD, UD_vars}{See the descriptions of \code{newx}. Note that these values are required if and only if \code{newx} is not a \code{PredVars} object.}
 
-\item{...}{Other arguments are passed directly to backend (currently glmnet() is used), and
-if not given, backend API's default values are used to call backend functions.}
+\item{s}{Value(s) of the penalty parameter \code{lambda} at which predictions are required.
+Default is the entire sequence used to create the model.}
+
+\item{type}{Type of prediction required.
+\itemize{
+\item Type \code{"link"} gives the linear predictors for \code{"binomial"}, \code{"poisson"} models, and for \code{"gaussian"} models it gives the fitted values.
+\item Type \code{"response"} gives the fitted probabilities for \code{"binomial"}, fitted mean for \code{"poisson"}, and for \code{"gaussian"} models it is equivalent to type \code{"link"}.
+\item Type \code{"coefficients"} computes the coefficients at the requested values for \code{s}.
+Note that for \code{"binomial"} models, results are returned only for the class corresponding to the second level of the factor response.
+\item Type \code{"class"} applies only to \code{"binomial"}, and produces the  class label corresponding to the maximum probability.
+\item Type \code{"nonzero"} returns a list of the indices of the nonzero coefficients for each value of \code{s}.
+}}
+
+\item{...}{Other arguments are passed directly to backend (currently glmnet() is used), and if not given, backend API's deault values are used.}
 }
 \value{
-same as glmnet()
+The object returned depends on type.
 }
 \description{
-Predicts response variables for new explanatory variables.
+Make predictions from a fitted AccurateGLM
 }

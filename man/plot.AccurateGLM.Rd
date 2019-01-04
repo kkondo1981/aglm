@@ -4,8 +4,22 @@
 \alias{plot.AccurateGLM}
 \title{Plot coefficients from an AccurateGLM object}
 \usage{
-\method{plot}{AccurateGLM}(fitted, xvar = c("norm", "lambda", "dev"),
+\method{plot}{AccurateGLM}(model, xvar = c("norm", "lambda", "dev"),
   label = FALSE, ...)
+}
+\arguments{
+\item{model}{An AccurateGLM object.}
+
+\item{xvar}{What is on the X-axis.
+\itemize{
+\item \code{"norm"} plots against the L1-norm of the coefficients.
+\item \code{"lambda"} against the log-lambda sequence.
+\item \code{"dev"} against the percent deviance explained.
+}}
+
+\item{label}{A boolean value. If \code{TRUE}, label the curves with variable sequence numbers.}
+
+\item{...}{Other arguments are passed directly to \code{plot} functions of \code{model@backend_models}.}
 }
 \description{
 Plot coefficients from an AccurateGLM object

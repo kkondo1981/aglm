@@ -10,9 +10,8 @@ S4 class for predictors
 \section{Slots}{
 
 \describe{
-\item{\code{vars_info}}{A list of lists. Each element represents one predictor and contains information
-of it and how to create its matrix representation from \code{data} slot.}
+\item{\code{vars_info}}{A list of list. Each element represents one predictor and contains various informations of it.}
 
-\item{\code{data}}{A data.frame which contains numerical values for creation of matrix representation of predictors.}
+\item{\code{data}}{A data.frame which contains original data itself.}
 }}
 

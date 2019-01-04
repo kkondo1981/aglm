@@ -15,33 +15,25 @@ aglm(x, y, x_UD = NULL, UD_vars = NULL,
   standardize.response = FALSE)
 }
 \arguments{
-\item{x}{Explanatory or predictor variables used for fitting AGLM.
-Although this function expects \code{x} would a PredVars object, it also can be matrix or data.frame.
-Is such cases, this function automatically convert it to a PredVars object by calling
-\code{newPredVars(x, x_UD, UD_vars)} and use that PredVars object as it is initially given.
-Furthermore, \code{x} could be NULL in case where \code{x_UD} is given.
-See descriptions of \code{newPredVars()} for details of non-PredVars cases.}
+\item{x}{Predictor variables (or explanatory variables) used for fitting AGLM.
+Although this function expects \code{x} would be a \code{PredVars} object, it also can be matrix or data.frame.
+In such cases, this function automatically convert it to a \code{PredVars} object by calling \code{newPredVars(x, x_UD, UD_vars)}.
+See the descriptions of \code{newPredVars} functions for more details.}
 
 \item{y}{An integer or numeric vector which represents response variable.}
 
-\item{x_UD, UD_vars}{See descriptions of \code{x} for details. Note that these values are required
-only if a non-PredVar value are given as \code{x}.}
+\item{x_UD, UD_vars}{See descriptions of \code{x}. Note that these values are required if and only if a \code{x} is not a \code{PredVars} object.}
 
 \item{standardize_quantitative_vars}{A boolean value indicating quantitative values should be standardized.
 Note that this option does not affect creations of dummy values (both O-dummies and U-dummies).}
 
 \item{family}{Response type. Currently "gaussian", "binomial", and "poisson" are supported.}
 
-\item{...}{Other arguments other than standardize flags for explanatory variables are passed
-directly to backend (currently glmnet() is used), and if not given, backend API's default
-values are used to call backend functions.
-For standardize flags for explanatory variables (such as glmnet()'s standardize argument),
-this function simply ignore them and doesn't pass them to backend functions.
-This is because AGLM use design matrices with dummy columns and should standardize only
-non-dummy columns, but usually there is no way to tell backend functions not to standardize
-dummy columns. Use \code{standardize_quantitative_vars} option to control standardization of qualitative
-variables instead. Furtheromre, standardize flags for response variables are not ignored and passed
-to the backend because there is no confusion related with dummies.}
+\item{...}{Other arguments except standardize flags for explanatory variables are passed directly to backend (currently glmnet() is used), and if not given, backend API's default values are used to call backend functions.
+For standardize flags of explanatory variables for backend functions (such as glmnet()'s standardize argument), this function simply ignore them and doesn't pass them to backend functions.
+This is because AGLM use design matrices with dummy columns and should standardize only non-dummy columns, but usually there is no way to tell backend functions not to standardize dummy columns.
+Instead, use standardize_quantitative_vars option which standardize only qualitative variables.
+It should be noted that standardize flags for response variables are not ignored and passed to the backend because there is no confusion related with dummies.}
 }
 \value{
 An AccurateGLM object, fitted to the data (x, y)
