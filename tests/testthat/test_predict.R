@@ -29,7 +29,7 @@ calcRMSE <- function(xy, train_idx, test_idx) {
 
   preds_train <- newPredVars(x=x[train_idx, ], x_UD=x_UD[train_idx, ])
   y_train <- y[train_idx]
-  fitted <- aglm(x=preds_train, y=y_train, lambda=0)
+  fitted <- aglm(x=preds_train, y=y_train, lambda=1e-5)
 
   preds_test <- newPredVars(x=x[test_idx, ], x_UD=x_UD[test_idx, ])
   y_pred <- predict(fitted, newx=preds_test)
@@ -53,4 +53,15 @@ test_that("Check whether fitting error is improve when sample size grows.",{
   for (nobs in 4 ** (1:5))
     rmse <- c(rmse, calcRMSE(xy, 1:nobs, 1:(4 ** 5)))
   expect_equal(sort(rmse, decreasing=TRUE), rmse)
+})
+
+
+
+test_that("Check whether fitting error is better than glmnet.",{
+  nobs <- 1000
+  xy <- createXY(nobs, 3, 3)
+  lambda <- 1e-4
+  rmse_aglm <- mean((predict(aglm(x=xy$x, x_UD=xy$x_UD, y=xy$y, lambda=lambda), newx=xy$x, newx_UD=xy$x_UD) - xy$y) ** 2)
+  rmse_glmnet <- mean((predict(glmnet(x=xy$x, y=xy$y, lambda=lambda), newx=xy$x) - xy$y) ** 2)
+  expect_true(rmse_aglm < rmse_glmnet)
 })
