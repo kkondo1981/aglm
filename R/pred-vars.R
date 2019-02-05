@@ -6,8 +6,6 @@
 #'
 #' @slot vars_info A list of list. Each element represents one predictor and contains various informations of it.
 #' @slot data A data.frame which contains original data itself.
-#'
-#' @export
 setClass("PredVars",
          representation=representation(vars_info="list", data="data.frame"))
 
@@ -32,7 +30,6 @@ setClass("PredVars",
 #'
 #' @return A new PredVars object which hold entire information of `x` and `x_UD`
 #'
-#' @export
 #' @importFrom assertthat assert_that
 newPredVars <- function(x=NULL, x_UD=NULL, UD_vars=NULL, append_interaction_vars=TRUE) {
   # Check and process arguments
@@ -192,7 +189,6 @@ getMatrixRepresentation <- function(preds, idx, standardize_quantitative_vars) {
 #'
 #' @return A data.frame which represents the matrix representation of `preds`.
 #'
-#' @export
 #' @importFrom assertthat assert_that
 getDesignMatrix <- function(preds, standardize_quantitative_vars=TRUE) {
   # Check arguments
