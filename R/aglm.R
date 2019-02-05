@@ -4,15 +4,15 @@
 
 #' fit an AGLM model
 #'
-#' @param x Predictor variables (or explanatory variables) used for fitting AGLM.
-#'   Although this function expects `x` would be a `PredVars` object, it also can be matrix or data.frame.
-#'   In such cases, this function automatically convert it to a `PredVars` object by calling `newPredVars(x, x_UD, UD_vars)`.
-#'   See the descriptions of `newPredVars` functions for more details.
+#' @param x An input matrix or data.frame to be fitted.
 #' @param y An integer or numeric vector which represents response variable.
-#' @param x_UD,UD_vars See descriptions of `x`. Note that these values are required if and only if a `x` is not a `PredVars` object.
-#' @param family Response type. Currently "gaussian", "binomial", and "poisson" are supported.
+#' @param qualitative_vars_UD_only A list of indices or names for specifying which columns are qualitative and need only U-dummy representations.
+#' @param qualitative_vars_both A list of indices or names for specifying which columns are qualitative and need both U-dummy and O-dummy representations.
+#' @param qualitative_vars_OD_only A list of indices or names for specifying which columns are qualitative and need only O-dummy representations.
+#' @param quantitative_vars A list of indices or names for specyfying which columns are quantitative.
 #' @param standardize_quantitative_vars A boolean value indicating quantitative values should be standardized.
 #'   Note that this option does not affect creations of dummy values (both O-dummies and U-dummies).
+#' @param family Response type. Currently "gaussian", "binomial", and "poisson" are supported.
 #' @param ... Other arguments except standardize flags for explanatory variables are passed directly to backend (currently glmnet() is used), and if not given, backend API's default values are used to call backend functions.
 #'   For standardize flags of explanatory variables for backend functions (such as glmnet()'s standardize argument), this function simply ignore them and doesn't pass them to backend functions.
 #'   This is because AGLM use design matrices with dummy columns and should standardize only non-dummy columns, but usually there is no way to tell backend functions not to standardize dummy columns.
@@ -24,7 +24,14 @@
 #' @export
 #' @importFrom assertthat assert_that
 #' @importFrom glmnet glmnet
-aglm <- function(x, y, x_UD=NULL,UD_vars=NULL,
+aglm <- function(x, y,
+                 qualitative_vars_UD_only=NULL,
+                 qualitative_vars_both=NULL,
+                 qualitative_vars_OD_only=NULL,
+                 quantitative_vars=NULL,
+                 add_linear_columns=TRUE,
+                 add_OD_columns_of_qualitatives=TRUE,
+                 add_intersection_columns=TRUE,
                  standardize_quantitative_vars=TRUE,
                  family=c("gaussian","binomial","poisson"),
                  weights,
