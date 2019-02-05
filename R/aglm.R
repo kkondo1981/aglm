@@ -6,9 +6,18 @@
 #'
 #' @param x An input matrix or data.frame to be fitted.
 #' @param y An integer or numeric vector which represents response variable.
+<<<<<<< HEAD
 #' @param qualitative_vars_UD_only A list of indices or names for specifying which columns are qualitative and need only U-dummy representations.
 #' @param qualitative_vars_both A list of indices or names for specifying which columns are qualitative and need both U-dummy and O-dummy representations.
 #' @param qualitative_vars_OD_only A list of indices or names for specifying which columns are qualitative and need only O-dummy representations.
+=======
+#' @param qualitative_vars_UD_only A list of indices or names for specifying which columns are qualitative
+#'   and need only U-dummy representations.
+#' @param qualitative_vars_both A list of indices or names for specifying which columns are qualitative
+#'   and need both U-dummy and O-dummy representations.
+#' @param qualitative_vars_OD_only A list of indices or names for specifying which columns are qualitative
+#'   and need only O-dummy representations.
+>>>>>>> 46451bfe6ddf929fb0fa6e43ae9989a00bf5e153
 #' @param quantitative_vars A list of indices or names for specyfying which columns are quantitative.
 #' @param standardize_quantitative_vars A boolean value indicating quantitative values should be standardized.
 #'   Note that this option does not affect creations of dummy values (both O-dummies and U-dummies).
