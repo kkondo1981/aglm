@@ -10,6 +10,9 @@
 #' @param qualitative_vars_both A list of indices or names for specifying which columns are qualitative and need both U-dummy and O-dummy representations.
 #' @param qualitative_vars_OD_only A list of indices or names for specifying which columns are qualitative and need only O-dummy representations.
 #' @param quantitative_vars A list of indices or names for specyfying which columns are quantitative.
+#' @param add_linear_columns A boolean value which indicates whether this function uses linear effects or not.
+#' @param add_OD_columns_of_qualitatives A boolean value which indicates whether this function use O-dummy representations for qualitative and ordinal variables or not.
+#' @param add_intersection_columns A boolean value which indicates whether this function uses intersection effects or not.
 #' @param standardize_quantitative_vars A boolean value indicating quantitative values should be standardized.
 #'   Note that this option does not affect creations of dummy values (both O-dummies and U-dummies).
 #' @param family Response type. Currently "gaussian", "binomial", and "poisson" are supported.
