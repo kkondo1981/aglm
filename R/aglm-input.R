@@ -136,14 +136,12 @@ newInput <- function(x=NULL,
   }
 
 
-  # Append additional informations into vars_info
+  # some pre-processes and additional information related to binning
   for (i in seq(nvar)) {
-    # For quantitative variables, holds numeric data and informations for standardization
+    # For quantitative variables, holds numeric data
     if (vars_info[[i]]$type == "quan") {
       data_idx <- vars_info[[i]]$data_column_idx
       x[, data_idx] <- as.numeric(x[, data_idx])
-      vars_info[[i]]$mu <- mean(x[, data_idx])
-      vars_info[[i]]$sigma <- sd(x[, data_idx])
     }
 
     # For qualitative variables, holds ordered or unordered factor data

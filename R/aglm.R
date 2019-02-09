@@ -13,14 +13,8 @@
 #' @param add_linear_columns A boolean value which indicates whether this function uses linear effects or not.
 #' @param add_OD_columns_of_qualitatives A boolean value which indicates whether this function use O-dummy representations for qualitative and ordinal variables or not.
 #' @param add_intersection_columns A boolean value which indicates whether this function uses intersection effects or not.
-#' @param standardize_quantitative_vars A boolean value indicating quantitative values should be standardized.
-#'   Note that this option does not affect creations of dummy values (both O-dummies and U-dummies).
 #' @param family Response type. Currently "gaussian", "binomial", and "poisson" are supported.
-#' @param ... Other arguments except standardize flags for explanatory variables are passed directly to backend (currently glmnet() is used), and if not given, backend API's default values are used to call backend functions.
-#'   For standardize flags of explanatory variables for backend functions (such as glmnet()'s standardize argument), this function simply ignore them and doesn't pass them to backend functions.
-#'   This is because AGLM use design matrices with dummy columns and should standardize only non-dummy columns, but usually there is no way to tell backend functions not to standardize dummy columns.
-#'   Instead, use standardize_quantitative_vars option which standardize only qualitative variables.
-#'   It should be noted that standardize flags for response variables are not ignored and passed to the backend because there is no confusion related with dummies.
+#' @param ... Other arguments are passed directly to backend (currently glmnet() is used), and if not given, backend API's default values are used to call backend functions.
 #'
 #' @return An AccurateGLM object, fitted to the data (x, y)
 #'
@@ -35,7 +29,7 @@ aglm <- function(x, y,
                  add_linear_columns=TRUE,
                  add_OD_columns_of_qualitatives=TRUE,
                  add_intersection_columns=TRUE,
-                 standardize_quantitative_vars=TRUE,
+                 standardize=TRUE,
                  family=c("gaussian","binomial","poisson"),
                  weights,
                  offset=NULL,
@@ -67,7 +61,7 @@ aglm <- function(x, y,
   family <- match.arg(family)
 
   # Create a design matrix which is passed to backend API
-  x_for_backend <- getDesignMatrix(x, standardize_quantitative_vars=standardize_quantitative_vars)
+  x_for_backend <- getDesignMatrix(x)
 
   # Data size
   nobs <- dim(x_for_backend)[1]
@@ -90,7 +84,7 @@ aglm <- function(x, y,
                           nlambda=nlambda,
                           lambda.min.ratio=lambda.min.ratio,
                           lambda=lambda,
-                          standardize=FALSE,
+                          standardize=standardize,
                           intercept=intercept,
                           thresh=thresh,
                           dfmax=dfmax,
