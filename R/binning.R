@@ -1,7 +1,7 @@
 # utility functions for binning numerical data
 # written by Kenji Kondo @ 2019/1/1
 
-#' Create evenly cut bins.
+#' Create bins by Equal Width Binning
 #'
 #' @param left left value of the original interval.
 #' @param right right value of the original interval.
@@ -11,7 +11,7 @@
 #'
 #' @export
 #' @importFrom assertthat assert_that
-createEvenBins <- function(left, right, nbin){
+createEqualWidthBins <- function(left, right, nbin){
   nbin <- as.integer(nbin)
   assert_that(length(nbin) == 1 & nbin > 1)
 
