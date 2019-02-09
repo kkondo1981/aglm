@@ -4,7 +4,11 @@
 \alias{aglm}
 \title{fit an AGLM model}
 \usage{
-aglm(x, y, x_UD = NULL, UD_vars = NULL,
+aglm(x, y, qualitative_vars_UD_only = NULL,
+  qualitative_vars_both = NULL, qualitative_vars_OD_only = NULL,
+  quantitative_vars = NULL, add_linear_columns = TRUE,
+  add_OD_columns_of_qualitatives = TRUE,
+  add_intersection_columns = TRUE,
   standardize_quantitative_vars = TRUE, family = c("gaussian",
   "binomial", "poisson"), weights, offset = NULL, alpha = 1,
   nlambda = 100, lambda.min.ratio = NULL, lambda = NULL,
@@ -15,14 +19,23 @@ aglm(x, y, x_UD = NULL, UD_vars = NULL,
   standardize.response = FALSE)
 }
 \arguments{
-\item{x}{Predictor variables (or explanatory variables) used for fitting AGLM.
-Although this function expects \code{x} would be a \code{PredVars} object, it also can be matrix or data.frame.
-In such cases, this function automatically convert it to a \code{PredVars} object by calling \code{newPredVars(x, x_UD, UD_vars)}.
-See the descriptions of \code{newPredVars} functions for more details.}
+\item{x}{An input matrix or data.frame to be fitted.}
 
 \item{y}{An integer or numeric vector which represents response variable.}
 
-\item{x_UD, UD_vars}{See descriptions of \code{x}. Note that these values are required if and only if a \code{x} is not a \code{PredVars} object.}
+\item{qualitative_vars_UD_only}{A list of indices or names for specifying which columns are qualitative and need only U-dummy representations.}
+
+\item{qualitative_vars_both}{A list of indices or names for specifying which columns are qualitative and need both U-dummy and O-dummy representations.}
+
+\item{qualitative_vars_OD_only}{A list of indices or names for specifying which columns are qualitative and need only O-dummy representations.}
+
+\item{quantitative_vars}{A list of indices or names for specyfying which columns are quantitative.}
+
+\item{add_linear_columns}{A boolean value which indicates whether this function uses linear effects or not.}
+
+\item{add_OD_columns_of_qualitatives}{A boolean value which indicates whether this function use O-dummy representations for qualitative and ordinal variables or not.}
+
+\item{add_intersection_columns}{A boolean value which indicates whether this function uses intersection effects or not.}
 
 \item{standardize_quantitative_vars}{A boolean value indicating quantitative values should be standardized.
 Note that this option does not affect creations of dummy values (both O-dummies and U-dummies).}
