@@ -42,7 +42,7 @@ createEqualFreqBins <- function(x_vec, nbin.max) {
   assert_that(nbin.max > 0 & length(x_vec) > 0)
  
   nbin <- min(nbin.max, length(x_vec))
-  percents <- seq(0, 1, 1 / (nbin - 1))
+  percents <- seq(0, 1, 1 / nbin)
   breaks <- unique(as.numeric(quantile(x_vec, percents)))
 
   return(breaks)
@@ -79,7 +79,7 @@ executeBinning <- function(x_vec, breaks=NULL, nbin.max=100, allow_na=FALSE, met
     if (method == "freq") {
       breaks <- createEqualFreqBins(x_vec, nbin.max)
     } else if (method == "width") {
-      breaks <- createEvenBins(left, right, nbin.max)
+      breaks <- createEqualWidthBins(left, right, nbin.max)
     } else {
       assert_that(FALSE, msg="wrong 'method' argument.")
     }
