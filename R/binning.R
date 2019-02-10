@@ -57,6 +57,7 @@ createEqualFreqBins <- function(x_vec, nbin.max) {
 #' @param nbin a number of bins which is used. Only used when `breaks` is not set.
 #' @param allow_na a boolean value to tell whether all the elements should be binned or not (default is FALSE).
 #'   If set TRUE, the leftmost and rightmost boundaries of bins are enhanced to -Inf and +Inf, respectively.
+#' @param method used for specifying binning method. "freq": equal freq binning (default), "width": equal width binning.
 #'
 #' @return a list which has two members `labels` and `breaks`.
 #' * `labels`: an integer vector of `length(x_vec)`.
@@ -66,7 +67,7 @@ createEqualFreqBins <- function(x_vec, nbin.max) {
 #'
 #' @export
 #' @importFrom assertthat assert_that
-executeBinning <- function(x_vec, breaks=NULL, nbin=20, allow_na=FALSE) {
+executeBinning <- function(x_vec, breaks=NULL, nbin=20, allow_na=FALSE, method="freq") {
   # Check arguments
   assert_that(isBinningFeasible(x_vec))
 
