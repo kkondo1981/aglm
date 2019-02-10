@@ -46,7 +46,7 @@ getUDummyMatForOneVec <- function(x_vec, levels=NULL, drop_last=TRUE, only_info=
 #' @param x_vec An integer or numeric vector to be converted into dummy matrix.
 #' @param breaks A numeric vector which indicates the boundaries of bins, of length (number of bins + 1).
 #'   If NULL, evenly cut bins are automatically generated and used.
-#' @param nbin A number of bins which is used. Only used when `breaks` is not set.
+#' @param nbin.max A maximum number of bins which is used. Only used when `breaks` is not set.
 #' @param only_info A boolean value. If TRUE, actual creation of dummy matrix is omitted.
 #'
 #' @return a list with two members `breaks` and `dummy_mat`.
@@ -60,12 +60,12 @@ getUDummyMatForOneVec <- function(x_vec, levels=NULL, drop_last=TRUE, only_info=
 #'
 #' @export
 #' @importFrom assertthat assert_that
-getODummyMatForOneVec <- function(x_vec, breaks=NULL, nbin=20, only_info=FALSE) {
+getODummyMatForOneVec <- function(x_vec, breaks=NULL, nbin.max=20, only_info=FALSE) {
   # Check arguments. only integer or numerical vectors are allowed.
   assert_that(class(x_vec) == "integer" | class(x_vec) == "numeric")
 
   # Execute binning
-  binned_x <- executeBinning(x_vec, breaks=breaks, nbin=nbin, allow_na=FALSE)
+  binned_x <- executeBinning(x_vec, breaks=breaks, nbin.max=nbin.max, allow_na=FALSE)
 
   # create dummy matrix for x_vec
   nrow <- length(x_vec)
