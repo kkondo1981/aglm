@@ -1,6 +1,13 @@
 # utility functions for binning numerical data
 # written by Kenji Kondo @ 2019/1/1
 
+
+# Inner function used in executeBinning
+isBinningFeasible <- function(x_vec) {
+  return(class(x_vec) == "integer" | class(x_vec) == "numeric")
+}
+
+
 #' Create bins by Equal Width Binning
 #'
 #' @param left left value of the original interval.
@@ -20,9 +27,25 @@ createEqualWidthBins <- function(left, right, nbin){
 }
 
 
-# Inner function used in executeBinning
-isBinningFeasible <- function(x_vec) {
-  return(class(x_vec) == "integer" | class(x_vec) == "numeric")
+#' Create bins by Equal Freq Binning
+#'
+#' @param x_vec A reference integer or numeric vector to be binned.
+#' @param nbin.max An integer value which indicates the maximum counts of bins.
+#'   Note that this function makes `min(nbin.max, length(x_vec))` counts of bins.
+#'
+#' @return a numeric vector which indicates the boundaries of bins, with (number of bins + 1) elements.
+#'
+#' @export
+#' @importFrom assertthat assert_that
+createEqualFreqBins <- function(x_vec, nbin.max) {
+  nbin.max <- as.integer(nbin.max)
+  assert_that(nbin.max > 0 & length(x_vec) > 0)
+ 
+  nbin <- min(nbin.max, length(x_vec))
+  percents <- seq(0, 1, 1 / (nbin - 1))
+  breaks <- unique(as.numeric(quantile(x_vec, percents)))
+
+  return(breaks)
 }
 
 
