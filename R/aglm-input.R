@@ -183,3 +183,83 @@ newInput <- function(x,
 
   new("AGLM_Input", vars_info=vars_info, data=x)
 }
+
+
+# Functions for inner use
+getMatrixRepresentation <- function(x, idx, drop_OD=FALSE) {
+  var_info <- x@vars_info[[idx]]
+  z <- NULL
+
+  if (var_info$type == "quan" | var_info$type == "qual") {
+    z_raw <- matrix(x@data[, var_info$data_column_idx], ncol=1)
+
+    if (var_info$use_linear) {
+      z <- z_raw
+      colnames(z) <- var_info$name
+    }
+
+    if (var_info$use_OD & !drop_OD) {
+      z_OD <- getODummyMatForOneVec(z_raw, breaks=var_info$OD_info$breaks)$dummy_mat
+      colnames(z_OD) <- paste0(var_info$name, "_OD_", seq(dim(z_OD)[2]))
+      z <- cbind(z, z_OD)
+    }
+
+    if (var_info$use_UD) {
+      z_UD <- getUDummyMatForOneVec(z_raw, levels=var_info$UD_info$levels,
+                                    drop_last=var_info$UD_info$drop_last)$dummy_mat
+      colnames(z_UD) <- paste0(var_info$name, "_UD_", seq(dim(z_UD)[2]))
+      z <- cbind(z, z_UD)
+    }
+  } else if (var_info$type == "inter") {
+    # Get matrix representations of two variables
+    z1 <- getMatrixRepresentation(x, var_info$var_idx1, drop_OD=TRUE)
+    z2 <- getMatrixRepresentation(x, var_info$var_idx2, drop_OD=TRUE)
+
+    # Create matrix representation of intarction
+    nrow <- dim(z1)[1]
+    ncol1 <- dim(z1)[2]
+    ncol2 <- dim(z2)[2]
+    assert_that(dim(z2)[1] == nrow)
+    z <- matrix(0, nrow, ncol1 * ncol2)
+    nm <- character(ncol1 * ncol2)
+    for (i in 1:ncol1) {
+      for (j in 1:ncol2) {
+        ij <- (i - 1) * ncol2 + j
+        z[, ij] <- z1[, i] * z2[, j]
+        nm[ij] <- paste0(var_info$name, "_", i, "_", j)
+      }
+    }
+    colnames(z) <- nm
+  } else {
+    assert_true(FALSE)  # never expects to come here
+  }
+
+  return(z)
+}
+
+
+#' Get design-matrix representation of PredVars objects
+#'
+#' @param x An AGLM_Input object
+#'
+#' @return A data.frame which represents the matrix representation of `x`.
+#'
+#' @export
+#' @importFrom assertthat assert_that
+getDesignMatrix <- function(x) {
+  # Check arguments
+  assert_that(class(x) == "AGLM_Input")
+
+  # Data size
+  nobs <- dim(x@data)[1]
+  nvar <- length(x@vars_info)
+  x_mat <- NULL
+
+  for (i in 1:nvar) {
+    z <- getMatrixRepresentation(x, i)
+    if (i == 1) x_mat <- z
+    else x_mat <- cbind(x_mat, z)
+  }
+
+  return(x_mat)
+}
