@@ -12,7 +12,7 @@ setClass("AGLM_Input",
 
 #' Create a new AGLM_Input object
 #' @importFrom assertthat assert_that
-newInput <- function(x=NULL,
+newInput <- function(x,
                      qualitative_vars_UD_only=NULL,
                      qualitative_vars_both=NULL,
                      qualitative_vars_OD_only=NULL,
@@ -81,16 +81,15 @@ newInput <- function(x=NULL,
   qual_both <- get_idx(qualitative_vars_both)
   quan <- get_idx(quantitative_vars)
 
-
   # Check if no variables are doubly counted.
   msg <- paste0("Each pair of qualitative_vars_UD_only, qualitative_vars_both, qualitative_vars_both, ",
                 "and quantitative_vars shouldn't be overlapped.")
-  assert_that(length(qual_UD, qual_OD) == 0, msg)
-  assert_that(length(qual_UD, qual_both) == 0, msg)
-  assert_that(length(qual_UD, quan) == 0, msg)
-  assert_that(length(qual_OD, qual_both) == 0, msg)
-  assert_that(length(qual_OD, quan) == 0, msg)
-  assert_that(length(qual_both, quan) == 0, msg)
+  assert_that(length(intersect(qual_UD, qual_OD)) == 0, msg=msg)
+  assert_that(length(intersect(qual_UD, qual_both)) == 0, msg=msg)
+  assert_that(length(intersect(qual_UD, quan)) == 0, msg=msg)
+  assert_that(length(intersect(qual_OD, qual_both)) == 0, msg=msg)
+  assert_that(length(intersect(qual_OD, quan)) == 0, msg=msg)
+  assert_that(length(intersect(qual_both, quan)) == 0, msg=msg)
 
 
   # Modify vars_info using qualitative_vars_UD_only, qualitative_vars_both, ...

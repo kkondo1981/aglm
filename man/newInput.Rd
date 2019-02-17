@@ -4,7 +4,7 @@
 \alias{newInput}
 \title{Create a new AGLM_Input object}
 \usage{
-newInput(x = NULL, qualitative_vars_UD_only = NULL,
+newInput(x, qualitative_vars_UD_only = NULL,
   qualitative_vars_both = NULL, qualitative_vars_OD_only = NULL,
   quantitative_vars = NULL, add_linear_columns = TRUE,
   add_OD_columns_of_qualitatives = TRUE,
