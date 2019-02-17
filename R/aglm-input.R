@@ -191,10 +191,10 @@ getMatrixRepresentation <- function(x, idx, drop_OD=FALSE) {
   z <- NULL
 
   if (var_info$type == "quan" | var_info$type == "qual") {
-    z_raw <- matrix(x@data[, var_info$data_column_idx], ncol=1)
+    z_raw <- x@data[, var_info$data_column_idx]
 
     if (var_info$use_linear) {
-      z <- z_raw
+      z <- matrix(z_raw, ncol=1)
       colnames(z) <- var_info$name
     }
 
