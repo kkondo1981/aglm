@@ -9,8 +9,8 @@ test_that("getUDummyMatForOneVec()'s outputs are correct.", {
 })
 
 test_that("getODummyMatForOneVec()'s outputs are correct.", {
-  expect_equal(getODummyMatForOneVec(1:3, nbin=5)$dummy_mat,
-               matrix(c(1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1), 3, 5))
+  expect_equal(getODummyMatForOneVec(1:3, nbin.max=5)$dummy_mat,
+               matrix(c(1, 0, 0, 1, 1, 0, 1, 1, 1), 3, min(3, 5)))
   expect_equal(getODummyMatForOneVec(1:3, breaks=c(0, 0.5, 1.2, 3, 4))$dummy_mat,
                matrix(c(0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1), 3, 4))
 })
