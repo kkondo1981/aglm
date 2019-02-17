@@ -8,7 +8,7 @@ executeBinning(x_vec, breaks = NULL, nbin.max = 100,
   allow_na = FALSE, method = "freq")
 }
 \arguments{
-\item{x_vec}{an integer or numeric vector, to be binned.}
+\item{x_vec}{an integer or numeric or ordered vector, to be binned.}
 
 \item{breaks}{a numeric vector which indicates the boundaries of bins, of length (number of bins + 1).
 If NULL is set, bins are generated using the method which is specified by the \code{method} argument.}

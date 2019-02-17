@@ -7,7 +7,7 @@
 createEqualFreqBins(x_vec, nbin.max)
 }
 \arguments{
-\item{x_vec}{A reference integer or numeric vector to be binned.}
+\item{x_vec}{A reference integer or numeric or ordered vector to be binned.}
 
 \item{nbin.max}{An integer value which indicates the maximum counts of bins.
 Note that this function makes \code{min(nbin.max, length(x_vec))} counts of bins.}
