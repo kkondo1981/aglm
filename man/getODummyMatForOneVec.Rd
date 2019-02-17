@@ -4,7 +4,7 @@
 \alias{getODummyMatForOneVec}
 \title{Get O-dummy matrix for one-dimensional vector}
 \usage{
-getODummyMatForOneVec(x_vec, breaks = NULL, nbin = 20,
+getODummyMatForOneVec(x_vec, breaks = NULL, nbin.max = 20,
   only_info = FALSE)
 }
 \arguments{
@@ -13,7 +13,7 @@ getODummyMatForOneVec(x_vec, breaks = NULL, nbin = 20,
 \item{breaks}{A numeric vector which indicates the boundaries of bins, of length (number of bins + 1).
 If NULL, evenly cut bins are automatically generated and used.}
 
-\item{nbin}{A number of bins which is used. Only used when \code{breaks} is not set.}
+\item{nbin.max}{A maximum number of bins which is used. Only used when \code{breaks} is not set.}
 
 \item{only_info}{A boolean value. If TRUE, actual creation of dummy matrix is omitted.}
 }
