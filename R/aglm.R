@@ -49,8 +49,15 @@ aglm <- function(x, y,
                  type.gaussian=NULL,
                  type.logistic=c("Newton","modified.Newton"),
                  standardize.response=FALSE) {
-  # Create a PredVars object if not given
-  if (is.null(x) | class(x) != "PredVars") x <- newPredVars(x, x_UD, UD_vars)
+  # Create an input object
+  x <- newInput(x,
+                qualitative_vars_UD_only=qualitative_vars_UD_only,
+                qualitative_vars_both=qualitative_vars_both,
+                qualitative_vars_OD_only=qualitative_vars_OD_only,
+                quantitative_vars=quantitative_vars,
+                add_linear_columns=add_linear_columns,
+                add_OD_columns_of_qualitatives=add_OD_columns_of_qualitatives,
+                add_intersection_columns=add_intersection_columns)
 
   # Check y
   y <- drop(y)

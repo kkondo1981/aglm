@@ -4,13 +4,7 @@
 #' Make predictions from a fitted AccurateGLM
 #'
 #' @param model An AccurateGLM object.
-#' @param newx New values for `x_UD` at which predictions are to be made.
-#'   Although this function expects `newx` would be a `PredVars` object, it also can be matrix or data.frame.
-#'   In such cases, this function automatically convert it to a PredVars object by calling `newPredVars(newx, newx_UD, UD_vars)`.
-#'   See the descriptions of `newPredVars` function for more details.
-#' @param newx_UD,UD_vars See the descriptions of `newx`. Note that these values are required if and only if `newx` is not a `PredVars` object.
-#' @param s  Value(s) of the penalty parameter `lambda` at which predictions are required.
-#'   Default is the entire sequence used to create the model.
+#' @param newx An input matrix or data.frame used for predictions.
 #' @param type Type of prediction required.
 #'   * Type `"link"` gives the linear predictors for `"binomial"`, `"poisson"` models, and for `"gaussian"` models it gives the fitted values.
 #'   * Type `"response"` gives the fitted probabilities for `"binomial"`, fitted mean for `"poisson"`, and for `"gaussian"` models it is equivalent to type `"link"`.
@@ -25,18 +19,14 @@
 #' @export
 #' @importFrom glmnet predict.glmnet
 predict.AccurateGLM <- function(model,
-                                newx, newx_UD=NULL, UD_vars=NULL,
-                                standardize_quantitative_vars=TRUE,
+                                newx,
                                 s=NULL,
                                 type=c("link","response","coefficients","nonzero","class"),
                                 exact=FALSE,
                                 newoffset,
                                 ...) {
-  # Create a PredVars object if not given
-  if (is.null(newx) | class(newx) != "PredVars") newx <- newPredVars(newx, newx_UD, UD_vars)
-
-  # Set vars_info of the fitted model for creating a same type of design matrix as in training.
-  newx@vars_info <- model@vars_info
+  # Create an input object
+  newx <- new("AGLM_Input", vars_info=model@vars_info, data=newx)
 
   # Create a design matrix passed to backend API
   x_for_backend <- getDesignMatrix(newx)
