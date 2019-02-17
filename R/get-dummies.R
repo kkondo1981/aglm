@@ -30,7 +30,7 @@ getUDummyMatForOneVec <- function(x_vec, levels=NULL, drop_last=TRUE, only_info=
   }
 
   # create dummy matrix for x_vec
-  int_labels <- as.integer(labels(x_vec))
+  int_labels <- as.integer(x_vec)
   nrow <- length(x_vec)
   ncol <- length(levels(x_vec))
   if (drop_last) ncol <- ncol - 1
