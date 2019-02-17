@@ -96,8 +96,8 @@ executeBinning <- function(x_vec, breaks=NULL, nbin.max=100, allow_na=FALSE, met
       labels[x_vec >= breaks[i] & x_vec < breaks[i + 1]] <- i
     }
     if (!allow_na) {
-      labels[x_vec < breaks[i]] <- 1
-      labels[x_vec >= breaks[length(breaks)]] <- length(breaks) - 1
+      labels[x_vec < breaks[1]] <- 1
+      labels[x_vec >= breaks[length(breaks)]] <- length(breaks)
     }
   } else { # integer or numeric cases
     # Enhance the leftmost and rightmost boundaries of bins if NA values are not allowed.

@@ -13,6 +13,10 @@ test_that("createEqualFreqBins()'s outputs are correct.", {
   expect_equal(createEqualFreqBins(c(0.1, 0.3, 0.5, 0.8), 3), c(0.1, 0.3, 0.5, 0.8), tolerance=EPS)
   expect_equal(createEqualFreqBins(c(0.1, 0.3, 0.5, 0.8), 2), c(0.1, 0.4, 0.8), tolerance=EPS)
   expect_equal(length(createEqualFreqBins(rnorm(1000), 100)), 101, tolerance=EPS)
+
+  x <- ordered(c(1, 1, 1, 1, 1, 2, 2, 3, 3, 4))
+  expect_equal(executeBinning(x, nbin.max=100)$labels, as.integer(x))
+  expect_equal(executeBinning(x, nbin.max=2)$labels, c(1, 1, 1, 1, 1, 1, 1, 1, 1, 2))
 })
 
 test_that("executeBinning()'s outputs are correct.", {
