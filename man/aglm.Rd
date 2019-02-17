@@ -8,12 +8,11 @@ aglm(x, y, qualitative_vars_UD_only = NULL,
   qualitative_vars_both = NULL, qualitative_vars_OD_only = NULL,
   quantitative_vars = NULL, add_linear_columns = TRUE,
   add_OD_columns_of_qualitatives = TRUE,
-  add_intersection_columns = TRUE,
-  standardize_quantitative_vars = TRUE, family = c("gaussian",
-  "binomial", "poisson"), weights, offset = NULL, alpha = 1,
-  nlambda = 100, lambda.min.ratio = NULL, lambda = NULL,
-  intercept = TRUE, thresh = 1e-07, dfmax = NULL, pmax = NULL,
-  exclude, penalty.factor = NULL, lower.limits = -Inf,
+  add_intersection_columns = TRUE, standardize = TRUE,
+  family = c("gaussian", "binomial", "poisson"), weights,
+  offset = NULL, alpha = 1, nlambda = 100, lambda.min.ratio = NULL,
+  lambda = NULL, intercept = TRUE, thresh = 1e-07, dfmax = NULL,
+  pmax = NULL, exclude, penalty.factor = NULL, lower.limits = -Inf,
   upper.limits = Inf, maxit = 1e+05, type.gaussian = NULL,
   type.logistic = c("Newton", "modified.Newton"),
   standardize.response = FALSE)
@@ -37,16 +36,9 @@ aglm(x, y, qualitative_vars_UD_only = NULL,
 
 \item{add_intersection_columns}{A boolean value which indicates whether this function uses intersection effects or not.}
 
-\item{standardize_quantitative_vars}{A boolean value indicating quantitative values should be standardized.
-Note that this option does not affect creations of dummy values (both O-dummies and U-dummies).}
-
 \item{family}{Response type. Currently "gaussian", "binomial", and "poisson" are supported.}
 
-\item{...}{Other arguments except standardize flags for explanatory variables are passed directly to backend (currently glmnet() is used), and if not given, backend API's default values are used to call backend functions.
-For standardize flags of explanatory variables for backend functions (such as glmnet()'s standardize argument), this function simply ignore them and doesn't pass them to backend functions.
-This is because AGLM use design matrices with dummy columns and should standardize only non-dummy columns, but usually there is no way to tell backend functions not to standardize dummy columns.
-Instead, use standardize_quantitative_vars option which standardize only qualitative variables.
-It should be noted that standardize flags for response variables are not ignored and passed to the backend because there is no confusion related with dummies.}
+\item{...}{Other arguments are passed directly to backend (currently glmnet() is used), and if not given, backend API's default values are used to call backend functions.}
 }
 \value{
 An AccurateGLM object, fitted to the data (x, y)
