@@ -164,7 +164,7 @@ newInput <- function(x,
 
 
   # Append informations of interaction effects
-  if (append_interaction_vars & nvar > 1) {
+  if (add_intersection_columns & nvar > 1) {
     idx <- length(vars_info)
     for (i in 1:(nvar - 1)) {
       for (j in (i + 1):nvar) {

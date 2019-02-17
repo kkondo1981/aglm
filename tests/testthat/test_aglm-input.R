@@ -8,164 +8,62 @@ createX <- function(nobs, nvar_int, nvar_numeric, nvar_ordered, nvar_factor, see
   nvar <- nvar_int + nvar_numeric + nvar_ordered + nvar_factor
 
   data <- list()
-  for (i in 1:nvar_int) data[[paste0("Int", i)]] <- sample(1:10, size=nobs, replace=TRUE)
-  for (i in 1:nvar_numeric) data[[paste0("Num", i)]] <- rnorm(nobs)
-  for (i in 1:nvar_ordered) data[[paste0("Ord", i)]] <- ordered(sample(1:5, size=nobs, replace=TRUE))
-  for (i in 1:nvar_factor) data[[paste0("Fac", i)]] <- factor(sample(c("A", "B", "C"), nobs, replace=TRUE))
+  if (nvar_int > 0) for (i in 1:nvar_int) data[[paste0("Int", i)]] <- sample(1:10, size=nobs, replace=TRUE)
+  if (nvar_numeric > 0) for (i in 1:nvar_numeric) data[[paste0("Num", i)]] <- rnorm(nobs)
+  if (nvar_ordered > 0) for (i in 1:nvar_ordered) data[[paste0("Ord", i)]] <- ordered(sample(1:5, size=nobs, replace=TRUE))
+  if (nvar_factor > 0) for (i in 1:nvar_factor) data[[paste0("Fac", i)]] <- factor(sample(c("A", "B", "C"), nobs, replace=TRUE))
 
   return(data.frame(data))
 }
 
-x <- createX(10, 1, 1, 1, 1)
-z <- newInput(x)
-print(z)
+test_that("Check returned values of createX() for each input types", {
+  x <- newInput(createX(10, 1, 1, 1, 1))
 
-#test_that("Check the creation of AGLM_Input objects.", {
-  #
-#})
+  expect_equal(x@vars_info[[1]]$id, 1)
+  expect_equal(x@vars_info[[1]]$data_column_idx, 1)
+  expect_equal(x@vars_info[[1]]$type, "quan")
+  expect_equal(x@vars_info[[1]]$use_linear, TRUE)
+  expect_equal(x@vars_info[[1]]$use_UD, FALSE)
+  expect_equal(x@vars_info[[1]]$use_OD, TRUE)
+  expect_true(!is.null(x@vars_info[[1]]$OD_info))
+  expect_true(is.null(x@vars_info[[1]]$UD_info))
 
+  expect_equal(x@vars_info[[2]]$id, 2)
+  expect_equal(x@vars_info[[2]]$data_column_idx, 2)
+  expect_equal(x@vars_info[[2]]$type, "quan")
+  expect_equal(x@vars_info[[2]]$use_linear, TRUE)
+  expect_equal(x@vars_info[[2]]$use_UD, FALSE)
+  expect_equal(x@vars_info[[2]]$use_OD, TRUE)
+  expect_true(!is.null(x@vars_info[[2]]$OD_info))
+  expect_true(is.null(x@vars_info[[2]]$UD_info))
 
-# test_that("Check the creation of PredVars objects when x and UD_vars are specified.", {
-#   set.seed(12345)
-#   nobs <- 100
-#   nvar_OD <- 2
-#   nvar_UD <- 1
-#   nvar <- nvar_OD + nvar_UD
+  expect_equal(x@vars_info[[3]]$id, 3)
+  expect_equal(x@vars_info[[3]]$data_column_idx, 3)
+  expect_equal(x@vars_info[[3]]$type, "qual")
+  expect_equal(x@vars_info[[3]]$use_linear, FALSE)
+  expect_equal(x@vars_info[[3]]$use_UD, TRUE)
+  expect_equal(x@vars_info[[3]]$use_OD, TRUE)
+  expect_true(!is.null(x@vars_info[[3]]$UD_info))
+  expect_true(!is.null(x@vars_info[[3]]$OD_info))
 
-#   var_names <- paste0("Var_", 1:nvar)
-
-#   x <- matrix(rnorm(nobs * nvar_OD), nobs, nvar_OD)
-#   colnames(x) <- var_names[1:nvar_OD]
-
-#   x_UD <- matrix(paste0("", sample(1:10, nobs * nvar_UD, replace=TRUE)), nobs, nvar_UD)
-#   colnames(x_UD) <- var_names[-(1:nvar_OD)]
-
-#   res <- newPredVars(x=data.frame(x, x_UD), UD_vars=3, append_interaction_vars=FALSE)
-#   expect_true("PredVars" %in% class(res))
-#   expect_equal(dim(res@data), c(nobs, nvar))
-#   expect_equal(length(res@vars_info), nvar)
-#   expect_equal(res@vars_info[[1]]$idx, 1)
-#   expect_equal(res@vars_info[[1]]$name, var_names[1])
-#   expect_equal(res@vars_info[[1]]$data_column, 1)
-#   expect_equal(res@vars_info[[1]]$type, "O")
-#   expect_equal(res@vars_info[[3]]$idx, nvar)
-#   expect_equal(res@vars_info[[3]]$name, var_names[3], "_UD")
-#   expect_equal(res@vars_info[[3]]$data_column, 3)
-#   expect_equal(res@vars_info[[3]]$type, "U")
-#   expect_equal(res@vars_info[[3]]$dummy_info$levels, sort(paste0("", 1:10)))
-
-#   res <- newPredVars(x=data.frame(x, x_UD), UD_vars="Var_3", append_interaction_vars=FALSE)
-#   expect_true("PredVars" %in% class(res))
-#   expect_equal(dim(res@data), c(nobs, nvar))
-#   expect_equal(length(res@vars_info), nvar)
-#   expect_equal(res@vars_info[[1]]$idx, 1)
-#   expect_equal(res@vars_info[[1]]$name, var_names[1])
-#   expect_equal(res@vars_info[[1]]$data_column, 1)
-#   expect_equal(res@vars_info[[1]]$type, "O")
-#   expect_equal(res@vars_info[[3]]$idx, nvar)
-#   expect_equal(res@vars_info[[3]]$name, var_names[3])
-#   expect_equal(res@vars_info[[3]]$data_column, 3)
-#   expect_equal(res@vars_info[[3]]$type, "U")
-#   expect_equal(res@vars_info[[3]]$dummy_info$levels, sort(paste0("", 1:10)))
-# })
+  expect_equal(x@vars_info[[4]]$id, 4)
+  expect_equal(x@vars_info[[4]]$data_column_idx, 4)
+  expect_equal(x@vars_info[[4]]$type, "qual")
+  expect_equal(x@vars_info[[4]]$use_linear, FALSE)
+  expect_equal(x@vars_info[[4]]$use_UD, TRUE)
+  expect_equal(x@vars_info[[4]]$use_OD, FALSE)
+  expect_true(!is.null(x@vars_info[[4]]$UD_info))
+  expect_true(is.null(x@vars_info[[4]]$OD_info))
+})
 
 
-# test_that("Check the creation of PredVars objects when only x_UD is specified.", {
-#   set.seed(12345)
-#   nobs <- 100
-#   nvar <- 3
+test_that("Check add_xxx flags", {
+  x <- newInput(createX(10, 1, 1, 1, 1), add_intersection_columns=FALSE)
+  expect_equal(length(x@vars_info), 4)
 
-#   var_names <- paste0("Var_", 1:nvar)
+  x <- newInput(createX(10, 1, 1, 1, 1), add_linear_columns=FALSE, add_intersection_columns=FALSE)
+  expect_true(all(sapply(x@vars_info, function(var) {!var$use_linear})))
 
-#   x_UD <- matrix(paste0("", sample(1:10, nobs * nvar, replace=TRUE)), nobs, nvar)
-#   colnames(x_UD) <- var_names
-
-#   res <- newPredVars(x_UD=x_UD, append_interaction_vars=FALSE)
-
-#   expect_true("PredVars" %in% class(res))
-#   expect_equal(dim(res@data), c(nobs, nvar))
-#   expect_equal(length(res@vars_info), nvar)
-#   expect_equal(res@vars_info[[1]]$idx, 1)
-#   expect_equal(res@vars_info[[1]]$name, var_names[1])
-#   expect_equal(res@vars_info[[1]]$data_column, 1)
-#   expect_equal(res@vars_info[[1]]$type, "U")
-#   expect_equal(res@vars_info[[1]]$dummy_info$levels, sort(paste0("", 1:10)))
-# })
-
-
-# test_that("Check the creation of PredVars objects when only x is specified.", {
-#   set.seed(12345)
-#   nobs <- 100
-#   nvar <- 2
-
-#   var_names <- paste0("Var_", 1:nvar)
-
-#   x <- matrix(rnorm(nobs * nvar), nobs, nvar)
-#   colnames(x) <- var_names
-
-#   res <- newPredVars(x=x, append_interaction_vars=FALSE)
-
-#   expect_true("PredVars" %in% class(res))
-#   expect_equal(dim(res@data), c(nobs, nvar))
-#   expect_equal(length(res@vars_info), nvar)
-#   expect_equal(res@vars_info[[1]]$idx, 1)
-#   expect_equal(res@vars_info[[1]]$name, var_names[1])
-#   expect_equal(res@vars_info[[1]]$data_column, 1)
-#   expect_equal(res@vars_info[[1]]$type, "O")
-# })
-
-
-# test_that("Check getDesignMatrix().", {
-#   set.seed(12345)
-#   nobs <- 100
-#   nvar_OD <- 2
-#   nvar_UD <- 1
-#   nvar <- nvar_OD + nvar_UD
-
-#   var_names <- paste0("Var_", 1:nvar)
-
-#   x <- matrix(rnorm(nobs * nvar_OD), nobs, nvar_OD)
-#   colnames(x) <- var_names[1:nvar_OD]
-
-#   x_UD <- matrix(paste0("", sample(1:10, nobs * nvar_UD, replace=TRUE)))
-#   colnames(x_UD) <- var_names[-(1:nvar_OD)]
-
-#   preds <- newPredVars(x=x, x_UD=x_UD, append_interaction_vars=FALSE)
-
-#   dm <- getDesignMatrix(preds, standardize_quantitative_vars=TRUE)
-#   expect_equal(dim(dm), c(nobs, nvar_OD * (1 + 20) + nvar_UD * 9))
-#   expect_equal(sort(unique(as.numeric(dm[, 2:21]))), c(0, 1))
-#   expect_equal(sort(unique(as.numeric(dm[, 23:42]))), c(0, 1))
-#   expect_equal(sort(unique(as.numeric(dm[, 43:51]))), c(0, 1))
-#   expect_equal(colnames(dm)[1:3], c("Var_1", "Var_1_dummy_1", "Var_1_dummy_2"))
-#   expect_equal(mean(dm[, 1]), 0)
-#   expect_equal(sd(dm[, 1]), 1)
-
-#   dm <- getDesignMatrix(preds, standardize_quantitative_vars=FALSE)
-#   expect_equal(mean(dm[, 1]), mean(x[, 1]))
-#   expect_equal(sd(dm[, 1]), sd(x[, 1]))
-
-
-#   preds <- newPredVars(x=x, x_UD=x_UD, append_interaction_vars=TRUE)
-#   dm <- getDesignMatrix(preds)
-#   expect_equal(dim(dm), c(nobs, nvar_OD * (1 + 20) + nvar_UD * 9 + nvar_OD * (nvar_OD - 1) / 2 + nvar_OD * nvar_UD * 9 + nvar_UD * (nvar_UD - 1) / 2 * 9 * 9))
-#   expect_equal(dm[, "Var_1_x_Var_2"], dm[, "Var_1"] * dm[, "Var_2"])
-#   expect_equal(dm[, "Var_1_x_Var_3_1_1"], dm[, "Var_1"] * dm[, "Var_3_dummy_1"])
-
-
-#   # test for creations of practical size design matrixnobs <- 100
-#   nobs <- 100
-#   nvar_OD <- 20
-#   nvar_UD <- 20
-#   nvar <- nvar_OD + nvar_UD
-
-#   x <- matrix(rnorm(nobs * nvar_OD), nobs, nvar_OD)
-#   colnames(x) <- var_names[1:nvar_OD]
-
-#   x_UD <- matrix(paste0("", sample(1:10, nobs * nvar_UD, replace=TRUE)), nobs, nvar_UD)
-#   colnames(x_UD) <- var_names[-(1:nvar_OD)]
-
-#   preds <- newPredVars(x=x, x_UD=x_UD, append_interaction_vars=TRUE)
-#   dm <- getDesignMatrix(preds)
-#   expect_equal(dim(dm), c(nobs, nvar_OD * (1 + 20) + nvar_UD * 9 + nvar_OD * (nvar_OD - 1) / 2 + nvar_OD * nvar_UD * 9 + nvar_UD * (nvar_UD - 1) / 2 * 9 * 9))
-# })
+  x <- newInput(createX(10, 1, 1, 1, 1), add_OD_columns_of_qualitatives=FALSE, add_intersection_columns=FALSE)
+  expect_true(all(sapply(x@vars_info, function(var) {var$type=="quan" | !var$use_OD})))
+})
