@@ -20,7 +20,7 @@
 #' @importFrom assertthat assert_that
 getUDummyMatForOneVec <- function(x_vec, levels=NULL, drop_last=TRUE, only_info=FALSE) {
   # Check arguments. numerical vectors are not allowed.
-  assert_that(class(x_vec) == "integer" | class(x_vec) == "character" | class(x_vec) == "factor")
+  assert_that(is.integer(x_vec) | is.character(x_vec) | is.factor(x_vec))
 
   # Create factor. Note that if x_vec is itself factor and levels is not specified, do not need nothing.
   if (!is.factor(x_vec) | !is.null(levels)) {
@@ -61,8 +61,8 @@ getUDummyMatForOneVec <- function(x_vec, levels=NULL, drop_last=TRUE, only_info=
 #' @export
 #' @importFrom assertthat assert_that
 getODummyMatForOneVec <- function(x_vec, breaks=NULL, nbin.max=20, only_info=FALSE) {
-  # Check arguments. only integer or numerical vectors are allowed.
-  assert_that(class(x_vec) == "integer" | class(x_vec) == "numeric")
+  # Check arguments. only integer or numerical or ordered vectors are allowed.
+  assert_that(is.integer(x_vec) | is.numeric(x_vec) | is.ordered(x_vec))
 
   # Execute binning
   binned_x <- executeBinning(x_vec, breaks=breaks, nbin.max=nbin.max, allow_na=FALSE)
