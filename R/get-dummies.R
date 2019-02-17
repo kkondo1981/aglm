@@ -60,7 +60,7 @@ getUDummyMatForOneVec <- function(x_vec, levels=NULL, drop_last=TRUE, only_info=
 #'
 #' @export
 #' @importFrom assertthat assert_that
-getODummyMatForOneVec <- function(x_vec, breaks=NULL, nbin.max=20, only_info=FALSE) {
+getODummyMatForOneVec <- function(x_vec, breaks=NULL, nbin.max=100, only_info=FALSE) {
   # Check arguments. only integer or numerical or ordered vectors are allowed.
   assert_that(is.integer(x_vec) | is.numeric(x_vec) | is.ordered(x_vec))
 

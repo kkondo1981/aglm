@@ -4,7 +4,7 @@
 \alias{getODummyMatForOneVec}
 \title{Get O-dummy matrix for one-dimensional vector}
 \usage{
-getODummyMatForOneVec(x_vec, breaks = NULL, nbin.max = 20,
+getODummyMatForOneVec(x_vec, breaks = NULL, nbin.max = 100,
   only_info = FALSE)
 }
 \arguments{
