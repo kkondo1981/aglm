@@ -14,7 +14,7 @@ createEqualWidthBins(left, right, nbin)
 \item{nbin}{number of bins to be created.}
 }
 \value{
-a numeric vector which indicates the boundaries of bins, with (number of bins + 1) elements.
+a numeric vector which indicates the boundaries of bins, with \code{nbin} elements.
 }
 \description{
 Create bins by Equal Width Binning

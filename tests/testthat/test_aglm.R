@@ -1,47 +1,45 @@
 context("aglm")
 library(aglm)
 
-test_that("Check the types and forms of return value of aglm() in case where x is a PredVars object.", {
+
+test_that("Check the types and forms of return value of aglm() and predict.aglm().", {
   set.seed(12345)
-  nobs <- 100
-  nvar <- 3
-  nvar_UD <- 1
 
-  x <- matrix(rnorm(nobs * (nvar - nvar_UD)), nobs, nvar - nvar_UD)
-  x_UD <- matrix(sample(1:10, nobs * nvar_UD, replace=TRUE))
-  y <- rnorm(nobs)
+  # size of observations
+  nobs <- 1000
 
-  res <- aglm(newPredVars(x=x, x_UD=x_UD), y, family="gaussian")
+  # Randomly generates a numeric vector (as quantitative data)
+  quan_var <- runif(nobs)
+
+  # Randomly generates a character vector (as qualitative data with 5 levels)
+  qual_var <- factor(paste0("level_", sample(1:5, nobs, replace=TRUE)))
+
+  # Create the whole input data frame
+  x <- data.frame(quan_var, qual_var)
+  colnames(x) <- c("quan_var", "qual_var")
+
+  # Generates non-linear reponse
+  y <- sign(quan_var) * (abs(quan_var) ** 4) * (qual_var != "level_1")
+  y <- y + 0.1 * rnorm(length(y))
+
+  res <- aglm(x, y, family="gaussian", lambda=0.01)
 
   expect_true("AccurateGLM" %in% class(res))
   expect_true("glmnet" %in% class(res@backend_models$glmnet))
-  expect_equal(length(res@vars_info), nvar + nvar * (nvar - 1) / 2)
-  expect_equal(res@vars_info[[1]]$name, "X1")
-  expect_equal(res@vars_info[[1]]$type, "O")
-  expect_equal(res@vars_info[[3]]$name, "x_UD")
-  expect_equal(res@vars_info[[3]]$type, "U")
-  expect_equal(res@vars_info[[3]]$dummy_info$levels, sort(paste0("", 1:10)))
-})
 
 
-test_that("Check the types and forms of return value of aglm() in case where x is not a PredVars object.", {
-  set.seed(12345)
-  nobs <- 100
-  nvar <- 3
-  nvar_UD <- 1
+  # Generates new predictive variables
+  n_new_obs <- 100
+  new_quan_var <- runif(n_new_obs)
+  new_qual_var <- factor(paste0("level_", sample(1:5, n_new_obs, replace=TRUE)))
+  newx <- data.frame(new_quan_var, new_qual_var)
+  colnames(newx) <- c("quan_var", "qual_var")
 
-  x <- matrix(rnorm(nobs * (nvar - nvar_UD)), nobs, nvar - nvar_UD)
-  x_UD <- matrix(sample(1:10, nobs * nvar_UD, replace=TRUE))
-  y <- rnorm(nobs)
-
-  res <- aglm(x=x, x_UD=x_UD, y=y, family="gaussian")
-
-  expect_true("AccurateGLM" %in% class(res))
-  expect_true("glmnet" %in% class(res@backend_models$glmnet))
-  expect_equal(length(res@vars_info), nvar + nvar * (nvar - 1) /2)
-  expect_equal(res@vars_info[[1]]$name, "X1")
-  expect_equal(res@vars_info[[1]]$type, "O")
-  expect_equal(res@vars_info[[3]]$name, "x_UD")
-  expect_equal(res@vars_info[[3]]$type, "U")
-  expect_equal(res@vars_info[[3]]$dummy_info$levels, sort(paste0("", 1:10)))
+  # Predict values of y for newx
+  #y_true <- sign(new_quan_var) * (abs(new_quan_var) ** 4) * (new_qual_var != "level_1")
+  y_pred <- predict(res, newx)
+  #plot(new_quan_var, y_pred)
+  #points(new_quan_var, y_true, col="red")
+  expect_equal(class(y_pred), "matrix")
+  expect_equal(length(y_pred), n_new_obs)
 })

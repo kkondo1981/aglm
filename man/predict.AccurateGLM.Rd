@@ -4,23 +4,14 @@
 \alias{predict.AccurateGLM}
 \title{Make predictions from a fitted AccurateGLM}
 \usage{
-\method{predict}{AccurateGLM}(model, newx, newx_UD = NULL,
-  UD_vars = NULL, standardize_quantitative_vars = TRUE, s = NULL,
-  type = c("link", "response", "coefficients", "nonzero", "class"),
-  exact = FALSE, newoffset, ...)
+\method{predict}{AccurateGLM}(model, newx, s = NULL, type = c("link",
+  "response", "coefficients", "nonzero", "class"), exact = FALSE,
+  newoffset, ...)
 }
 \arguments{
 \item{model}{An AccurateGLM object.}
 
-\item{newx}{New values for \code{x_UD} at which predictions are to be made.
-Although this function expects \code{newx} would be a \code{PredVars} object, it also can be matrix or data.frame.
-In such cases, this function automatically convert it to a PredVars object by calling \code{newPredVars(newx, newx_UD, UD_vars)}.
-See the descriptions of \code{newPredVars} function for more details.}
-
-\item{newx_UD, UD_vars}{See the descriptions of \code{newx}. Note that these values are required if and only if \code{newx} is not a \code{PredVars} object.}
-
-\item{s}{Value(s) of the penalty parameter \code{lambda} at which predictions are required.
-Default is the entire sequence used to create the model.}
+\item{newx}{An input matrix or data.frame used for predictions.}
 
 \item{type}{Type of prediction required.
 \itemize{
