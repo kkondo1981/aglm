@@ -19,13 +19,14 @@ newInput <- function(x,
                      quantitative_vars=NULL,
                      add_linear_columns=TRUE,
                      add_OD_columns_of_qualitatives=TRUE,
-                     add_intersection_columns=TRUE) {
+                     add_intersection_columns=TRUE,
+                     bins_list=NULL,
+                     bins_names=NULL) {
   # Check and process arguments
   assert_that(!is.null(x))
   assert_that(class(x) == "matrix" | class(x) == "data.frame")
   if (class(x) == "matrix") x <- data.frame(x)
   assert_that(dim(x)[2] > 0)
-
 
   # Calculate data size
   nobs <- dim(x)[1]
@@ -135,7 +136,7 @@ newInput <- function(x,
   }
 
 
-  # some pre-processes and additional information related to binning
+  # Retypes columns
   for (i in seq(nvar)) {
     # For quantitative variables, holds numeric data
     if (vars_info[[i]]$type == "quan") {
@@ -152,12 +153,49 @@ newInput <- function(x,
         x[, data_idx] <- factor(x[, data_idx])
       }
     }
+  }
 
-    # For variables using dummies, holds informations of the way dummies are generated
+  # Set binning informations from bins_list
+  if (!is.null(bins_list)) {
+    if (is.null(bins_names)) {
+      idx_list <- list()
+      for (i in seq(nvar)) {
+        v <- vars_info[[i]]
+        if (v$use_OD) idx_list <- c(idx_list, v$idx)
+      }
+
+      for (i in seq(length(bins_list))) {
+        idx <- idx_list[[i]]
+        vars_info[[idx]]$OD_info$breaks <- bins_list[[i]]
+      }
+    } else {
+      idx_map <- list()
+      if (all(sapply(bins_names, is.character))) {
+        for (i in seq(nvar)) {
+          v <- vars_info[[i]]
+          if (v$use_OD) idx_map[[v$name]] <- v$idx
+        }
+      } else {
+        for (i in seq(nvar)) {
+          v <- vars_info[[i]]
+          if (v$use_OD) idx_map[[v$idx]] <- v$idx
+        }
+      }
+
+      for (i in seq(length(bins_list))) {
+        name <- bins_names[[i]]
+        idx <- idx_map[[name]]
+        vars_info[[idx]]$OD_info$breaks <- bins_list[[i]]
+      }
+    }
+  }
+
+  # For variables using dummies, set informations of the way dummies are generated
+  for (i in seq(nvar)) {
     if (vars_info[[i]]$use_UD) {
       vars_info[[i]]$UD_info <- getUDummyMatForOneVec(x[, i], only_info=TRUE)
     }
-    if (vars_info[[i]]$use_OD) {
+    if (vars_info[[i]]$use_OD & is.null(vars_info[[i]]$OD_info)) {
       vars_info[[i]]$OD_info <- getODummyMatForOneVec(x[, i], only_info=TRUE)
     }
   }

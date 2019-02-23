@@ -68,6 +68,20 @@ test_that("Check add_xxx flags of newInput()", {
   expect_true(all(sapply(x@vars_info, function(var) {var$type=="quan" | !var$use_OD})))
 })
 
+test_that("Check bins_list of newInput()", {
+  bins_list <- list(c(0, 1, 2))
+  x <- newInput(createX(10, 0, 5, 0, 0), bins_list=bins_list)
+  expect_equal(x@vars_info[[1]]$OD_info$breaks, bins_list[[1]])
+
+  bins_names <- list(3)
+  x <- newInput(createX(10, 0, 5, 0, 0), bins_list=bins_list, bins_names=bins_names)
+  expect_equal(x@vars_info[[3]]$OD_info$breaks, bins_list[[1]])
+
+  bins_names <- list("Num5")
+  x <- newInput(createX(10, 0, 5, 0, 0), bins_list=bins_list, bins_names=bins_names)
+  #expect_equal(x@vars_info[[5]]$OD_info$breaks, bins_list[[1]])
+})
+
 test_that("Check return values of getDesignMatrix()", {
   x_int <- newInput(createX(10, 1, 0, 0, 0), add_intersection_columns=FALSE)
   mat_int <- getDesignMatrix(x_int)
