@@ -65,12 +65,12 @@ getODummyMatForOneVec <- function(x_vec, breaks=NULL, nbin.max=100, only_info=FA
   assert_that(is.integer(x_vec) | is.numeric(x_vec) | is.ordered(x_vec))
 
   # Execute binning
-  binned_x <- executeBinning(x_vec, breaks=breaks, nbin.max=nbin.max, allow_na=FALSE)
+  binned_x <- executeBinning(x_vec, breaks=breaks, nbin.max=nbin.max)
 
   # create dummy matrix for x_vec
   nrow <- length(x_vec)
-  ncol <- length(binned_x$breaks) - 1
-  dummy_mat <- 1 * (binned_x$labels <= t(matrix(1:ncol, ncol, nrow)))
+  ncol <- length(binned_x$breaks)
+  dummy_mat <- 1 * (binned_x$labels > t(matrix(1:ncol, ncol, nrow)))
 
   if (only_info) return(list(breaks=binned_x$breaks))
   else return(list(breaks=binned_x$breaks, dummy_mat=dummy_mat))

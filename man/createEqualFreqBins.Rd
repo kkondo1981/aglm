@@ -13,7 +13,7 @@ createEqualFreqBins(x_vec, nbin.max)
 Note that this function makes \code{min(nbin.max, length(x_vec))} counts of bins.}
 }
 \value{
-a numeric vector which indicates the boundaries of bins, with (number of bins + 1) elements.
+a numeric vector which indicates the boundaries of bins, with \code{nbin} elements.
 }
 \description{
 Create bins by Equal Freq Binning
