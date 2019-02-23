@@ -22,7 +22,8 @@ test_that("Check the types and forms of return value of aglm() and predict.aglm(
   y <- sign(quan_var) * (abs(quan_var) ** 4) * (qual_var != "level_1")
   y <- y + 0.1 * rnorm(length(y))
 
-  res <- aglm(x, y, family="gaussian", lambda=0.01)
+  lambda.min <- cv.aglm(x, y, family="gaussian")$lambda.min
+  res <- aglm(x, y, family="gaussian", lambda=lambda.min)
 
   expect_true("AccurateGLM" %in% class(res))
   expect_true("glmnet" %in% class(res@backend_models$glmnet))

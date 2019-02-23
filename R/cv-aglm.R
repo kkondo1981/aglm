@@ -18,7 +18,7 @@
 #' @param bins_names A list of column name or column index, each name or index of which specifies which column of `x` is binned used with an element of `bins_list` in the same position.
 #' @param ... Other arguments are passed directly to backend (currently cv.glmnet() is used), and if not given, backend API's default values are used to call backend functions.
 #'
-#' @return
+#' @return Result of cross-validation.
 #'
 #' @export
 #' @importFrom assertthat assert_that
