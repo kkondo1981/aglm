@@ -123,5 +123,7 @@ test_that("Check return values of getDesignMatrix()", {
   ## Check intersection columns
   x_inter <- newInput(data.frame(x_int@data,  x_fac@data), add_intersection_columns=TRUE)
   mat_inter <- getDesignMatrix(x_inter)
-  expect_equal(dim(mat_inter), c(10, dim(mat_int)[2] + dim(mat_fac)[2] * 2))
+  a <- dim(mat_int)[2] + dim(mat_fac)[2]
+  b <- dim(x_int@data)[2] + dim(mat_fac)[2]
+  expect_equal(dim(mat_inter), c(10, a + b * (b - 1) / 2))
 })

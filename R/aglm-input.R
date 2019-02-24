@@ -204,8 +204,8 @@ newInput <- function(x,
   # Append informations of interaction effects
   if (add_intersection_columns & nvar > 1) {
     idx <- length(vars_info)
-    for (i in 1:(nvar - 1)) {
-      for (j in (i + 1):nvar) {
+    for (i in 1:nvar) {
+      for (j in i:nvar) {
         idx <- idx + 1
         var_info1 <- vars_info[[i]]
         var_info2 <- vars_info[[j]]
@@ -249,6 +249,9 @@ getMatrixRepresentation <- function(x, idx, drop_OD=FALSE) {
       z <- cbind(z, z_UD)
     }
   } else if (var_info$type == "inter") {
+    # Interaction effects between columns of one variable itself
+    self_interaction <- var_info$var_idx1 == var_info$var_idx2
+
     # Get matrix representations of two variables
     z1 <- getMatrixRepresentation(x, var_info$var_idx1, drop_OD=TRUE)
     z2 <- getMatrixRepresentation(x, var_info$var_idx2, drop_OD=TRUE)
@@ -257,12 +260,17 @@ getMatrixRepresentation <- function(x, idx, drop_OD=FALSE) {
     nrow <- dim(z1)[1]
     ncol1 <- dim(z1)[2]
     ncol2 <- dim(z2)[2]
+    ncol_res <- ifelse(self_interaction, ncol1 * (ncol1 - 1) / 2, ncol1 * ncol2)
     assert_that(dim(z2)[1] == nrow)
-    z <- matrix(0, nrow, ncol1 * ncol2)
-    nm <- character(ncol1 * ncol2)
+    z <- matrix(0, nrow, ncol_res)
+    nm <- character(ncol_res)
+    ij <- 0
     for (i in 1:ncol1) {
-      for (j in 1:ncol2) {
-        ij <- (i - 1) * ncol2 + j
+      js <- 1:ncol2
+      if (self_interaction)
+        js <- js[js > i]
+      for (j in js) {
+        ij <- ij + 1
         z[, ij] <- z1[, i] * z2[, j]
         nm[ij] <- paste0(var_info$name, "_", i, "_", j)
       }
@@ -276,7 +284,7 @@ getMatrixRepresentation <- function(x, idx, drop_OD=FALSE) {
 }
 
 
-#' Get design-matrix representation of PredVars objects
+#' Get design-matrix representation of AGLM_Input objects
 #'
 #' @param x An AGLM_Input object
 #'
