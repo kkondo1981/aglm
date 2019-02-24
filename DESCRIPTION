@@ -1,7 +1,7 @@
 Package: aglm
 Type: Package
 Title: Accurate Generalized Linear Model (AGLM)
-Version: 0.2.0
+Version: 0.3.0
 Author: Hirokazu Iwasawa, Yuji Hiramatsu, Kenji Kondo, and others
 Maintainer: Kenji Kondo <kkondo.odnokk@gmail.com>
 Description: A handy tool for actuarial modeling, which is designed to achieve both accuracy and accountability.
