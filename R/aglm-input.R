@@ -193,7 +193,7 @@ newInput <- function(x,
   # For variables using dummies, set informations of the way dummies are generated
   for (i in seq(nvar)) {
     if (vars_info[[i]]$use_UD) {
-      vars_info[[i]]$UD_info <- getUDummyMatForOneVec(x[, i], only_info=TRUE)
+      vars_info[[i]]$UD_info <- getUDummyMatForOneVec(x[, i], only_info=TRUE, drop_last=FALSE)
     }
     if (vars_info[[i]]$use_OD & is.null(vars_info[[i]]$OD_info)) {
       vars_info[[i]]$OD_info <- getODummyMatForOneVec(x[, i], only_info=TRUE)

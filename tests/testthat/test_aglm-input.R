@@ -106,14 +106,14 @@ test_that("Check return values of getDesignMatrix()", {
   #print(mat_ord)
   expect_equal(dim(mat_ord), c(10,
                                dim(getODummyMatForOneVec(x_ord@data[,1])$dummy_mat)[2]
-                               + dim(getUDummyMatForOneVec(x_ord@data[,1])$dummy_mat)[2]))
+                               + dim(getUDummyMatForOneVec(x_ord@data[,1], drop_last=FALSE)$dummy_mat)[2]))
 
   x_fac <- newInput(createX(10, 0, 0, 0, 1), add_intersection_columns=FALSE)
   mat_fac <- getDesignMatrix(x_fac)
   #print("")
   #print(t(x_fac@data))
   #print(mat_fac)
-  expect_equal(dim(mat_fac), c(10, dim(getUDummyMatForOneVec(x_fac@data[,1])$dummy_mat)[2]))
+  expect_equal(dim(mat_fac), c(10, dim(getUDummyMatForOneVec(x_fac@data[,1], drop_last=FALSE)$dummy_mat)[2]))
 
   x_all <- newInput(data.frame(x_int@data, x_num@data, x_ord@data, x_fac@data), add_intersection_columns=FALSE)
   mat_all <- getDesignMatrix(x_all)

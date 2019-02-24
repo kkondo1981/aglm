@@ -30,7 +30,7 @@ OD <- function(data, bins){
 
 UD <- function(x, name){
   x.UD <- NULL
-  for(i in 1:(nlevels(x)-1)){
+  for(i in 1:(nlevels(x))){
     lev <- levels(x)[i]
     temp <- sapply(x, FUN = function(x){ifelse(x == lev, 1, 0)})
     x.UD <- cbind(x.UD, temp)
