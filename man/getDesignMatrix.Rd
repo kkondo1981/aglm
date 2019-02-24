@@ -2,7 +2,7 @@
 % Please edit documentation in R/aglm-input.R
 \name{getDesignMatrix}
 \alias{getDesignMatrix}
-\title{Get design-matrix representation of PredVars objects}
+\title{Get design-matrix representation of AGLM_Input objects}
 \usage{
 getDesignMatrix(x)
 }
@@ -13,5 +13,5 @@ getDesignMatrix(x)
 A data.frame which represents the matrix representation of \code{x}.
 }
 \description{
-Get design-matrix representation of PredVars objects
+Get design-matrix representation of AGLM_Input objects
 }

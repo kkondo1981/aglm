@@ -28,12 +28,23 @@ OD <- function(data, bins){
   x.OD
 }
 
+UD <- function(x, name){
+  x.UD <- NULL
+  for(i in 1:(nlevels(x)-1)){
+    lev <- levels(x)[i]
+    temp <- sapply(x, FUN = function(x){ifelse(x == lev, 1, 0)})
+    x.UD <- cbind(x.UD, temp)
+    colnames(x.UD)[i] <- paste0(name, levels(x)[i])
+  }
+  x.UD
+}
+
 ## Function to produce a data.frame of two-way interactions
 ints.mat <- function(data){
   ints <- NULL
   temp <- colnames(data)
   for(i in 1:(ncol(data)-1)){
-    for(j in (i+1):(ncol(data))){
+    for(j in (i+1):ncol(data)){
       ints <- cbind(ints, data[, i] * data[, j])
       colnames(ints)[ncol(ints)] <- paste0(temp[i], ".", temp[j])
     }
@@ -41,18 +52,60 @@ ints.mat <- function(data){
   ints
 }
 
-# Sort columns of a matrix by ascending order of column sums, to compare matrices ignoring column orders
-sort.columns <- function(x) {
-  sums <- apply(x, FUN=sum, MARGIN=2)
-  return(x[, order(sums)])
+# To compare two matrices allowing column-reordering, we use checksums.
+compare_mat_without_column_order <- function(x, y) {
+  if (!all(dim(x) == dim(y)))
+    return(FALSE)
+
+  # Row-wise equality test. Orders are considered.
+  if (!all(apply(x, FUN=sum, MARGIN=1) == apply(x, FUN=sum, MARGIN=1)))
+    return(FALSE)
+
+  # Column-wise equality test. Orders are not considered.
+  if (!all(sort(apply(x, FUN=sum, MARGIN=2)) == sort(apply(x, FUN=sum, MARGIN=2))))
+    return(FALSE)
+
+  return(TRUE)
 }
 
-
 # Tests
-test_that("Check design matrix for actual data", {
+test_that("Check design matrix for actual data 1", {
+  ## Read data
   x <- Boston[-ncol(Boston)]
-  DM.aglm <- sort.columns(getDesignMatrix(newInput(x)))
-  DM.Iwasawa <- sort.columns(cbind(OD(x, make.bins(x)), as.matrix(x), ints.mat(x)))
 
-  expect_equal(as.numeric(DM.aglm), as.numeric(DM.Iwasawa))
+  ## Create design matrix of aglm
+  DM.aglm <- getDesignMatrix(newInput(x))
+
+  ## Create design matrix to be compared
+  DM.Iwasawa <- cbind(OD(x, make.bins(x)), as.matrix(x), ints.mat(x))
+
+  ## Test if two design matrice are same
+  expect_true(compare_mat_without_column_order(DM.aglm, DM.Iwasawa))
+})
+
+test_that("Check design matrix for actual data 2", {
+  ## Read data
+  x <- Boston[, -ncol(Boston)]
+
+  ## Create bins
+  bins_list <- make.bins(x[, colnames(x) != "chas"])
+  bins_names <- colnames(x)[colnames(x) != "chas"]
+
+  ## Set chas and rad variables as factors
+  x$chas <- as.factor(x$chas)
+  x$rad <- as.ordered(x$rad)
+
+  ## Create design matrix of aglm
+  input.aglm <- newInput(x, bins_list=bins_list, bins_names=bins_names)
+  DM.aglm <- getDesignMatrix(input.aglm)
+
+  ## Create design matrix to be compared
+  x.OD <- OD(as.matrix(x[colnames(x) != "chas"]), bins_list)
+  x.UD <- cbind(UD(x$chas, "chas"), UD(x$rad, "rad"))
+  x.linear <- as.matrix(x[!colnames(x) %in% c("chas", "rad")])
+  x.ints <- ints.mat(cbind(x.UD, x.linear))
+  DM.Iwasawa <- cbind(x.linear, x.OD, x.UD, x.ints)
+
+  ## Test if two design matrice are same
+  expect_true(compare_mat_without_column_order(DM.aglm, DM.Iwasawa))
 })
