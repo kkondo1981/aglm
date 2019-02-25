@@ -255,6 +255,8 @@ getMatrixRepresentation <- function(x, idx, drop_OD=FALSE) {
     # Get matrix representations of two variables
     z1 <- getMatrixRepresentation(x, var_info$var_idx1, drop_OD=TRUE)
     z2 <- getMatrixRepresentation(x, var_info$var_idx2, drop_OD=TRUE)
+    if (is.null(z1) | is.null(z2))
+      return(NULL)
 
     # Create matrix representation of intarction
     nrow <- dim(z1)[1]
