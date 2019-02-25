@@ -1,6 +1,12 @@
 library(MASS) # For Boston
 library(aglm)
 
+# Function to produce a data.frame of O-dummies
+make.bins <- function(data, max.nbin = 100){
+  temp <- apply(data, 2, function(x){as.vector(quantile(x, seq(0, 1, 1 / (min(max.nbin, length(x)) - 1))))})
+  apply(temp, 2, unique)
+}
+
 ## Read data
 xy <- Boston # xy is a data.frame to be processed.
 colnames(xy)[ncol(xy)] <- "y" # Let medv be the objective variable, y.
@@ -34,4 +40,4 @@ cat("lambda.min: ", lambda.min, "\n")
 model <- aglm(x, y, lambda=lambda.min, bins_list=bins_list, bins_names=bins_names)
 y_pred <- predict(model, newx=newx)
 cat("RMSE: ", sqrt(mean((y_true - y_pred)^2)), "\n")
-plot(y_pred, y_true)
+plot(y_true, y_pred)
