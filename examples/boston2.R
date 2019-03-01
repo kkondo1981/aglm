@@ -33,7 +33,8 @@ newx$chas <- factor(newx$chas, levels=levels(x$chas))
 newx$rad <- ordered(newx$rad, levels=levels(x$rad))
 
 ## Select the best lambda
-lambda.min <- cv.aglm(x, y, bins_list=bins_list, bins_names=bins_names)$lambda.min
+cv_results <- cv.aglm(x, y, bins_list=bins_list, bins_names=bins_names)
+lambda.min <- cv_results@lambda.min
 cat("lambda.min: ", lambda.min, "\n")
 
 ## Predict y for newx
@@ -41,3 +42,8 @@ model <- aglm(x, y, lambda=lambda.min, bins_list=bins_list, bins_names=bins_name
 y_pred <- predict(model, newx=newx)
 cat("RMSE: ", sqrt(mean((y_true - y_pred)^2)), "\n")
 plot(y_true, y_pred)
+
+## Other way
+y_pred2 <- predict(cv_results, newx=newx, s="lambda.min")
+cat("RMSE: ", sqrt(mean((y_true - y_pred2)^2)), "\n")
+plot(y_true, y_pred2)

@@ -17,7 +17,7 @@ newx <- test[-ncol(xy)]
 y_true <- test$y
 
 ## Select the best lambda
-lambda.min <- cv.aglm(x, y)$lambda.min
+lambda.min <- cv.aglm(x, y)@lambda.min
 cat("lambda.min: ", lambda.min, "\n")
 
 ## Predict y for newx
