@@ -20,7 +20,7 @@
 #' @importFrom assertthat assert_that
 #' @importFrom glmnet predict.glmnet
 predict.AccurateGLM <- function(model,
-                                newx,
+                                newx=NULL,
                                 s=NULL,
                                 type=c("link","response","coefficients","nonzero","class"),
                                 exact=FALSE,
