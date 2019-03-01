@@ -19,7 +19,7 @@ newInput <- function(x,
                      quantitative_vars=NULL,
                      add_linear_columns=TRUE,
                      add_OD_columns_of_qualitatives=TRUE,
-                     add_intersection_columns=TRUE,
+                     add_interaction_columns=TRUE,
                      bins_list=NULL,
                      bins_names=NULL) {
   # Check and process arguments
@@ -202,7 +202,7 @@ newInput <- function(x,
 
 
   # Append informations of interaction effects
-  if (add_intersection_columns & nvar > 1) {
+  if (add_interaction_columns & nvar > 1) {
     idx <- length(vars_info)
     for (i in 1:nvar) {
       for (j in i:nvar) {
