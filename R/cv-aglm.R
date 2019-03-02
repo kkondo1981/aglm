@@ -124,6 +124,11 @@ cv.aglm <- function(x, y,
                                 type.logistic=type.logistic,
                                 standardize.response=standardize.response)
 
+  if (!keep) {
+    cv.glmnet_result$fit.preval <- matrix(0)
+    cv.glmnet_result$foldid <- integer(0)
+  }
+
   return(new("AccurateGLM", backend_models=list(cv.glmnet=cv.glmnet_result$glmnet.fit),
              lambda=cv.glmnet_result$lambda,
              cvm=cv.glmnet_result$cvm,
@@ -134,5 +139,7 @@ cv.aglm <- function(x, y,
              name=cv.glmnet_result$name,
              lambda.min=cv.glmnet_result$lambda.min,
              lambda.1se=cv.glmnet_result$lambda.1se,
+             fit.preval=cv.glmnet_result$fit.preval,
+             foldid=cv.glmnet_result$foldid,
              vars_info=x@vars_info))
 }

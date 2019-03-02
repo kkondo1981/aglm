@@ -21,4 +21,6 @@ setClass("AccurateGLM",
                                        nzero="integer",
                                        name="character",
                                        lambda.min="numeric",
-                                       lambda.1se="numeric"))
+                                       lambda.1se="numeric",
+                                       fit.preval="matrix",
+                                       foldid="integer"))

@@ -65,11 +65,12 @@ test_that("Check for predict.AGLM_CV().", {
   y <- sign(quan_var) * (abs(quan_var) ** 4) * (qual_var != "level_1")
   y <- y + 0.1 * rnorm(length(y))
 
-  res <- cv.aglm(x, y, family="gaussian")
+  res <- cv.aglm(x, y, family="gaussian", keep=TRUE)
 
   expect_true("AccurateGLM" %in% class(res))
   expect_true("glmnet" %in% class(res@backend_models[[1]]))
-
+  expect_true(class(res@fit.preval) == "matrix")
+  expect_true(class(res@foldid) == "integer")
 
   # Generates new predictive variables
   n_new_obs <- 100
