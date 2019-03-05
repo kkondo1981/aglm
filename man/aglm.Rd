@@ -8,7 +8,7 @@ aglm(x, y, qualitative_vars_UD_only = NULL,
   qualitative_vars_both = NULL, qualitative_vars_OD_only = NULL,
   quantitative_vars = NULL, add_linear_columns = TRUE,
   add_OD_columns_of_qualitatives = TRUE,
-  add_intersection_columns = TRUE, bins_list = NULL,
+  add_interaction_columns = TRUE, bins_list = NULL,
   bins_names = NULL, standardize = TRUE, family = c("gaussian",
   "binomial", "poisson"), weights, offset = NULL, alpha = 1,
   nlambda = 100, lambda.min.ratio = NULL, lambda = NULL,
@@ -35,7 +35,7 @@ aglm(x, y, qualitative_vars_UD_only = NULL,
 
 \item{add_OD_columns_of_qualitatives}{A boolean value which indicates whether this function use O-dummy representations for qualitative and ordinal variables or not.}
 
-\item{add_intersection_columns}{A boolean value which indicates whether this function uses intersection effects or not.}
+\item{add_interaction_columns}{A boolean value which indicates whether this function uses intersection effects or not.}
 
 \item{bins_list}{A list of numeric vectors, each element of which is used as breaks when binning of a quantitative variable or a qualitative variable with order.}
 

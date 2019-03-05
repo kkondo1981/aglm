@@ -14,5 +14,7 @@ S4 class for fitted AGLM
 Currently glmnet is used as a backend and this slot holding a glmnet object.}
 
 \item{\code{vars_info}}{A list of list. Each element of \code{vars_info} represents one predictor variable and contains various informations of it.}
+
+\item{\code{others}}{slots for holding cross-validation results}
 }}
 

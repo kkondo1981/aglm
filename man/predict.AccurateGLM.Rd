@@ -4,9 +4,9 @@
 \alias{predict.AccurateGLM}
 \title{Make predictions from a fitted AccurateGLM}
 \usage{
-\method{predict}{AccurateGLM}(model, newx, s = NULL, type = c("link",
-  "response", "coefficients", "nonzero", "class"), exact = FALSE,
-  newoffset, ...)
+\method{predict}{AccurateGLM}(model, newx = NULL, s = NULL,
+  type = c("link", "response", "coefficients", "nonzero", "class"),
+  exact = FALSE, newoffset, ...)
 }
 \arguments{
 \item{model}{An AccurateGLM object.}

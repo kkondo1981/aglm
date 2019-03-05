@@ -12,7 +12,7 @@
 #' @param quantitative_vars A list of indices or names for specyfying which columns are quantitative.
 #' @param add_linear_columns A boolean value which indicates whether this function uses linear effects or not.
 #' @param add_OD_columns_of_qualitatives A boolean value which indicates whether this function use O-dummy representations for qualitative and ordinal variables or not.
-#' @param add_intersection_columns A boolean value which indicates whether this function uses intersection effects or not.
+#' @param add_interaction_columns A boolean value which indicates whether this function uses interaction effects or not.
 #' @param family Response type. Currently "gaussian", "binomial", and "poisson" are supported.
 #' @param bins_list A list of numeric vectors, each element of which is used as breaks when binning of a quantitative variable or a qualitative variable with order.
 #' @param bins_names A list of column name or column index, each name or index of which specifies which column of `x` is binned used with an element of `bins_list` in the same position.
@@ -30,7 +30,7 @@ cv.aglm <- function(x, y,
                     quantitative_vars=NULL,
                     add_linear_columns=TRUE,
                     add_OD_columns_of_qualitatives=TRUE,
-                    add_intersection_columns=TRUE,
+                    add_interaction_columns=TRUE,
                     bins_list=NULL,
                     bins_names=NULL,
                     weights,
@@ -67,7 +67,7 @@ cv.aglm <- function(x, y,
                 quantitative_vars=quantitative_vars,
                 add_linear_columns=add_linear_columns,
                 add_OD_columns_of_qualitatives=add_OD_columns_of_qualitatives,
-                add_intersection_columns=add_intersection_columns,
+                add_interaction_columns=add_interaction_columns,
                 bins_list,
                 bins_names)
 
@@ -124,5 +124,22 @@ cv.aglm <- function(x, y,
                                 type.logistic=type.logistic,
                                 standardize.response=standardize.response)
 
-  return(cv.glmnet_result)
+  if (!keep) {
+    cv.glmnet_result$fit.preval <- matrix(0)
+    cv.glmnet_result$foldid <- integer(0)
+  }
+
+  return(new("AccurateGLM", backend_models=list(cv.glmnet=cv.glmnet_result$glmnet.fit),
+             lambda=cv.glmnet_result$lambda,
+             cvm=cv.glmnet_result$cvm,
+             cvsd=cv.glmnet_result$cvsd,
+             cvup=cv.glmnet_result$cvup,
+             cvlo=cv.glmnet_result$cvlo,
+             nzero=cv.glmnet_result$nzero,
+             name=cv.glmnet_result$name,
+             lambda.min=cv.glmnet_result$lambda.min,
+             lambda.1se=cv.glmnet_result$lambda.1se,
+             fit.preval=cv.glmnet_result$fit.preval,
+             foldid=cv.glmnet_result$foldid,
+             vars_info=x@vars_info))
 }

@@ -17,9 +17,10 @@
 #' @return The object returned depends on type.
 #'
 #' @export
+#' @importFrom assertthat assert_that
 #' @importFrom glmnet predict.glmnet
 predict.AccurateGLM <- function(model,
-                                newx,
+                                newx=NULL,
                                 s=NULL,
                                 type=c("link","response","coefficients","nonzero","class"),
                                 exact=FALSE,
@@ -31,11 +32,25 @@ predict.AccurateGLM <- function(model,
   # Create a design matrix passed to backend API
   x_for_backend <- getDesignMatrix(newx)
 
-  glmnet_result <- predict(model@backend_models[[1]],
+  # Select what is to be given predict() as a model
+  backend_model <- model@backend_models[[1]]
+
+  model_name <- names(model@backend_models)[[1]]
+  if (model_name == "cv.glmnet") {
+    if (is.character(s)) {
+      if (s == "lambda.min")
+        s <- model@lambda.min
+      if (s == "lambda.1se")
+        s <- model@lambda.1se
+    }
+  }
+
+  glmnet_result <- predict(backend_model,
                            x_for_backend,
                            s=s,
                            type=type,
                            exact=exact,
+                           newoffset,
                            ...)
 
   return(glmnet_result)
