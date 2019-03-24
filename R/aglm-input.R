@@ -44,7 +44,7 @@ newInput <- function(x,
     var$name <- names(x)[i]
     var$data_column_idx <- i
 
-    var$type <- if (is.factor(x[, i])) {"qual"} else {"quan"}
+    var$type <- if (is.factor(x[, i]) | is.logical(x[, i])) {"qual"} else {"quan"}
     is_ordered <- (var$type == "qual" & is.ordered(x[, i])) | (var$type == "quan")
 
     var$use_linear <- var$type == "quan" & add_linear_columns

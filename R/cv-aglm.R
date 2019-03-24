@@ -73,7 +73,8 @@ cv.aglm <- function(x, y,
 
   # Check y
   y <- drop(y)
-  assert_that(class(y) == "integer" | class(y) == "numeric")
+  #assert_that(class(y) == "integer" | class(y) == "numeric")
+  y <- as.numeric(y)
   assert_that(length(y) == dim(x@data)[1])
 
   # Check family
