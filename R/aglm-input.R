@@ -166,7 +166,8 @@ newInput <- function(x,
 
       for (i in seq(length(bins_list))) {
         idx <- idx_list[[i]]
-        vars_info[[idx]]$OD_info$breaks <- bins_list[[i]]
+        breaks <- bins_list[[i]]
+        vars_info[[idx]]$OD_info$breaks <- unique(sort(breaks[is.finite(breaks)]))
       }
     } else {
       idx_map <- list()
