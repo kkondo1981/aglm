@@ -87,3 +87,37 @@ test_that("Check for predict.AGLM_CV().", {
   expect_equal(class(y_pred), "matrix")
   expect_equal(length(y_pred), n_new_obs)
 })
+
+
+test_that("Check for logical features", {
+  set.seed(12345)
+
+  # size of observations and variables
+  nobs <- 1000
+  nvars <- 2
+
+  # a random generated logical variables
+  x <- matrix(sample(c(TRUE, FALSE), nobs * nvars, replace=TRUE), nobs, nvars)
+
+  # Generates non-linear reponse
+  y <- xor(x[, 1], x[, 2])
+
+  res <- cv.aglm(x, y, family="gaussian", keep=TRUE)
+
+  expect_true("AccurateGLM" %in% class(res))
+  expect_true("glmnet" %in% class(res@backend_models[[1]]))
+  expect_true(class(res@fit.preval) == "matrix")
+  expect_true(class(res@foldid) == "integer")
+
+  # Generates new predictive variables
+  n_new_obs <- 100
+
+  newx <- matrix(sample(c(TRUE, FALSE), n_new_obs * nvars, replace=TRUE), n_new_obs, nvars)
+
+  # Predict values of y for newx
+  y_pred <- predict(res, newx, s=res@lambda.min)
+  #y_true <- xor(newx[, 1], newx[, 2])
+  #plot(y_true, y_pred)
+  expect_equal(class(y_pred), "matrix")
+  expect_equal(length(y_pred), n_new_obs)
+})
