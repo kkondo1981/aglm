@@ -4,14 +4,62 @@
 #' Plot coefficients from an AccurateGLM object
 #'
 #' @param model An AccurateGLM object.
-#' @param xvar What is on the X-axis.
-#'   * `"norm"` plots against the L1-norm of the coefficients.
-#'   * `"lambda"` against the log-lambda sequence.
-#'   * `"dev"` against the percent deviance explained.
-#' @param label A boolean value. If `TRUE`, label the curves with variable sequence numbers.
-#' @param ... Other arguments are passed directly to `plot` functions of `model@backend_models`.
+#' @param verbose If TRUE, outputs details.
 #'
 #' @export
-plot.AccurateGLM <- function(model, xvar=c("norm","lambda","dev"), label=FALSE, ...) {
-  plot(fitted@backend_models[[1]], xvar, label, ...)
+plot.AccurateGLM <- function(model, verbose=TRUE, ...) {
+  coefs_all <- coef(model)
+  nvars <- length(model@vars_info)
+
+  devAskNewPage(TRUE)
+  for (i in seq(nvars)) {
+    var_info <- model@vars_info[[i]]
+    if (var_info$type == "inter") break ## no plot for interactions
+
+    coefs <- coef(model, index=var_info$idx)
+    main <- sprintf("Cofficients Plot for variable `%s`", var_info$name)
+
+    if (var_info$type == "quan") {
+      # Plot for numeric features
+      slope <- coefs$coef.linear
+      steps <- coefs$coef.OD
+      if (is.null(slope)) slope <- 0
+      if (is.null(steps)) steps <- 0
+
+      x <- var_info$OD_info$breaks
+      y <- slope * x + cumsum(steps)
+      type <- ifelse(slope == 0, "s", "l")
+
+      plot(x=x, y=y,
+           type=type,
+           main=main,
+           xlab=var_info$name,
+           ylab="Coefficients")
+
+    } else if (var_info$type == "qual") {
+      # Plot for factorial features
+      steps <- coefs$coef.OD
+      levels <- coefs$coef.UD
+      if (is.null(steps)) steps <- 0
+      if (is.null(levels)) leels <- 0
+
+      y <- cumsum(steps) + levels
+      names <- var_info$OD_info$breaks
+
+      barplot(y,
+              names.arg = names,
+              main=main,
+              xlab = var_info$name,
+              ylab = "Coefficients")
+    }
+
+    if (verbose) {
+      cat(main); cat("\n\n")
+      cat("Variable Informations:\n"); str(var_info); cat("\n")
+      cat("Coefficients:\n"); str(coefs); cat("\n")
+    }
+
+    flush.console() # this makes sure that the display is current
+  }
+  devAskNewPage(FALSE)
 }
