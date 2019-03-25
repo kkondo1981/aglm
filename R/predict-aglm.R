@@ -27,6 +27,15 @@ predict.AccurateGLM <- function(model,
                                 newoffset,
                                 ...) {
   # Create an input object
+  if (class(newx) != "data.frame") newx <- data.frame(newx)
+  for (i in seq(dim(newx)[2])) {
+    var_info <- model@vars_info[[i]]
+    if (var_info$type == "quan") newx[, i] <- as.numeric(newx[, i])
+    else if (var_info$type == "qual") {
+      if (var_info$use_OD) newx[, i] <- ordered(newx[, i])
+      else newx[, i] <- factor(newx[, i])
+    }
+  }
   newx <- new("AGLM_Input", vars_info=model@vars_info, data=newx)
 
   # Create a design matrix passed to backend API
