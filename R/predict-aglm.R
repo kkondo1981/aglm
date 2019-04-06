@@ -26,6 +26,9 @@ predict.AccurateGLM <- function(model,
                                 exact=FALSE,
                                 newoffset,
                                 ...) {
+  # Check and set `type`
+  type <- match.arg(type)
+
   # Create an input object
   if (class(newx) != "data.frame") newx <- data.frame(newx)
   for (i in seq(dim(newx)[2])) {
