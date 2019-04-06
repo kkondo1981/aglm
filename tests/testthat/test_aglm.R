@@ -121,3 +121,15 @@ test_that("Check for logical features", {
   expect_equal(class(y_pred), "matrix")
   expect_equal(length(y_pred), n_new_obs)
 })
+
+test_that("Check for binomial family", {
+  nobs <- 1000
+  x1 <- rnorm(nobs); x2 <- rnorm(nobs); x <- cbind(x1, x2)
+  y <- 1 * ((atan(0.25 * x1 - 0.5 * x2) / pi + 0.5) > 0.5)
+  model <- aglm(x, y, family = "binomial", alpha = 1, lambda = 0.003)
+
+  newx1 <- rnorm(100); newx2 <- rnorm(100); newx <- cbind(newx1, newx2)
+  aglm.pred <- predict(model, newx)
+
+  expect_equal(length(aglm.pred), 100)
+})
