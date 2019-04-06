@@ -123,6 +123,8 @@ test_that("Check for logical features", {
 })
 
 test_that("Check for binomial family", {
+  set.seed(12345)
+
   nobs <- 1000
   x1 <- rnorm(nobs); x2 <- rnorm(nobs); x <- cbind(x1, x2)
   y <- 1 * ((atan(0.25 * x1 - 0.5 * x2) / pi + 0.5) > 0.5)
@@ -132,4 +134,20 @@ test_that("Check for binomial family", {
   aglm.pred <- predict(model, newx)
 
   expect_equal(length(aglm.pred), 100)
+})
+
+
+test_that("Check for poisson family", {
+  set.seed(12345)
+
+  nobs <- 100
+  x <- runif(nobs) * 20
+  y <- rpois(nobs, x)
+  cv_result <- cv.aglm(x, y, family = "poisson", alpha = 1)
+
+  newx <- runif(100) * 20
+  y_pred <- predict(cv_result, newx, s=cv_result@lambda.min)
+
+  expect_equal(length(y_pred), 100)
+  expect_equal(names(cv_result@name), "deviance")
 })
