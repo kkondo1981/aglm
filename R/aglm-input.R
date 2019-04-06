@@ -24,8 +24,7 @@ newInput <- function(x,
                      bins_names=NULL) {
   # Check and process arguments
   assert_that(!is.null(x))
-  assert_that(class(x) == "matrix" | class(x) == "data.frame")
-  if (class(x) == "matrix") x <- data.frame(x)
+  if (class(x) != "data.frame") x <- data.frame(x)
   assert_that(dim(x)[2] > 0)
 
   # Calculate data size
