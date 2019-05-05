@@ -13,6 +13,10 @@
 #' @param add_linear_columns A boolean value which indicates whether this function uses linear effects or not.
 #' @param add_OD_columns_of_qualitatives A boolean value which indicates whether this function use O-dummy representations for qualitative and ordinal variables or not.
 #' @param add_interaction_columns A boolean value which indicates whether this function uses interaction effects or not.
+#' @param OD_type_of_quantitatives A character value which indicates how O-dummy matrices of quantitative
+#'   values are constructed. Choose 'C'(default) or 'J'.
+#'   * 'C': Continuous-type dummies, which result continuous contribution curves.
+#'   * 'J': Jum-type dummies, which result contribution curves with jumps.
 #' @param family Response type. Currently "gaussian", "binomial", and "poisson" are supported.
 #' @param bins_list A list of numeric vectors, each element of which is used as breaks when binning of a quantitative variable or a qualitative variable with order.
 #' @param bins_names A list of column name or column index, each name or index of which specifies which column of `x` is binned used with an element of `bins_list` in the same position.
@@ -31,6 +35,7 @@ cv.aglm <- function(x, y,
                     add_linear_columns=TRUE,
                     add_OD_columns_of_qualitatives=TRUE,
                     add_interaction_columns=TRUE,
+                    OD_type_of_quantitatives='C',
                     bins_list=NULL,
                     bins_names=NULL,
                     weights,
@@ -68,6 +73,7 @@ cv.aglm <- function(x, y,
                 add_linear_columns=add_linear_columns,
                 add_OD_columns_of_qualitatives=add_OD_columns_of_qualitatives,
                 add_interaction_columns=add_interaction_columns,
+                OD_type_of_quantitatives=OD_type_of_quantitatives,
                 bins_list,
                 bins_names)
 

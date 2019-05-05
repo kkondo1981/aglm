@@ -20,6 +20,7 @@ newInput <- function(x,
                      add_linear_columns=TRUE,
                      add_OD_columns_of_qualitatives=TRUE,
                      add_interaction_columns=TRUE,
+                     OD_type_of_quantitatives='C',
                      bins_list=NULL,
                      bins_names=NULL) {
   # Check and process arguments
@@ -49,6 +50,10 @@ newInput <- function(x,
     var$use_linear <- var$type == "quan" & add_linear_columns
     var$use_UD <- var$type == "qual"
     var$use_OD <- var$type == "quan" | (var$type == "qual" & is_ordered & add_OD_columns_of_qualitatives)
+    if (var$use_OD) {
+      if (var$type == "quan") var$OD_type <- OD_type_of_quantitatives
+      else var$OD_type <- 'J'
+    }
 
     vars_info[[i]] <- var
   }
@@ -196,7 +201,7 @@ newInput <- function(x,
       vars_info[[i]]$UD_info <- getUDummyMatForOneVec(x[, i], only_info=TRUE, drop_last=FALSE)
     }
     if (vars_info[[i]]$use_OD & is.null(vars_info[[i]]$OD_info)) {
-      vars_info[[i]]$OD_info <- getODummyMatForOneVec(x[, i], only_info=TRUE)
+      vars_info[[i]]$OD_info <- getODummyMatForOneVec(x[, i], dummy_type=vars_info[[i]]$OD_type, only_info=TRUE)
     }
   }
 
@@ -237,7 +242,7 @@ getMatrixRepresentation <- function(x, idx, drop_OD=FALSE) {
     }
 
     if (var_info$use_OD & !drop_OD) {
-      z_OD <- getODummyMatForOneVec(z_raw, breaks=var_info$OD_info$breaks)$dummy_mat
+      z_OD <- getODummyMatForOneVec(z_raw, breaks=var_info$OD_info$breaks, dummy_type=var_info$OD_type)$dummy_mat
       colnames(z_OD) <- paste0(var_info$name, "_OD_", seq(dim(z_OD)[2]))
       z <- cbind(z, z_OD)
     }

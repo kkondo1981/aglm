@@ -26,9 +26,17 @@ coef.AccurateGLM <- function(model, index=NULL, name=NULL, s=NULL, exact=FALSE, 
     off0 <- 1  # not 0 because the first column is used as intercept.
     for (i in seq(nvars)) {
       var_info <- model@vars_info[[i]]
-      ncol_linear <- 0; if (var_info$use_linear) ncol_linear <- 1
-      ncol_OD <- 0; if(var_info$use_OD) ncol_OD <- length(var_info$OD_info$breaks)
-      ncol_UD <- 0; if(var_info$use_UD) ncol_UD <- length(var_info$UD_info$levels) - var_info$UD_info$drop_last
+      ncol_linear <- 0
+      if (var_info$use_linear) ncol_linear <- 1
+
+      ncol_OD <- 0
+      if(var_info$use_OD) {
+        ncol_OD <- length(var_info$OD_info$breaks)
+        if (var_info$OD_type == 'C') ncol_OD <- ncol_OD - 1
+      }
+
+      ncol_UD <- 0
+      if(var_info$use_UD) ncol_UD <- length(var_info$UD_info$levels) - var_info$UD_info$drop_last
 
       if (i == index) {
         c <- list()

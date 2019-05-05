@@ -26,9 +26,17 @@ plot.AccurateGLM <- function(model, verbose=TRUE, ...) {
       if (is.null(slope)) slope <- 0
       if (is.null(steps)) steps <- 0
 
-      x <- var_info$OD_info$breaks
-      y <- slope * x + cumsum(steps)
-      type <- ifelse(slope == 0, "s", "l")
+      if (var_info$OD_type == 'C') {
+        x <- var_info$OD_info$breaks
+        y <- slope * x + cumsum(c(0, steps))
+        type <- "l"
+      } else if (var_info$OD_type == 'J') {
+        x <- var_info$OD_info$breaks
+        y <- slope * x + cumsum(steps)
+        type <- ifelse(slope == 0, "s", "l")
+      } else {
+        assert_that(FALSE)
+      }
 
       plot(x=x, y=y,
            type=type,
