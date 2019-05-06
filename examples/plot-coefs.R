@@ -21,3 +21,7 @@ plot(model, s=0.5)
 ## Plots coefs of cross-validated model
 cv.model <- cv.aglm(x, y)
 plot(cv.model, s=cv.model@lambda.min)
+
+## Plots coefs of specified variables only
+plot(cv.model, s=cv.model@lambda.min, vars=c(1, 2))
+plot(cv.model, s=cv.model@lambda.min, vars=c("rm", "nox"))

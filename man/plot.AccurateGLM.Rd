@@ -4,10 +4,13 @@
 \alias{plot.AccurateGLM}
 \title{Plot coefficients from an AccurateGLM object}
 \usage{
-\method{plot}{AccurateGLM}(model, verbose = TRUE, s = NULL, ...)
+\method{plot}{AccurateGLM}(model, vars = NULL, verbose = TRUE,
+  s = NULL, ...)
 }
 \arguments{
 \item{model}{An AccurateGLM object.}
+
+\item{vars}{An integer or character vectors (indices or names) specifying which variables should be plotted.}
 
 \item{verbose}{If TRUE, outputs details.}
 
