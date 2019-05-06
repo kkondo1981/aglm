@@ -4,6 +4,7 @@
 #' Plot coefficients from an AccurateGLM object
 #'
 #' @param model An AccurateGLM object.
+#' @param vars An integer or character vectors (indices or names) specifying which variables should be plotted.
 #' @param verbose If TRUE, outputs details.
 #' @param s A numeric value specifying lambda value at which plotting is required.
 #'   Note that this function can't plot for multiple lambda values, so it allows only
@@ -11,12 +12,26 @@
 #'   or `s=NULL` (which means `model` is trained with single lambda value and plot with that value).
 #'
 #' @export
-plot.AccurateGLM <- function(model, verbose=TRUE, s=NULL, ...) {
+plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, ...) {
   coefs_all <- coef(model, s=s)
   nvars <- length(model@vars_info)
 
+  if (is.null(vars)) {
+    inds <- seq(nvars)
+  } else if (is.numeric(vars)) {
+    inds <- unique(sort(vars))
+  } else if (is.character(vars)) {
+    inds <- NULL
+    for (i in seq(nvars)) {
+      var_name <- model@vars_info[[i]]$name
+      if (var_name %in% vars) inds <- c(inds, i)
+    }
+  } else {
+    assert_that(FALSE)
+  }
+
   devAskNewPage(TRUE)
-  for (i in seq(nvars)) {
+  for (i in inds) {
     var_info <- model@vars_info[[i]]
     if (var_info$type == "inter") break ## no plot for interactions
 
