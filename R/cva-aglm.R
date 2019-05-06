@@ -12,7 +12,7 @@
 #' @param parallel.alpha not implemented yet.
 #' @param ... Other arguments are passed directly to cv.aglm().
 #'
-#' @return Result of cross-validation.
+#' @return Result of cross-validation. See `CVA_AccurateGLM`'s document for more details.
 #'
 #' @export
 #' @importFrom assertthat assert_that
