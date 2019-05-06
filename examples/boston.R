@@ -28,3 +28,7 @@ plot(y_true, y_pred)
 
 ## Plot coeffs
 plot(model)
+
+## TIPS: models trained with multiple lambdas can be plotted by specifying `s` option.
+model <- aglm(x, y)
+plot(model, s=lambda.min)
