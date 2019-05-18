@@ -74,7 +74,7 @@ test_that("Check design matrix for actual data 1", {
   x <- Boston[-ncol(Boston)]
 
   ## Create design matrix of aglm
-  DM.aglm <- getDesignMatrix(newInput(x))
+  DM.aglm <- getDesignMatrix(newInput(x, OD_type_of_quantitatives='J'))
 
   ## Create design matrix to be compared
   DM.Iwasawa <- cbind(OD(x, make.bins(x)), as.matrix(x), ints.mat(x))
@@ -96,7 +96,7 @@ test_that("Check design matrix for actual data 2", {
   x$rad <- as.ordered(x$rad)
 
   ## Create design matrix of aglm
-  input.aglm <- newInput(x, bins_list=bins_list, bins_names=bins_names)
+  input.aglm <- newInput(x, bins_list=bins_list, bins_names=bins_names, OD_type_of_quantitatives='J')
   DM.aglm <- getDesignMatrix(input.aglm)
 
   ## Create design matrix to be compared

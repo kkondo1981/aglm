@@ -43,6 +43,20 @@ test_that("Check the types and forms of return value of aglm() and predict.aglm(
   #points(new_quan_var, y_true, col="red")
   expect_equal(class(y_pred), "matrix")
   expect_equal(length(y_pred), n_new_obs)
+
+  ## Test cva.aglm()
+  cva_results <- cva.aglm(x, y, family="gaussian")
+  alpha.min <- cva_results@alpha.min
+  lambda.min <- cva_results@lambda.min
+  res2 <- aglm(x, y, family="gaussian", alpha=alpha.min, lambda=lambda.min)
+  y_fit1 <- predict(res, x)
+  y_fit2 <- predict(res2, x)
+  y_true <- sign(new_quan_var) * (abs(new_quan_var) ** 4) * (new_qual_var != "level_1")
+  RMSE1 <- sqrt(mean((y_fit1 - y_true)^2))
+  RMSE2 <- sqrt(mean((y_fit2 - y_true)^2))
+
+  # The result of cva.aglm() must be better than that of cv.aglm() for trainning data.
+  expect_true(RMSE2 < RMSE1)
 })
 
 test_that("Check for predict.AGLM_CV().", {

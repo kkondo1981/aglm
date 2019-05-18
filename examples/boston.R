@@ -25,6 +25,3 @@ model <- aglm(x, y, lambda=lambda.min)
 y_pred <- predict(model, newx=newx)
 cat("RMSE: ", sqrt(mean((y_true - y_pred)^2)), "\n")
 plot(y_true, y_pred)
-
-## Plot coeffs
-plot(model)

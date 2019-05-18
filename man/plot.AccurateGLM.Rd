@@ -4,12 +4,20 @@
 \alias{plot.AccurateGLM}
 \title{Plot coefficients from an AccurateGLM object}
 \usage{
-\method{plot}{AccurateGLM}(model, verbose = TRUE, ...)
+\method{plot}{AccurateGLM}(model, vars = NULL, verbose = TRUE,
+  s = NULL, ...)
 }
 \arguments{
 \item{model}{An AccurateGLM object.}
 
+\item{vars}{An integer or character vectors (indices or names) specifying which variables should be plotted.}
+
 \item{verbose}{If TRUE, outputs details.}
+
+\item{s}{A numeric value specifying lambda value at which plotting is required.
+Note that this function can't plot for multiple lambda values, so it allows only
+single \code{s} value (which means \code{model} is trained with multiple lambda values and plot with one of them),
+or \code{s=NULL} (which means \code{model} is trained with single lambda value and plot with that value).}
 }
 \description{
 Plot coefficients from an AccurateGLM object

@@ -32,18 +32,28 @@ x$rad <- as.ordered(x$rad)
 newx$chas <- factor(newx$chas, levels=levels(x$chas))
 newx$rad <- ordered(newx$rad, levels=levels(x$rad))
 
-## Select the best lambda
-cv_results <- cv.aglm(x, y, bins_list=bins_list, bins_names=bins_names)
-lambda.min <- cv_results@lambda.min
+
+## Select the best lambda by `cv.aglm()`, fixing `alpha=1` (LASSO)
+cv.model <- cv.aglm(x, y, bins_list=bins_list, bins_names=bins_names)
+lambda.min <- cv.model@lambda.min
 cat("lambda.min: ", lambda.min, "\n")
 
-## Predict y for newx
-model <- aglm(x, y, lambda=lambda.min, bins_list=bins_list, bins_names=bins_names)
-y_pred <- predict(model, newx=newx)
+# Predict y for newx
+y_pred <- predict(cv.model, newx=newx, s="lambda.min")
 cat("RMSE: ", sqrt(mean((y_true - y_pred)^2)), "\n")
 plot(y_true, y_pred)
 
-## Other way
-y_pred2 <- predict(cv_results, newx=newx, s="lambda.min")
-cat("RMSE: ", sqrt(mean((y_true - y_pred2)^2)), "\n")
-plot(y_true, y_pred2)
+
+## Select the best (alpha, lambda) simultaneously by `cva.aglm()`
+cva.model <- cva.aglm(x, y, bins_list=bins_list, bins_names=bins_names)
+
+alpha.min <- cva.model@alpha.min
+lambda.min <- cva.model@lambda.min
+cat("alpha.min: ", alpha.min, "\n")
+cat("lambda.min: ", lambda.min, "\n")
+
+## Predict y for newx
+best_model <- aglm(x, y, lambda=lambda.min, alpha=alpha.min,bins_list=bins_list, bins_names=bins_names)
+y_pred <- predict(best_model, newx=newx)
+cat("RMSE: ", sqrt(mean((y_true - y_pred)^2)), "\n")
+plot(y_true, y_pred)
