@@ -40,24 +40,29 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, ...) {
 
     if (var_info$type == "quan") {
       # Plot for numeric features
-      slope <- coefs$coef.linear
-      steps <- coefs$coef.OD
-      if (is.null(slope)) slope <- 0
-      if (is.null(steps)) steps <- 0
 
-      if (var_info$OD_type == 'C') {
-        x <- var_info$OD_info$breaks
-        y <- slope * x + cumsum(c(0, steps))
-        type <- "l"
-      } else if (var_info$OD_type == 'J') {
-        x <- var_info$OD_info$breaks
-        y <- slope * x + cumsum(steps)
-        type <- ifelse(slope == 0, "s", "l")
-      } else {
-        assert_that(FALSE)
-      }
+      ## Calculates range of x to be plotted
+      breaks <- var_info$OD_info$breaks
+      breaks <- breaks[abs(breaks) < Inf]  # get rid of -Inf and Inf
+      x.min <- min(breaks)
+      x.max <- max(breaks)
+      x.d <- x.max - x.min
+      assert_that(x.d > 0)
 
-      plot(x=x, y=y,
+      x.min <- x.min - 0.05 * x.d
+      x.max <- x.max + 0.05 * x.d
+      x.d <- x.max - x.min
+
+      ## Extract x values to be plotted
+      x <- x.min + (0:2000) / 2000 * x.d
+
+      ## Calculates component values for x
+      x.mat <- getMatrixRepresentationByVector(x, var_info)
+      b <- matrix(c(coefs$coef.linear, coefs$coef.OD), ncol=1)
+      comp <- x.mat %*% b
+      type <- "l"
+
+      plot(x=x, y=comp,
            type=type,
            main=main,
            xlab=var_info$name,

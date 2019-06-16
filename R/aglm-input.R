@@ -229,30 +229,39 @@ newInput <- function(x,
 
 
 # Functions for inner use
+getMatrixRepresentationByVector <- function(raw_vec, var_info, drop_OD=FALSE) {
+  assert_that(var_info$type != "inter")
+
+  z <- NULL
+
+  if (var_info$use_linear) {
+    z <- matrix(raw_vec, ncol=1)
+    colnames(z) <- var_info$name
+  }
+
+  if (var_info$use_OD & !drop_OD) {
+    z_OD <- getODummyMatForOneVec(raw_vec, breaks=var_info$OD_info$breaks, dummy_type=var_info$OD_type)$dummy_mat
+    colnames(z_OD) <- paste0(var_info$name, "_OD_", seq(dim(z_OD)[2]))
+    z <- cbind(z, z_OD)
+  }
+
+  if (var_info$use_UD) {
+    z_UD <- getUDummyMatForOneVec(raw_vec, levels=var_info$UD_info$levels,
+                                  drop_last=var_info$UD_info$drop_last)$dummy_mat
+    colnames(z_UD) <- paste0(var_info$name, "_UD_", seq(dim(z_UD)[2]))
+    z <- cbind(z, z_UD)
+  }
+
+  return(z)
+}
+
 getMatrixRepresentation <- function(x, idx, drop_OD=FALSE) {
   var_info <- x@vars_info[[idx]]
   z <- NULL
 
   if (var_info$type == "quan" | var_info$type == "qual") {
     z_raw <- x@data[, var_info$data_column_idx]
-
-    if (var_info$use_linear) {
-      z <- matrix(z_raw, ncol=1)
-      colnames(z) <- var_info$name
-    }
-
-    if (var_info$use_OD & !drop_OD) {
-      z_OD <- getODummyMatForOneVec(z_raw, breaks=var_info$OD_info$breaks, dummy_type=var_info$OD_type)$dummy_mat
-      colnames(z_OD) <- paste0(var_info$name, "_OD_", seq(dim(z_OD)[2]))
-      z <- cbind(z, z_OD)
-    }
-
-    if (var_info$use_UD) {
-      z_UD <- getUDummyMatForOneVec(z_raw, levels=var_info$UD_info$levels,
-                                    drop_last=var_info$UD_info$drop_last)$dummy_mat
-      colnames(z_UD) <- paste0(var_info$name, "_UD_", seq(dim(z_UD)[2]))
-      z <- cbind(z, z_UD)
-    }
+    z <- getMatrixRepresentationByVector(z_raw, var_info, drop_OD)
   } else if (var_info$type == "inter") {
     # Interaction effects between columns of one variable itself
     self_interaction <- var_info$var_idx1 == var_info$var_idx2
