@@ -40,7 +40,6 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE,
     resids <- predict(model, x.orig, s=s) - y.orig
   }
 
-  devAskNewPage(TRUE)
   for (i in inds) {
     var_info <- model@vars_info[[i]]
     if (var_info$type == "inter") break ## no plot for interactions
@@ -177,6 +176,8 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE,
     }
 
     flush.console() # this makes sure that the display is current
+
+    devAskNewPage(TRUE)
   }
   devAskNewPage(FALSE)
 }
