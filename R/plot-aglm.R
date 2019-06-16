@@ -12,9 +12,10 @@
 #'   or `s=NULL` (which means `model` is trained with single lambda value and plot with that value).
 #' @param resid A boolean value which indicates plot residuals.
 #' @param ask A boolean value which indicates ask if go to next plot.
+#' @param layout A pair of integer values which indicates how many plots are drawn rawwise and columnwise respectively.
 #'
 #' @export
-plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE, ask=TRUE, ...) {
+plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE, ask=TRUE, layout=c(2,2), ...) {
   nvars <- length(model@vars_info)
 
   if (is.null(vars)) {
@@ -41,6 +42,11 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE,
     resids <- predict(model, x.orig, s=s) - y.orig
   }
 
+  ## set par
+  par(oma=c(0, 0, 2, 0))
+  par(mfrow=layout)
+
+  ## Plotting
   for (i in inds) {
     var_info <- model@vars_info[[i]]
     if (var_info$type == "inter") break ## no plot for interactions
@@ -48,15 +54,14 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE,
     coefs <- coef(model, index=var_info$idx, s=s)
 
     if (resid) {
-      main <- sprintf("Component + Residual Plot for `%s`", var_info$name)
       xlab <- var_info$name
-      ylab <- "Component + Residual"
+      ylab <- "Comp + Resid"
     } else {
-      main <- sprintf("Component Plot for `%s`", var_info$name)
       xlab <- var_info$name
-      ylab <- "Component"
+      ylab <- "Comp"
     }
 
+    first <- TRUE
     if (var_info$type == "quan") {
       # Plot for numeric features
 
@@ -103,7 +108,6 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE,
       plot(x=x,
            y=comp,
            type="n",
-           main=main,
            xlab=xlab,
            ylab=ylab,
            xlim=xlim,
@@ -157,28 +161,32 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE,
         ylim[2] <- ylim[2] + 0.05 * (ylim[2] - ylim[1])
 
         boxplot(c_and_r.sample ~ x.sample,
-                main=main,
                 xlab=xlab,
                 ylab=ylab,
                 ylim=ylim)
       } else {
         barplot(comp,
                 names=lv,
-                main=main,
                 xlab=xlab,
                 ylab=ylab)
       }
     }
 
     if (verbose) {
-      cat(main); cat("\n\n")
+      cat(sprintf("Plotting for %s", var_info$name))
       cat("Variable Informations:\n"); str(var_info); cat("\n")
       cat("Coefficients:\n"); str(coefs); cat("\n")
     }
 
     flush.console() # this makes sure that the display is current
 
-    if (ask) devAskNewPage(TRUE)
+
+    if (first) {
+      if (resid) mtext(line=0, outer=TRUE, text="Component + Residual Plot")
+      else mtext(line=0, outer=TRUE, text="Component Plot")
+      if (ask) devAskNewPage(TRUE)
+      first <- FALSE
+    }
   }
   if (ask) devAskNewPage(FALSE)
 }
