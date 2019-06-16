@@ -11,9 +11,10 @@
 #'   single `s` value (which means `model` is trained with multiple lambda values and plot with one of them),
 #'   or `s=NULL` (which means `model` is trained with single lambda value and plot with that value).
 #' @param resid A boolean value which indicates plot residuals.
+#' @param ask A boolean value which indicates ask if go to next plot.
 #'
 #' @export
-plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE, ...) {
+plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE, ask=TRUE, ...) {
   nvars <- length(model@vars_info)
 
   if (is.null(vars)) {
@@ -177,7 +178,7 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE,
 
     flush.console() # this makes sure that the display is current
 
-    devAskNewPage(TRUE)
+    if (ask) devAskNewPage(TRUE)
   }
-  devAskNewPage(FALSE)
+  if (ask) devAskNewPage(FALSE)
 }
