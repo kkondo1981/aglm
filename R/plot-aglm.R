@@ -30,13 +30,20 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, ...) {
     assert_that(FALSE)
   }
 
+  ## Calculates residuals
+  call.orig <- getCall(model)
+  x.orig <- eval(call.orig$x)
+  if (class(x.orig) != "data.frame") x <- data.frame(x.orig)
+  y.orig <- as.numeric(drop(eval(call.orig$y)))
+  assert_that(dim(x.orig)[1] == length(y.orig))
+  resids <- predict(model, x.orig, s=s) - y.orig
+
   devAskNewPage(TRUE)
   for (i in inds) {
     var_info <- model@vars_info[[i]]
     if (var_info$type == "inter") break ## no plot for interactions
 
     coefs <- coef(model, index=var_info$idx, s=s)
-    main <- sprintf("Cofficients Plot for variable `%s`", var_info$name)
 
     if (var_info$type == "quan") {
       # Plot for numeric features
@@ -56,18 +63,42 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, ...) {
       ## Extract x values to be plotted
       x <- x.min + (0:2000) / 2000 * x.d
 
-      ## Calculates component values for x
+      ## Calculates component values of x
       x.mat <- getMatrixRepresentationByVector(x, var_info)
       b <- matrix(c(coefs$coef.linear, coefs$coef.OD), ncol=1)
-      comp <- x.mat %*% b
-      type <- "l"
+      comp <- drop(x.mat %*% b)
 
-      plot(x=x, y=comp,
-           type=type,
+      ## Calculates component and residual values of samples
+      x.sample <- x.orig[, var_info$data_column_idx]
+      x.sample.mat <- getMatrixRepresentationByVector(x.sample, var_info)
+      c_and_r.sample <- drop(x.sample.mat %*% b) + resids
+
+      ## Plotting
+      x.all <- c(x, x.sample)
+      xlim <- c(min(x.all), max(x.all))
+      xlim[1] <- xlim[1] - 0.05 * (xlim[2] - xlim[1])
+      xlim[2] <- xlim[2] + 0.05 * (xlim[2] - xlim[1])
+
+      y.all <- c(comp, c_and_r.sample)
+      ylim <- c(min(y.all), max(y.all))
+      ylim[1] <- ylim[1] - 0.05 * (ylim[2] - ylim[1])
+      ylim[2] <- ylim[2] + 0.05 * (ylim[2] - ylim[1])
+
+      main <- sprintf("Component + Residual Plot for `%s`", var_info$name)
+      plot(x=x.sample,
+           y=c_and_r.sample,
+           pch=20,
+           col="grey",
            main=main,
            xlab=var_info$name,
-           ylab="Coefficients")
+           ylab="Component + Residual",
+           xlim=xlim,
+           ylim=ylim)
 
+      lines(x=x,
+            y=comp,
+            col="blue",
+            lwd=5)
     } else if (var_info$type == "qual") {
       # Plot for factorial features
       steps <- coefs$coef.OD
@@ -78,6 +109,7 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, ...) {
       y <- cumsum(steps) + levels
       names <- var_info$OD_info$breaks
 
+      main <- sprintf("Cofficients Plot for variable `%s`", var_info$name)
       barplot(y,
               names.arg = names,
               main=main,
