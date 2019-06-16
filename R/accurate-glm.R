@@ -23,7 +23,8 @@ setClass("AccurateGLM",
                                        lambda.min="numeric",
                                        lambda.1se="numeric",
                                        fit.preval="matrix",
-                                       foldid="integer"))
+                                       foldid="integer",
+                                       call="ANY"))
 
 #' S4 class for the result of cva.aglm function
 #'
@@ -41,4 +42,5 @@ setClass("CVA_AccurateGLM",
                                        nfolds="integer",
                                        alpha.min.index="integer",
                                        alpha.min="numeric",
-                                       lambda.min="numeric"))
+                                       lambda.min="numeric",
+                                       call="ANY"))

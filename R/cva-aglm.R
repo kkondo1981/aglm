@@ -47,5 +47,6 @@ cva.aglm <- function(x, y,
              nfolds=nfolds,
              alpha.min.index=alpha.min.index,
              alpha.min=alpha.min,
-             lambda.min=lambda.min))
+             lambda.min=lambda.min,
+             call=match.call))
 }

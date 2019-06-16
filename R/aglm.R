@@ -118,5 +118,5 @@ aglm <- function(x, y,
                           type.logistic=type.logistic,
                           standardize.response=standardize.response)
 
-  return(new("AccurateGLM", backend_models=list(glmnet=glmnet_result), vars_info=x@vars_info))
+  return(new("AccurateGLM", backend_models=list(glmnet=glmnet_result), vars_info=x@vars_info, call=match.call()))
 }

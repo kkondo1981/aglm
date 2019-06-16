@@ -148,5 +148,6 @@ cv.aglm <- function(x, y,
              lambda.1se=cv.glmnet_result$lambda.1se,
              fit.preval=cv.glmnet_result$fit.preval,
              foldid=cv.glmnet_result$foldid,
-             vars_info=x@vars_info))
+             vars_info=x@vars_info,
+             call=match.call()))
 }
