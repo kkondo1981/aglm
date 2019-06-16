@@ -10,9 +10,10 @@
 #'   Note that this function can't plot for multiple lambda values, so it allows only
 #'   single `s` value (which means `model` is trained with multiple lambda values and plot with one of them),
 #'   or `s=NULL` (which means `model` is trained with single lambda value and plot with that value).
+#' @param resid A boolean value which indicates plot residuals.
 #'
 #' @export
-plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, ...) {
+plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE, ...) {
   coefs_all <- coef(model, s=s)
   nvars <- length(model@vars_info)
 
@@ -31,12 +32,14 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, ...) {
   }
 
   ## Calculates residuals
-  call.orig <- getCall(model)
-  x.orig <- eval(call.orig$x)
-  if (class(x.orig) != "data.frame") x <- data.frame(x.orig)
-  y.orig <- as.numeric(drop(eval(call.orig$y)))
-  assert_that(dim(x.orig)[1] == length(y.orig))
-  resids <- predict(model, x.orig, s=s) - y.orig
+  if (resid) {
+    call.orig <- getCall(model)
+    x.orig <- eval(call.orig$x)
+    if (class(x.orig) != "data.frame") x <- data.frame(x.orig)
+    y.orig <- as.numeric(drop(eval(call.orig$y)))
+    assert_that(dim(x.orig)[1] == length(y.orig))
+    resids <- predict(model, x.orig, s=s) - y.orig
+  }
 
   devAskNewPage(TRUE)
   for (i in inds) {
@@ -69,9 +72,13 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, ...) {
       comp <- drop(x.mat %*% b)
 
       ## Calculates component and residual values of samples
-      x.sample <- x.orig[, var_info$data_column_idx]
-      x.sample.mat <- getMatrixRepresentationByVector(x.sample, var_info)
-      c_and_r.sample <- drop(x.sample.mat %*% b) + resids
+      x.sample <- NULL
+      c_and_r.sample <- NULL
+      if (resid) {
+        x.sample <- x.orig[, var_info$data_column_idx]
+        x.sample.mat <- getMatrixRepresentationByVector(x.sample, var_info)
+        c_and_r.sample <- drop(x.sample.mat %*% b) + resids
+      }
 
       ## Plotting
       x.all <- c(x, x.sample)
@@ -84,21 +91,36 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, ...) {
       ylim[1] <- ylim[1] - 0.05 * (ylim[2] - ylim[1])
       ylim[2] <- ylim[2] + 0.05 * (ylim[2] - ylim[1])
 
-      main <- sprintf("Component + Residual Plot for `%s`", var_info$name)
-      plot(x=x.sample,
-           y=c_and_r.sample,
-           pch=20,
-           col="grey",
+      if (resid) {
+        main <- sprintf("Component + Residual Plot for `%s`", var_info$name)
+        xlab <- var_info$name
+        ylab <- "Component + Residual"
+      } else {
+        main <- sprintf("Component Plot for `%s`", var_info$name)
+        xlab <- var_info$name
+        ylab <- "Component"
+      }
+
+      plot(x=x,
+           y=comp,
+           type="n",
            main=main,
-           xlab=var_info$name,
-           ylab="Component + Residual",
+           xlab=xlab,
+           ylab=ylab,
            xlim=xlim,
            ylim=ylim)
+
+      if (resid) {
+        points(x=x.sample,
+               y=c_and_r.sample,
+               pch=20,
+               col="grey")
+      }
 
       lines(x=x,
             y=comp,
             col="blue",
-            lwd=5)
+            lwd=3)
     } else if (var_info$type == "qual") {
       # Plot for factorial features
       steps <- coefs$coef.OD
