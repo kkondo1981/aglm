@@ -14,7 +14,6 @@
 #'
 #' @export
 plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE, ...) {
-  coefs_all <- coef(model, s=s)
   nvars <- length(model@vars_info)
 
   if (is.null(vars)) {
@@ -47,6 +46,16 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE,
     if (var_info$type == "inter") break ## no plot for interactions
 
     coefs <- coef(model, index=var_info$idx, s=s)
+
+    if (resid) {
+      main <- sprintf("Component + Residual Plot for `%s`", var_info$name)
+      xlab <- var_info$name
+      ylab <- "Component + Residual"
+    } else {
+      main <- sprintf("Component Plot for `%s`", var_info$name)
+      xlab <- var_info$name
+      ylab <- "Component"
+    }
 
     if (var_info$type == "quan") {
       # Plot for numeric features
@@ -91,16 +100,6 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE,
       ylim[1] <- ylim[1] - 0.05 * (ylim[2] - ylim[1])
       ylim[2] <- ylim[2] + 0.05 * (ylim[2] - ylim[1])
 
-      if (resid) {
-        main <- sprintf("Component + Residual Plot for `%s`", var_info$name)
-        xlab <- var_info$name
-        ylab <- "Component + Residual"
-      } else {
-        main <- sprintf("Component Plot for `%s`", var_info$name)
-        xlab <- var_info$name
-        ylab <- "Component"
-      }
-
       plot(x=x,
            y=comp,
            type="n",
@@ -123,20 +122,52 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE,
             lwd=3)
     } else if (var_info$type == "qual") {
       # Plot for factorial features
-      steps <- coefs$coef.OD
-      levels <- coefs$coef.UD
-      if (is.null(steps)) steps <- 0
-      if (is.null(levels)) leels <- 0
 
-      y <- cumsum(steps) + levels
-      names <- var_info$OD_info$breaks
+      ## All levels to be plotted
+      lv <- var_info$UD_info$levels
+      x <- if (var_info$use_OD) {
+        ordered(lv, levels=lv)
+      } else {
+        factor(lv, levels=lv)
+      }
 
-      main <- sprintf("Cofficients Plot for variable `%s`", var_info$name)
-      barplot(y,
-              names.arg = names,
-              main=main,
-              xlab = var_info$name,
-              ylab = "Coefficients")
+      ## Calculate component values of x
+      x.mat <- getMatrixRepresentationByVector(x, var_info)
+      b <- matrix(c(coefs$coef.OD, coefs$coef.UD), ncol=1)
+      comp <- drop(x.mat %*% b)
+
+      # Calculates component and residual values of samples
+      x.sample <- NULL
+      c_and_r.sample <- NULL
+      if (resid) {
+        x.sample <- x.orig[, var_info$data_column_idx]
+        x.sample <- if (var_info$use_OD) {
+          ordered(x.sample, levels=lv)
+        } else {
+          factor(x.sample, levels=lv)
+        }
+        x.sample.mat <- getMatrixRepresentationByVector(x.sample, var_info)
+        c_and_r.sample <- drop(x.sample.mat %*% b) + resids
+      }
+
+      if (resid) {
+        y.all <- c(comp, c_and_r.sample)
+        ylim <- c(min(y.all), max(y.all))
+        ylim[1] <- ylim[1] - 0.05 * (ylim[2] - ylim[1])
+        ylim[2] <- ylim[2] + 0.05 * (ylim[2] - ylim[1])
+
+        boxplot(c_and_r.sample ~ x.sample,
+                main=main,
+                xlab=xlab,
+                ylab=ylab,
+                ylim=ylim)
+      } else {
+        barplot(comp,
+                names=lv,
+                main=main,
+                xlab=xlab,
+                ylab=ylab)
+      }
     }
 
     if (verbose) {
