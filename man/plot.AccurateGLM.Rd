@@ -5,7 +5,7 @@
 \title{Plot coefficients from an AccurateGLM object}
 \usage{
 \method{plot}{AccurateGLM}(model, vars = NULL, verbose = TRUE,
-  s = NULL, ...)
+  s = NULL, resid = TRUE, ask = TRUE, layout = c(2, 2), ...)
 }
 \arguments{
 \item{model}{An AccurateGLM object.}
@@ -18,6 +18,12 @@
 Note that this function can't plot for multiple lambda values, so it allows only
 single \code{s} value (which means \code{model} is trained with multiple lambda values and plot with one of them),
 or \code{s=NULL} (which means \code{model} is trained with single lambda value and plot with that value).}
+
+\item{resid}{A boolean value which indicates plot residuals.}
+
+\item{ask}{A boolean value which indicates ask if go to next plot.}
+
+\item{layout}{A pair of integer values which indicates how many plots are drawn rawwise and columnwise respectively.}
 }
 \description{
 Plot coefficients from an AccurateGLM object

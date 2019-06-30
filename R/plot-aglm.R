@@ -10,10 +10,12 @@
 #'   Note that this function can't plot for multiple lambda values, so it allows only
 #'   single `s` value (which means `model` is trained with multiple lambda values and plot with one of them),
 #'   or `s=NULL` (which means `model` is trained with single lambda value and plot with that value).
+#' @param resid A boolean value which indicates plot residuals.
+#' @param ask A boolean value which indicates ask if go to next plot.
+#' @param layout A pair of integer values which indicates how many plots are drawn rawwise and columnwise respectively.
 #'
 #' @export
-plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, ...) {
-  coefs_all <- coef(model, s=s)
+plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE, ask=TRUE, layout=c(2,2), ...) {
   nvars <- length(model@vars_info)
 
   if (is.null(vars)) {
@@ -30,63 +32,161 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, ...) {
     assert_that(FALSE)
   }
 
-  devAskNewPage(TRUE)
+  ## Calculates residuals
+  if (resid) {
+    call.orig <- getCall(model)
+    x.orig <- eval(call.orig$x)
+    if (class(x.orig) != "data.frame") x <- data.frame(x.orig)
+    y.orig <- as.numeric(drop(eval(call.orig$y)))
+    assert_that(dim(x.orig)[1] == length(y.orig))
+    resids <- predict(model, x.orig, s=s) - y.orig
+  }
+
+  ## set par
+  par(oma=c(0, 0, 2, 0))
+  par(mfrow=layout)
+
+  ## Plotting
   for (i in inds) {
     var_info <- model@vars_info[[i]]
     if (var_info$type == "inter") break ## no plot for interactions
 
     coefs <- coef(model, index=var_info$idx, s=s)
-    main <- sprintf("Cofficients Plot for variable `%s`", var_info$name)
 
+    if (resid) {
+      xlab <- var_info$name
+      ylab <- "Comp + Resid"
+    } else {
+      xlab <- var_info$name
+      ylab <- "Comp"
+    }
+
+    first <- TRUE
     if (var_info$type == "quan") {
       # Plot for numeric features
-      slope <- coefs$coef.linear
-      steps <- coefs$coef.OD
-      if (is.null(slope)) slope <- 0
-      if (is.null(steps)) steps <- 0
 
-      if (var_info$OD_type == 'C') {
-        x <- var_info$OD_info$breaks
-        y <- slope * x + cumsum(c(0, steps))
-        type <- "l"
-      } else if (var_info$OD_type == 'J') {
-        x <- var_info$OD_info$breaks
-        y <- slope * x + cumsum(steps)
-        type <- ifelse(slope == 0, "s", "l")
-      } else {
-        assert_that(FALSE)
+      ## Calculates range of x to be plotted
+      breaks <- var_info$OD_info$breaks
+      breaks <- breaks[abs(breaks) < Inf]  # get rid of -Inf and Inf
+      x.min <- min(breaks)
+      x.max <- max(breaks)
+      x.d <- x.max - x.min
+      assert_that(x.d > 0)
+
+      x.min <- x.min - 0.05 * x.d
+      x.max <- x.max + 0.05 * x.d
+      x.d <- x.max - x.min
+
+      ## Extract x values to be plotted
+      x <- x.min + (0:2000) / 2000 * x.d
+
+      ## Calculates component values of x
+      x.mat <- getMatrixRepresentationByVector(x, var_info)
+      b <- matrix(c(coefs$coef.linear, coefs$coef.OD), ncol=1)
+      comp <- drop(x.mat %*% b)
+
+      ## Calculates component and residual values of samples
+      x.sample <- NULL
+      c_and_r.sample <- NULL
+      if (resid) {
+        x.sample <- x.orig[, var_info$data_column_idx]
+        x.sample.mat <- getMatrixRepresentationByVector(x.sample, var_info)
+        c_and_r.sample <- drop(x.sample.mat %*% b) + resids
       }
 
-      plot(x=x, y=y,
-           type=type,
-           main=main,
-           xlab=var_info$name,
-           ylab="Coefficients")
+      ## Plotting
+      x.all <- c(x, x.sample)
+      xlim <- c(min(x.all), max(x.all))
+      xlim[1] <- xlim[1] - 0.05 * (xlim[2] - xlim[1])
+      xlim[2] <- xlim[2] + 0.05 * (xlim[2] - xlim[1])
 
+      y.all <- c(comp, c_and_r.sample)
+      ylim <- c(min(y.all), max(y.all))
+      ylim[1] <- ylim[1] - 0.05 * (ylim[2] - ylim[1])
+      ylim[2] <- ylim[2] + 0.05 * (ylim[2] - ylim[1])
+
+      plot(x=x,
+           y=comp,
+           type="n",
+           xlab=xlab,
+           ylab=ylab,
+           xlim=xlim,
+           ylim=ylim)
+
+      if (resid) {
+        points(x=x.sample,
+               y=c_and_r.sample,
+               pch=20,
+               col="grey")
+      }
+
+      lines(x=x,
+            y=comp,
+            col="blue",
+            lwd=3)
     } else if (var_info$type == "qual") {
       # Plot for factorial features
-      steps <- coefs$coef.OD
-      levels <- coefs$coef.UD
-      if (is.null(steps)) steps <- 0
-      if (is.null(levels)) leels <- 0
 
-      y <- cumsum(steps) + levels
-      names <- var_info$OD_info$breaks
+      ## All levels to be plotted
+      lv <- var_info$UD_info$levels
+      x <- if (var_info$use_OD) {
+        ordered(lv, levels=lv)
+      } else {
+        factor(lv, levels=lv)
+      }
 
-      barplot(y,
-              names.arg = names,
-              main=main,
-              xlab = var_info$name,
-              ylab = "Coefficients")
+      ## Calculate component values of x
+      x.mat <- getMatrixRepresentationByVector(x, var_info)
+      b <- matrix(c(coefs$coef.OD, coefs$coef.UD), ncol=1)
+      comp <- drop(x.mat %*% b)
+
+      # Calculates component and residual values of samples
+      x.sample <- NULL
+      c_and_r.sample <- NULL
+      if (resid) {
+        x.sample <- x.orig[, var_info$data_column_idx]
+        x.sample <- if (var_info$use_OD) {
+          ordered(x.sample, levels=lv)
+        } else {
+          factor(x.sample, levels=lv)
+        }
+        x.sample.mat <- getMatrixRepresentationByVector(x.sample, var_info)
+        c_and_r.sample <- drop(x.sample.mat %*% b) + resids
+      }
+
+      if (resid) {
+        y.all <- c(comp, c_and_r.sample)
+        ylim <- c(min(y.all), max(y.all))
+        ylim[1] <- ylim[1] - 0.05 * (ylim[2] - ylim[1])
+        ylim[2] <- ylim[2] + 0.05 * (ylim[2] - ylim[1])
+
+        boxplot(c_and_r.sample ~ x.sample,
+                xlab=xlab,
+                ylab=ylab,
+                ylim=ylim)
+      } else {
+        barplot(comp,
+                names=lv,
+                xlab=xlab,
+                ylab=ylab)
+      }
     }
 
     if (verbose) {
-      cat(main); cat("\n\n")
+      cat(sprintf("Plotting for %s", var_info$name))
       cat("Variable Informations:\n"); str(var_info); cat("\n")
       cat("Coefficients:\n"); str(coefs); cat("\n")
     }
 
     flush.console() # this makes sure that the display is current
+
+
+    if (first) {
+      if (resid) mtext(line=0, outer=TRUE, text="Component + Residual Plot")
+      else mtext(line=0, outer=TRUE, text="Component Plot")
+      if (ask) devAskNewPage(TRUE)
+      first <- FALSE
+    }
   }
-  devAskNewPage(FALSE)
+  if (ask) devAskNewPage(FALSE)
 }
