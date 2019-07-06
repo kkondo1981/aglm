@@ -39,7 +39,7 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE,
     if (class(x.orig) != "data.frame") x <- data.frame(x.orig)
     y.orig <- as.numeric(drop(eval(call.orig$y)))
     assert_that(dim(x.orig)[1] == length(y.orig))
-    resids <- predict(model, x.orig, s=s) - y.orig
+    resids <- predict(model, x.orig, s=s, type="response") - y.orig
   }
 
   ## set par
