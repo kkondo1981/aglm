@@ -4,3 +4,6 @@ inst/doc
 .Rhistory
 .RData
 .Ruserdata
+aglm.Rcheck/
+aglm*.tar.gz
+aglm*.tgz
