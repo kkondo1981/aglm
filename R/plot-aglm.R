@@ -37,11 +37,7 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE,
     call.orig <- getCall(model)
     x.orig <- eval(call.orig$x)
     if (class(x.orig) != "data.frame") x <- data.frame(x.orig)
-    y.orig <- as.numeric(drop(eval(call.orig$y)))
-    assert_that(dim(x.orig)[1] == length(y.orig))
-
-    # use working residuals to cope with non-gaussian models
-    resids <- residuals(model, x=x.orig, y=y.orig, s=s, type="working")
+    resids <- residuals(model, x=x.orig, s=s, type="working")
   }
 
   ## set par
