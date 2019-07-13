@@ -41,8 +41,8 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=FALSE
   }
 
   ## set par
-  par(oma=c(0, 0, 2, 0))
-  par(mfrow=layout)
+  old.par <- par()
+  par(oma=c(0, 0, 2, 0), par(mfrow=layout))
 
   ## Plotting
   for (i in inds) {
@@ -184,4 +184,7 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=FALSE
     }
   }
   if (ask) devAskNewPage(FALSE)
+
+  if (!is.null(old.par$oma)) par(oma=old.par$oma)
+  if (!is.null(old.par$mfrow)) par(mfrow=old.par$mfrow)
 }
