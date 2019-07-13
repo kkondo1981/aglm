@@ -15,7 +15,7 @@
 #' @param layout A pair of integer values which indicates how many plots are drawn rawwise and columnwise respectively.
 #'
 #' @export
-plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE, ask=TRUE, layout=c(2,2), ...) {
+plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=FALSE, ask=TRUE, layout=c(2,2), ...) {
   nvars <- length(model@vars_info)
 
   if (is.null(vars)) {
@@ -114,14 +114,11 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE,
       if (resid) {
         points(x=x.sample,
                y=c_and_r.sample,
-               pch=20,
-               col="grey")
+               pch=".")
       }
 
       lines(x=x,
-            y=comp,
-            col="blue",
-            lwd=3)
+            y=comp)
     } else if (var_info$type == "qual") {
       # Plot for factorial features
 
