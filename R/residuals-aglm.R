@@ -15,7 +15,8 @@
 residuals.AccurateGLM <- function(model,
                                   x=NULL,
                                   y=NULL,
-                                  type=c("working"),
+                                  weights=NULL,
+                                  type=c("working", "pearson"),
                                   s=NULL) {
   # Check and set `type`
   type <- match.arg(type)
@@ -29,14 +30,27 @@ residuals.AccurateGLM <- function(model,
   if (is.null(y)) {
     y <- as.numeric(drop(eval(call.orig$y)))
   }
+  if (is.null(weights)) {
+    weights <- as.numeric(drop(eval(call.orig$weights)))
+    if (is.null(weights) || length(weights) == 0) weights <- rep(1, length(y))
+  }
   assert_that(dim(x)[1] == length(y))
+  assert_that(length(y) == length(weights))
 
   # Calculate residuals
   yhat <- as.numeric(drop(predict(model, newx=x, s=s, type="response")))
-  resids <- y - yhat
+  resids <- sqrt(weights) * (y - yhat)
+
   cl <- class(model@backend_models[[1]])
-  if ("fishnet" %in% cl) resids <- resids / yhat
-  else if ("lognet" %in% cl) resids <- resids / (yhat * (1 - yhat))
+  if (type == "working") {
+    if ("fishnet" %in% cl) resids <- resids / yhat  # Poisson case
+    else if ("lognet" %in% cl) resids <- resids / (yhat * (1 - yhat))  # binomial case
+  } else if (type == "pearson") {
+    if ("fishnet" %in% cl) resids <- resids / sqrt(yhat) # Poisson case
+    else if ("lognet") resids <- resids / sqrt(yhat * (1 - yhat)) # binomial case
+  } else {
+    assert_that(FALSE)
+  }
 
   return(resids)
 }

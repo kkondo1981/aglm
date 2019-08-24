@@ -37,7 +37,7 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=FALSE
     call.orig <- getCall(model)
     x.orig <- eval(call.orig$x)
     if (class(x.orig) != "data.frame") x <- data.frame(x.orig)
-    resids <- residuals(model, x=x.orig, s=s, type="working")
+    resids <- residuals(model, x=x.orig, s=s, type="pearson")
   }
 
   ## set par
