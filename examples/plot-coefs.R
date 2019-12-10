@@ -23,7 +23,7 @@ x$rad <- as.ordered(x$rad)
 # plot(model, s=0.5)
 
 ## Plots coefs of cross-validated model
-cv.model <- cv.aglm(x, y)
+cv.model <- cv.aglm(x, y, use_LVar=TRUE)
 plot(cv.model, s=cv.model@lambda.min)
 
 ## Plots coefs of specified variables only
