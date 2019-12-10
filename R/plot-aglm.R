@@ -66,7 +66,11 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE,
       # Plot for numeric features
 
       ## Calculates range of x to be plotted
-      breaks <- var_info$OD_info$breaks
+      if (var_info$use_LV) {
+        breaks <- var_info$LV_info$breaks
+      } else {
+        breaks <- var_info$OD_info$breaks
+      }
       breaks <- breaks[abs(breaks) < Inf]  # get rid of -Inf and Inf
       x.min <- min(breaks)
       x.max <- max(breaks)
@@ -82,7 +86,11 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE,
 
       ## Calculates component values of x
       x.mat <- getMatrixRepresentationByVector(x, var_info)
-      b <- matrix(c(coefs$coef.linear, coefs$coef.OD), ncol=1)
+      if (var_info$use_LV) {
+        b <- matrix(c(coefs$coef.linear, coefs$coef.LV), ncol=1)
+      } else {
+        b <- matrix(c(coefs$coef.linear, coefs$coef.OD), ncol=1)
+      }
       comp <- drop(x.mat %*% b)
 
       ## Calculates component and residual values of samples
