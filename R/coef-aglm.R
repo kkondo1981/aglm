@@ -38,6 +38,9 @@ coef.AccurateGLM <- function(model, index=NULL, name=NULL, s=NULL, exact=FALSE, 
       ncol_UD <- 0
       if(var_info$use_UD) ncol_UD <- length(var_info$UD_info$levels) - var_info$UD_info$drop_last
 
+      ncol_LV <- 0
+      if(var_info$use_LV) ncol_LV <- length(var_info$LV_info$breaks) - 1
+
       if (i == index) {
         c <- list()
 
@@ -50,9 +53,12 @@ coef.AccurateGLM <- function(model, index=NULL, name=NULL, s=NULL, exact=FALSE, 
         if(ncol_UD) c$coef.UD <- coefs[off0 + 1:ncol_UD,] else c$coef.UD <- NULL
         off0 <- off0 + ncol_UD
 
+        if(ncol_LV) c$coef.LV <- coefs[off0 + 1:ncol_LV, ] else c$coef.LV <-  NULL
+        off0 <- off0 + ncol_LV
+
         return(c)
       } else {
-        ncol_all <- ncol_linear + ncol_OD + ncol_UD
+        ncol_all <- ncol_linear + ncol_OD + ncol_UD + ncol_LV
         off0 <- off0 + ncol_all
       }
     }
