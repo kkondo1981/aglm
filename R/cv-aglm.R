@@ -102,34 +102,37 @@ cv.aglm <- function(x, y,
   if (is.null(type.gaussian)) type.gaussian <- ifelse(nvars<500,"covariance","naive")
 
 
-  cv.glmnet_result <- cv.glmnet(x=x_for_backend,
-                                y=y,
-                                type.measure=type.measure,
-                                nfolds=nfolds,
-                                foldid=foldid,
-                                grouped=grouped,
-                                keep=keep,
-                                parallel=parallel,
-                                family=family,
-                                weights=weights,
-                                offset=offset,
-                                alpha=alpha,
-                                nlambda=nlambda,
-                                lambda.min.ratio=lambda.min.ratio,
-                                lambda=lambda,
-                                standardize=standardize,
-                                intercept=intercept,
-                                thresh=thresh,
-                                dfmax=dfmax,
-                                pmax=pmax,
-                                exclude=exclude,
-                                penalty.factor=penalty.factor,
-                                lower.limits=lower.limits,
-                                upper.limits=upper.limits,
-                                maxit=maxit,
-                                type.gaussian=type.gaussian,
-                                type.logistic=type.logistic,
-                                standardize.response=standardize.response)
+  args <- list(x=x_for_backend,
+               y=y,
+               nfolds=nfolds,
+               grouped=grouped,
+               keep=keep,
+               parallel=parallel,
+               family=family,
+               offset=offset,
+               alpha=alpha,
+               nlambda=nlambda,
+               lambda.min.ratio=lambda.min.ratio,
+               lambda=lambda,
+               standardize=standardize,
+               intercept=intercept,
+               thresh=thresh,
+               dfmax=dfmax,
+               pmax=pmax,
+               penalty.factor=penalty.factor,
+               lower.limits=lower.limits,
+               upper.limits=upper.limits,
+               maxit=maxit,
+               type.gaussian=type.gaussian,
+               type.logistic=type.logistic,
+               standardize.response=standardize.response)
+
+  if(!missing(type.measure)) args$type.measure <- type.measure
+  if(!missing(weights)) args$weights <- weights
+  if(!missing(foldid)) args$foldid <- foldid
+  if(!missing(exclude)) args$exclude <- exclude
+
+  cv.glmnet_result <- do.call(cv.glmnet, args)
 
   if (!keep) {
     cv.glmnet_result$fit.preval <- matrix(0)
