@@ -56,7 +56,7 @@ test_that("Check the types and forms of return value of aglm() and predict.aglm(
   RMSE2 <- sqrt(mean((y_fit2 - y_true)^2))
 
   # The result of cva.aglm() must be better than that of cv.aglm() for trainning data.
-  expect_true(RMSE2 < RMSE1)
+  expect_true(RMSE2 <= RMSE1)
 })
 
 test_that("Check for predict.AGLM_CV().", {
