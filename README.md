@@ -5,7 +5,7 @@ A handy tool for actuarial modeling, which is designed to achieve both accuracy 
 To install the latest version from `github` :
 ```r
 install.packages("devtools")
-devtools::install_github("kkondo1981/aglm", build_vignettes=TRUE)
+devtools::install_github("kkondo1981/aglm")
 ```
 
 ### Usage
