@@ -4,19 +4,22 @@
 \alias{aglm}
 \title{fit an AGLM model}
 \usage{
-aglm(x, y, qualitative_vars_UD_only = NULL,
-  qualitative_vars_both = NULL, qualitative_vars_OD_only = NULL,
-  quantitative_vars = NULL, add_linear_columns = TRUE,
+aglm(
+  x,
+  y,
+  qualitative_vars_UD_only = NULL,
+  qualitative_vars_both = NULL,
+  qualitative_vars_OD_only = NULL,
+  quantitative_vars = NULL,
+  add_linear_columns = TRUE,
   add_OD_columns_of_qualitatives = TRUE,
-  add_interaction_columns = TRUE, OD_type_of_quantitatives = "C",
-  bins_list = NULL, bins_names = NULL, standardize = TRUE,
-  family = c("gaussian", "binomial", "poisson"), weights,
-  offset = NULL, alpha = 1, nlambda = 100, lambda.min.ratio = NULL,
-  lambda = NULL, intercept = TRUE, thresh = 1e-07, dfmax = NULL,
-  pmax = NULL, exclude, penalty.factor = NULL, lower.limits = -Inf,
-  upper.limits = Inf, maxit = 1e+05, type.gaussian = NULL,
-  type.logistic = c("Newton", "modified.Newton"),
-  standardize.response = FALSE)
+  add_interaction_columns = FALSE,
+  OD_type_of_quantitatives = "C",
+  bins_list = NULL,
+  bins_names = NULL,
+  family = c("gaussian", "binomial", "poisson"),
+  ...
+)
 }
 \arguments{
 \item{x}{An input matrix or data.frame to be fitted.}

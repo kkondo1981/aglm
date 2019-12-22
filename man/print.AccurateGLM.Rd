@@ -4,8 +4,7 @@
 \alias{print.AccurateGLM}
 \title{Print an AccurateGLM object}
 \usage{
-\method{print}{AccurateGLM}(model, digits = max(3, getOption("digits") -
-  3), ...)
+\method{print}{AccurateGLM}(model, digits = max(3, getOption("digits") - 3), ...)
 }
 \arguments{
 \item{model}{An AccurateGLM object.}

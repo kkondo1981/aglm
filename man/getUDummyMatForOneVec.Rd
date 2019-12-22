@@ -4,8 +4,12 @@
 \alias{getUDummyMatForOneVec}
 \title{Get U-dummy matrix for one-dimensional vector}
 \usage{
-getUDummyMatForOneVec(x_vec, levels = NULL, drop_last = TRUE,
-  only_info = FALSE)
+getUDummyMatForOneVec(
+  x_vec,
+  levels = NULL,
+  drop_last = TRUE,
+  only_info = FALSE
+)
 }
 \arguments{
 \item{x_vec}{A non-numeric vector to be converted into dummy matrix.}

@@ -4,8 +4,16 @@
 \alias{plot.AccurateGLM}
 \title{Plot coefficients from an AccurateGLM object}
 \usage{
-\method{plot}{AccurateGLM}(model, vars = NULL, verbose = TRUE,
-  s = NULL, resid = TRUE, ask = TRUE, layout = c(2, 2), ...)
+\method{plot}{AccurateGLM}(
+  model,
+  vars = NULL,
+  verbose = TRUE,
+  s = NULL,
+  resid = TRUE,
+  ask = TRUE,
+  layout = c(2, 2),
+  ...
+)
 }
 \arguments{
 \item{model}{An AccurateGLM object.}

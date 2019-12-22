@@ -4,8 +4,13 @@
 \alias{getODummyMatForOneVec}
 \title{Get O-dummy matrix for one-dimensional vector}
 \usage{
-getODummyMatForOneVec(x_vec, breaks = NULL, nbin.max = 100,
-  only_info = FALSE, dummy_type = NULL)
+getODummyMatForOneVec(
+  x_vec,
+  breaks = NULL,
+  nbin.max = 100,
+  only_info = FALSE,
+  dummy_type = NULL
+)
 }
 \arguments{
 \item{x_vec}{An integer or numeric vector to be converted into dummy matrix.}
@@ -29,8 +34,8 @@ a list with two members \code{breaks} and \code{dummy_mat}.
 \itemize{
 \item \code{breaks}: Same as input
 \item \code{dummy_mat}: An integer matrix with size (length of \code{x_vec}, length of \code{breaks} minus 1).
-\code{dummy_mat[i, j]} is 1 if and only if \code{breaks[i] < x_vec[i] <= breaks[i+1]}, and 0 otherwise.
-Note that, in case where \code{x_vec[i]} is outside of \code{(breaks[1], breaks[length(breaks)]]},
+\code{dummy_mat[i, j]} is 1 if and only if \verb{breaks[i] < x_vec[i] <= breaks[i+1]}, and 0 otherwise.
+Note that, in case where \code{x_vec[i]} is outside of \verb{(breaks[1], breaks[length(breaks)]]},
 \code{x_vec[i]} is considered to be in the first bin if \code{x_vec[i] <= breaks[1]}, and
 be in the last bin if \code{x_vec[i] > breaks[length(breaks)]}.
 Omitted if \code{only_info=TRUE}
