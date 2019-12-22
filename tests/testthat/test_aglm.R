@@ -5,55 +5,44 @@ library(aglm)
 test_that("Check the types and forms of return value of aglm() and predict.aglm().", {
   set.seed(12345)
 
-  # size of observations
-  nobs <- 1000
-
-  # Randomly generates a numeric vector (as quantitative data)
-  quan_var <- runif(nobs)
-
-  # Randomly generates a character vector (as qualitative data with 5 levels)
+  # Generates random data
+  nobs <- 500
+  n_quan_vars <- 20
+  quan_var <- matrix(runif(nobs * n_quan_vars), nobs, n_quan_vars)
   qual_var <- factor(paste0("level_", sample(1:5, nobs, replace=TRUE)))
-
-  # Create the whole input data frame
   x <- data.frame(quan_var, qual_var)
-  colnames(x) <- c("quan_var", "qual_var")
-
-  # Generates non-linear reponse
-  y <- sign(quan_var) * (abs(quan_var) ** 4) * (qual_var != "level_1")
+  colnames(x) <- c(lapply(1:n_quan_vars, function(i){sprintf("quan_var%d", i)}), "qual_var")
+  y <- sign(quan_var[,1]) * (abs(quan_var[,2]) ** 4) * (qual_var != "level_1")
   y <- y + 0.1 * rnorm(length(y))
 
-  lambda.min <- cv.aglm(x, y, family="gaussian")@lambda.min
+  # Generates new variables
+  n_new_obs <- 100
+  new_quan_var <- matrix(runif(n_new_obs * n_quan_vars), n_new_obs, n_quan_vars)
+  new_qual_var <- factor(paste0("level_", sample(1:5, n_new_obs, replace=TRUE)))
+  newx <- data.frame(new_quan_var, new_qual_var)
+  colnames(newx) <- c(lapply(1:n_quan_vars, function(i){sprintf("quan_var%d", i)}), "qual_var")
+  y_true <- sign(new_quan_var[,1]) * (abs(new_quan_var[,2]) ** 4) * (new_qual_var != "level_1")
+
+
+  # cv.aglm
+  cv_results <- cv.aglm(x, y, family="gaussian")
+  lambda.min <- cv_results@lambda.min
   res <- aglm(x, y, family="gaussian", lambda=lambda.min)
+  y_pred <- predict(res, newx)
+  RMSE1 <- sqrt(mean((y_pred - y_true)^2))
 
   expect_true("AccurateGLM" %in% class(res))
   expect_true("glmnet" %in% class(res@backend_models[[1]]))
-
-
-  # Generates new predictive variables
-  n_new_obs <- 100
-  new_quan_var <- runif(n_new_obs)
-  new_qual_var <- factor(paste0("level_", sample(1:5, n_new_obs, replace=TRUE)))
-  newx <- data.frame(new_quan_var, new_qual_var)
-  colnames(newx) <- c("quan_var", "qual_var")
-
-  # Predict values of y for newx
-  #y_true <- sign(new_quan_var) * (abs(new_quan_var) ** 4) * (new_qual_var != "level_1")
-  y_pred <- predict(res, newx)
-  #plot(new_quan_var, y_pred)
-  #points(new_quan_var, y_true, col="red")
   expect_equal(class(y_pred), "matrix")
   expect_equal(length(y_pred), n_new_obs)
 
-  ## Test cva.aglm()
+  # cva.aglm
   cva_results <- cva.aglm(x, y, family="gaussian")
   alpha.min <- cva_results@alpha.min
   lambda.min <- cva_results@lambda.min
-  res2 <- aglm(x, y, family="gaussian", alpha=alpha.min, lambda=lambda.min)
-  y_fit1 <- predict(res, x)
-  y_fit2 <- predict(res2, x)
-  y_true <- sign(new_quan_var) * (abs(new_quan_var) ** 4) * (new_qual_var != "level_1")
-  RMSE1 <- sqrt(mean((y_fit1 - y_true)^2))
-  RMSE2 <- sqrt(mean((y_fit2 - y_true)^2))
+  res <- aglm(x, y, family="gaussian", alpha=alpha.min, lambda=lambda.min)
+  y_pred <- predict(res, newx)
+  RMSE2 <- sqrt(mean((y_pred - y_true)^2))
 
   # The result of cva.aglm() must be better than that of cv.aglm() for trainning data.
   expect_true(RMSE2 <= RMSE1)
