@@ -38,32 +38,9 @@ cv.aglm <- function(x, y,
                     OD_type_of_quantitatives='C',
                     bins_list=NULL,
                     bins_names=NULL,
-                    weights,
-                    offset=NULL,
-                    lambda=NULL,
-                    type.measure,
-                    nfolds = 10,
-                    foldid,
-                    grouped = TRUE,
-                    keep = FALSE,
-                    parallel = FALSE,
-                    standardize=TRUE,
                     family=c("gaussian","binomial","poisson"),
-                    alpha=1.0,
-                    nlambda=100,
-                    lambda.min.ratio=NULL,
-                    intercept=TRUE,
-                    thresh=1e-7,
-                    dfmax=NULL,
-                    pmax=NULL,
-                    exclude,
-                    penalty.factor=NULL,
-                    lower.limits=-Inf,
-                    upper.limits=Inf,
-                    maxit=100000,
-                    type.gaussian=NULL,
-                    type.logistic=c("Newton","modified.Newton"),
-                    standardize.response=FALSE) {
+                    keep=FALSE,
+                    ...) {
   # Create an input object
   x <- newInput(x,
                 qualitative_vars_UD_only=qualitative_vars_UD_only,
@@ -94,43 +71,12 @@ cv.aglm <- function(x, y,
   nvars <- dim(x_for_backend)[2]
   assert_that(length(y) == nobs)
 
-  # Set default values to some parameters if not given
-  if (is.null(lambda.min.ratio)) lambda.min.ratio <- ifelse(nobs<nvars,1e-2,1e-4)
-  if (is.null(dfmax)) dfmax <- nvars+1
-  if (is.null(pmax)) pmax <- min(dfmax*2+20,nvars)
-  if (is.null(penalty.factor)) penalty.factor <- rep(1,nvars)
-  if (is.null(type.gaussian)) type.gaussian <- ifelse(nvars<500,"covariance","naive")
-
-
+  # Call backend
   args <- list(x=x_for_backend,
                y=y,
-               nfolds=nfolds,
-               grouped=grouped,
-               keep=keep,
-               parallel=parallel,
                family=family,
-               offset=offset,
-               alpha=alpha,
-               nlambda=nlambda,
-               lambda.min.ratio=lambda.min.ratio,
-               lambda=lambda,
-               standardize=standardize,
-               intercept=intercept,
-               thresh=thresh,
-               dfmax=dfmax,
-               pmax=pmax,
-               penalty.factor=penalty.factor,
-               lower.limits=lower.limits,
-               upper.limits=upper.limits,
-               maxit=maxit,
-               type.gaussian=type.gaussian,
-               type.logistic=type.logistic,
-               standardize.response=standardize.response)
-
-  if(!missing(type.measure)) args$type.measure <- type.measure
-  if(!missing(weights)) args$weights <- weights
-  if(!missing(foldid)) args$foldid <- foldid
-  if(!missing(exclude)) args$exclude <- exclude
+               keep=keep,
+               ...)
 
   cv.glmnet_result <- do.call(cv.glmnet, args)
 

@@ -4,9 +4,15 @@
 \alias{cva.aglm}
 \title{Cross-validation for both alpha and lambda}
 \usage{
-cva.aglm(x, y, alpha = seq(0, 1, len = 11)^3, nfolds = 10,
-  foldid = sample(rep(seq(nfolds), length = nrow(x))),
-  parallel.alpha = FALSE, ...)
+cva.aglm(
+  x,
+  y,
+  alpha = seq(0, 1, len = 11)^3,
+  nfolds = 10,
+  foldid = NULL,
+  parallel.alpha = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{An input matrix or data.frame to be fitted.}

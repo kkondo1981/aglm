@@ -9,7 +9,7 @@ Description: A handy tool for actuarial modeling, which is designed to achieve b
 License: set later
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Roxygen: list(markdown = TRUE)
 Imports:
     glmnet

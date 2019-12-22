@@ -4,8 +4,7 @@
 \alias{coef.AccurateGLM}
 \title{Extract coefficients from an AccurateGLM object.}
 \usage{
-\method{coef}{AccurateGLM}(model, index = NULL, name = NULL,
-  s = NULL, exact = FALSE, ...)
+\method{coef}{AccurateGLM}(model, index = NULL, name = NULL, s = NULL, exact = FALSE, ...)
 }
 \arguments{
 \item{model}{An AccurateGLM object.}

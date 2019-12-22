@@ -19,7 +19,7 @@
 cva.aglm <- function(x, y,
                      alpha=seq(0, 1, len=11)^3,
                      nfolds=10,
-                     foldid=sample(rep(seq(nfolds), length=nrow(x))),
+                     foldid=NULL,
                      parallel.alpha=FALSE,
                      ...) {
   nfolds <- as.integer(nfolds)
