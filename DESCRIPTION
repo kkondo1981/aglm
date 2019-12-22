@@ -6,7 +6,7 @@ Author: Kenji Kondo, Kazuhisa Takahashi, others
 Maintainer: Kenji Kondo <kkondo.odnokk@gmail.com>
 Description: A handy tool for actuarial modeling, which is designed to achieve both accuracy and accountability.
     AGLM is based on GLM but customized by expert actuaries for areas which require not only accuracy but also accountability.
-License: set later
+License: GPL-2
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.0.2
