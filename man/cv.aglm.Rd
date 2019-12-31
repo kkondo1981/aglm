@@ -47,6 +47,7 @@ values are constructed. Choose 'C'(default) or 'J'.
 \itemize{
 \item 'C': Continuous-type dummies, which result continuous contribution curves.
 \item 'J': Jum-type dummies, which result contribution curves with jumps.
+\item 'N': No use of O-dummies
 }}
 
 \item{nbin.max}{a maximum number of bins which is automatically generated. Only used when \code{breaks} is not set.}

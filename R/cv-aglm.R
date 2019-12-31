@@ -17,6 +17,7 @@
 #'   values are constructed. Choose 'C'(default) or 'J'.
 #'   * 'C': Continuous-type dummies, which result continuous contribution curves.
 #'   * 'J': Jum-type dummies, which result contribution curves with jumps.
+#'   * 'N': No use of O-dummies
 #' @param family Response type. Currently "gaussian", "binomial", and "poisson" are supported.
 #' @param nbin.max a maximum number of bins which is automatically generated. Only used when `breaks` is not set.
 #' @param bins_list A list of numeric vectors, each element of which is used as breaks when binning of a quantitative variable or a qualitative variable with order.
