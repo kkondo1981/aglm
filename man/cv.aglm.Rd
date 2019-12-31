@@ -15,6 +15,7 @@ cv.aglm(
   add_OD_columns_of_qualitatives = TRUE,
   add_interaction_columns = FALSE,
   OD_type_of_quantitatives = "C",
+  nbin.max = NULL,
   bins_list = NULL,
   bins_names = NULL,
   family = c("gaussian", "binomial", "poisson"),
@@ -46,7 +47,10 @@ values are constructed. Choose 'C'(default) or 'J'.
 \itemize{
 \item 'C': Continuous-type dummies, which result continuous contribution curves.
 \item 'J': Jum-type dummies, which result contribution curves with jumps.
+\item 'N': No use of O-dummies
 }}
+
+\item{nbin.max}{a maximum number of bins which is automatically generated. Only used when \code{breaks} is not set.}
 
 \item{bins_list}{A list of numeric vectors, each element of which is used as breaks when binning of a quantitative variable or a qualitative variable with order.}
 

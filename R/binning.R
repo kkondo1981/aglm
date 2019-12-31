@@ -39,7 +39,7 @@ createEqualWidthBins <- function(left, right, nbin){
 #' @importFrom assertthat assert_that
 createEqualFreqBins <- function(x_vec, nbin.max) {
   nbin.max <- as.integer(nbin.max)
-  assert_that(nbin.max > 0 & length(x_vec) > 0)
+  assert_that(nbin.max > 1 & length(x_vec) > 0)
 
   nbin <- min(nbin.max, length(x_vec))
   percents <- seq(0, 1, 1 / (nbin - 1))

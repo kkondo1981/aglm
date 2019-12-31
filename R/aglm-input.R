@@ -21,6 +21,7 @@ newInput <- function(x,
                      add_OD_columns_of_qualitatives=TRUE,
                      add_interaction_columns=TRUE,
                      OD_type_of_quantitatives='C',
+                     nbin.max=NULL,
                      bins_list=NULL,
                      bins_names=NULL) {
   # Check and process arguments
@@ -49,10 +50,19 @@ newInput <- function(x,
 
     var$use_linear <- var$type == "quan" & add_linear_columns
     var$use_UD <- var$type == "qual"
-    var$use_OD <- var$type == "quan" | (var$type == "qual" & is_ordered & add_OD_columns_of_qualitatives)
+    var$use_OD <- (var$type == "quan" & OD_type_of_quantitatives != 'N') |
+      (var$type == "qual" & is_ordered & add_OD_columns_of_qualitatives)
     if (var$use_OD) {
       if (var$type == "quan") var$OD_type <- OD_type_of_quantitatives
       else var$OD_type <- 'J'
+    } else {
+      if (var$type == "quan") {
+        # Even cases not using O-dummies for quantitatives,
+        # we should store minimum and maximum values to calculate plotting range
+        # in plot.AccurateGLM()
+        x_vec <- x[, i]
+        var$OD_info$breaks <- c(min(x_vec), max(x_vec))
+      }
     }
 
     vars_info[[i]] <- var
@@ -201,7 +211,9 @@ newInput <- function(x,
       vars_info[[i]]$UD_info <- getUDummyMatForOneVec(x[, i], only_info=TRUE, drop_last=FALSE)
     }
     if (vars_info[[i]]$use_OD & is.null(vars_info[[i]]$OD_info)) {
-      vars_info[[i]]$OD_info <- getODummyMatForOneVec(x[, i], dummy_type=vars_info[[i]]$OD_type, only_info=TRUE)
+      args <- list(x_vec=x[, i], dummy_type=vars_info[[i]]$OD_type, only_info=TRUE)
+      if(!is.null(nbin.max)) args <- c(args, nbin.max=nbin.max)
+      vars_info[[i]]$OD_info <- do.call(getODummyMatForOneVec, args)
     }
   }
 
