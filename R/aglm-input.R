@@ -21,6 +21,7 @@ newInput <- function(x,
                      add_OD_columns_of_qualitatives=TRUE,
                      add_interaction_columns=TRUE,
                      OD_type_of_quantitatives='C',
+                     nbin.max=NULL,
                      bins_list=NULL,
                      bins_names=NULL) {
   # Check and process arguments
@@ -201,7 +202,9 @@ newInput <- function(x,
       vars_info[[i]]$UD_info <- getUDummyMatForOneVec(x[, i], only_info=TRUE, drop_last=FALSE)
     }
     if (vars_info[[i]]$use_OD & is.null(vars_info[[i]]$OD_info)) {
-      vars_info[[i]]$OD_info <- getODummyMatForOneVec(x[, i], dummy_type=vars_info[[i]]$OD_type, only_info=TRUE)
+      args <- list(x_vec=x[, i], dummy_type=vars_info[[i]]$OD_type, only_info=TRUE)
+      if(!is.null(nbin.max)) args <- c(args, nbin.max=nbin.max)
+      vars_info[[i]]$OD_info <- do.call(getODummyMatForOneVec, args)
     }
   }
 

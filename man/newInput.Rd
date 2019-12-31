@@ -14,6 +14,7 @@ newInput(
   add_OD_columns_of_qualitatives = TRUE,
   add_interaction_columns = TRUE,
   OD_type_of_quantitatives = "C",
+  nbin.max = NULL,
   bins_list = NULL,
   bins_names = NULL
 )
