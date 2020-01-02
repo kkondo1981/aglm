@@ -7,3 +7,5 @@ inst/doc
 aglm.Rcheck/
 aglm*.tar.gz
 aglm*.tgz
+*.html
+*.rda
