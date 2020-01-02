@@ -9,7 +9,7 @@
   vars = NULL,
   verbose = TRUE,
   s = NULL,
-  resid = TRUE,
+  resid = FALSE,
   ask = TRUE,
   layout = c(2, 2),
   ...

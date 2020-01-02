@@ -4,8 +4,14 @@
 \alias{residuals.AccurateGLM}
 \title{Calculate residuals for AGLM model}
 \usage{
-\method{residuals}{AccurateGLM}(model, x = NULL, y = NULL,
-  type = c("working"), s = NULL)
+\method{residuals}{AccurateGLM}(
+  model,
+  x = NULL,
+  y = NULL,
+  weights = NULL,
+  type = c("working", "pearson"),
+  s = NULL
+)
 }
 \arguments{
 \item{model}{An AccurateGLM object.}
