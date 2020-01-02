@@ -13,7 +13,6 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(assertthat)
-library(glmnetUtils)
 library(aglm)
 par(ps=8)
 set.seed(2020)  # Set seed for reproducibility.
@@ -97,7 +96,7 @@ Now it is ensured that there are no missing values.
 table(y)
 ```
 
-The response values contain too large values as claim numbers in less than one year.
+The response values seem to contain too large values as claim numbers in less than one year.
 Because these values are possibly disturbing, so we truncate them to 4 as below (FYI, our treatment is same as that in https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3164764 ).
 
 ```{r}
@@ -170,139 +169,17 @@ off_test <- off[test.id]
 ```
 
 
-# Elastic Net with Poisson family
-
-We use glmnet library to fit the data to elastic net with poisson family.
-
-## Preprocess
-
-Because glmnet doesn't accept qualitative variables, we need to convert them into dummy variables.
-
-```{r}
-expandX <- function(x) {
-  xx <- x %>% keep(is.numeric)
-  for (nm in colnames(x)) {
-    v <- x[[nm]]
-    if ("factor" %in% class(v)) {
-      m <- getUDummyMatForOneVec(v, drop_last=FALSE)$dummy_mat
-      colnames(m) <- sprintf("%s_UD_%d", nm, seq(ncol(m)))
-      xx <- cbind(xx, m)
-    }
-  }
-  as.matrix(xx)
-}
-
-# Create x with dummies
-dum_x <- expandX(x)
-dum_x_train <- dum_x[-test.id,]
-dum_x_test <- dum_x[test.id,]
-```
-
+# AGLM with Poisson family
 
 ## Choose hyperparameters
 
-The elastic net has two hyperparameters $\alpha$ and $\lambda$.
+AGLM use the elastic-net type penalty, and it has two hyperparameters $\alpha$ and $\lambda$.
 In short, $\alpha$ is the elastic-net mixing parameter, with $0 \le \alpha \le 1$, and \lambda is the strongness of penalty.
 If specific value of alpha and lambda is given, the penalty for a coefficient β is wirten as $\lambda \{(1-\alpha)/2||\beta||_2^2+\alpha||\beta||_1\}$.
 Note that `alpha = 1` is the lasso penalty, and `alpha = 0` the ridge penalty.
 
-We can choose these hyperparameters by cross-validation using `glmnetUtils::cva.glmnet()`.
-An R code for this purpose is as below, but commented out it because this process is time-consuming.
-
-```{r}
-# cva.model <- cva.glmnet(dum_x_train, y_train, family="poisson", trace.it=TRUE)
-# alpha.min.index <- which.min(lapply(cva.model$modlist, function(mod){min(mod$cvm)}))
-# alpha.min <- cva.model$alpha[alpha.min.index]
-# lambda.min <- cva.model$modlist[[alpha.min.index]]$lambda.min
-# 
-# cat("Chosen hyperparameters", "\n",
-#     "alpha.min: ", alpha.min, "\n",
-#     "lamda.min: ", lambda.min, "\n")
-```
-
-Instead, use precalculated values here as below.
-
-```{r}
-alpha.min <- 0.34300000000000008260059303211164660751819610595703125
-lambda.min <- 0.0001797932830553665580451683236873350324458442628383636474609375
-```
-
-
-## Fit a model to the train data
-
-```{r}
-best_model <- glmnet(dum_x_train, y_train, offset=off_train, family="poisson", lambda=lambda.min, alpha=alpha.min, trace.it=TRUE)
-```
-
-
-## Predict for the test data
-
-```{r}
-y_pred <- predict(best_model, newx=dum_x_test, newoffset=off_test, type="response")
-```
-
-
-## Evaluate the prediction
-
-### Compare to y_true
-
-To see how nice the prediction is, we use boxplots of the predicted means(y_pred) against true values(y_true) as below.
-
-```{r}
-ggplot(data.frame(y_test, y_pred), aes(x=as.factor(y_test), y=y_pred)) +
-  geom_boxplot() +
-  scale_y_log10() +  # Use log scale because y_pred has positively-skewed distribution.
-  theme_bw()
-```
-
-Notice that medians of y_pred and y_true seem positively correlated (the case where `y_true=4` is an exception), which indicates some natures of occuring are actually captured in this model.
-
-
-### Calculate a numerical measure
-
-Because it is difficult to understand how accurate our prediction only from boxplots (especially in poisson cases), we calculate test deviance as below.
-
-```{r}
-dev_test <- 2 * mean(ifelse(y_test == 0, y_pred, y_test * log(y_test / y_pred) - y_test + y_pred))
-cat("Test deviance: ", dev_test, "\n")  # => 0.3201249
-```
-
-The calculated deviance value can be used when comparing this model to other models.
-
-
-## Understand the model
-
-We can see which coefficients are used by the model, by calling `glmnet::coef()` as below.
-
-```{r}
-cfs <- coef(best_model)
-keys <- rownames(cfs)[-1]  # Cut off the intercept (index=1)
-values <- cfs[,1][-1] # Cut off the intercept (index=1)
-df <- data.frame(keys=keys, values=values)
-g <- ggplot(df, aes(x=keys, y=values)) +
-  geom_bar(stat="identity") +
-  coord_flip() +
-  scale_x_discrete(limits=rev(df$keys))
-plot(g)
-```
-
-## Store the result
-
-```{r}
-glmnet.result <- list(alpha.min=alpha.min,
-                      lambda.min=lambda.min,
-                      best_model=best_model,
-                      y_pred=y_pred,
-                      dev_test=dev_test)
-save(glmnet.result, file="glmnet_result.rda")
-```
-
-
-# AGLM wiht Poisson family
-
-## Subsampling to make computation enable
-
-## Choose hyperparameters
+We can choose these hyperparameters by cross-validation using `cva.aglm()`.
+An R code for this purpose is as below, but commented out it because this process is slightly time-consuming.
 
 ```{r}
 # cva.model <- cva.aglm(x_train,
@@ -319,7 +196,7 @@ save(glmnet.result, file="glmnet_result.rda")
 #    "lamda.min: ", lambda.min, "\n")
 ```
 
-Instead, use precalculated values here as below.
+Instead, use precalculated values here.
 
 ```{r}
 alpha.min <- 1
@@ -352,6 +229,8 @@ y_pred <- predict(best_model, newx=x_test, newoffset=off_test, type="response")
 
 ### Compare to y_true
 
+To see how nice the prediction is, we use boxplots of the predicted means(y_pred) against true values(y_true) as below.
+
 ```{r}
 ggplot(data.frame(y_test, y_pred), aes(x=as.factor(y_test), y=y_pred)) +
   geom_boxplot() +
@@ -359,28 +238,26 @@ ggplot(data.frame(y_test, y_pred), aes(x=as.factor(y_test), y=y_pred)) +
   theme_bw()
 ```
 
+Notice that medians of y_pred and y_true seem positively correlated (the case where `y_true=4` is an exception), which indicates some natures of occuring are actually captured in this model.
+
 
 ### Calculate a numerical measure
 
+Because it is difficult to understand how accurate our prediction only from boxplots (especially in poisson cases), we calculate test deviance as below.
+
 ```{r}
 dev_test <- 2 * mean(ifelse(y_test == 0, y_pred, y_test * log(y_test / y_pred) - y_test + y_pred))
-cat("Test deviance: ", dev_test, "\n")  # => 0.3122932 
+cat("Test deviance: ", dev_test, "\n")
 ```
+
+The calculated deviance value can be used when comparing this model to other models.
 
 
 ### Understand the model
-```{r}
-plot(best_model, verbose=FALSE, ask=FALSE, resid=FALSE, layout=c(2, 2))
-```
 
-
-## Store the result
+We can also understand the model visually using the `plot()` function.
+It draws component curves (say, link values against specific values of explanatory variables) and residuals for the train data.
 
 ```{r}
-aglm.result <- list(alpha.min=alpha.min,
-                    lambda.min=lambda.min,
-                    best_model=best_model,
-                    y_pred=y_pred,
-                    dev_test=dev_test)
-save(aglm.result, file="aglm_result.rda")
+plot(best_model, verbose=FALSE, ask=FALSE, resid=TRUE, layout=c(3, 3))
 ```
