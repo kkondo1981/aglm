@@ -27,7 +27,10 @@ Note that this function can't plot for multiple lambda values, so it allows only
 single \code{s} value (which means \code{model} is trained with multiple lambda values and plot with one of them),
 or \code{s=NULL} (which means \code{model} is trained with single lambda value and plot with that value).}
 
-\item{resid}{A boolean value which indicates plot residuals.}
+\item{resid}{A boolean value which indicates to plot residuals,
+or a character value which indicates residual type to be plotted (see the help of \code{residuals.AccurateGLM()}),
+or a numerical vector which indicates residual values to be plotted.
+Note that Pearson residual is used in the first case with \code{resid=TRUE}.}
 
 \item{ask}{A boolean value which indicates ask if go to next plot.}
 

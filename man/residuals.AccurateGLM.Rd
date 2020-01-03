@@ -8,8 +8,9 @@
   model,
   x = NULL,
   y = NULL,
+  offset = NULL,
   weights = NULL,
-  type = c("working", "pearson"),
+  type = c("working", "pearson", "deviance"),
   s = NULL
 )
 }
@@ -19,6 +20,8 @@
 \item{type}{Type of prediction required.
 \itemize{
 \item Type \code{"working"} Working residuals.
+\item Type \code{"pearson"} Pearson residuals.
+\item Type \code{"deviance"} Devian residuals.
 }}
 
 \item{s}{A numeric value specifying lambda value at which plotting is required.}
