@@ -6,6 +6,8 @@
 #' @param model An AccurateGLM object.
 #' @param type Type of prediction required.
 #'   * Type `"working"` Working residuals.
+#'   * Type `"pearson"` Pearson residuals.
+#'   * Type `"deviance"` Devian residuals.
 #' @param s A numeric value specifying lambda value at which plotting is required.
 #'
 #' @return The object returned depends on type.
