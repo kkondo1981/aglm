@@ -36,13 +36,12 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=FALSE
   }
 
   ## Calculates residuals
-  use_x.orig <- !is.logical(resid) | resid
+  use_x.orig <- if (is.logical(resid)) resid else TRUE
   if (use_x.orig) {
     call.orig <- getCall(model)
     x.orig <- eval.parent(call.orig$x)
     if (class(x.orig) != "data.frame")
       x.orig <- data.frame(x.orig)
-    assert_that(nrow(x.orig) == length(resid))
   }
   if (is.numeric(resid)) {
     resids <- resid
@@ -53,11 +52,12 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=FALSE
   } else if (resid) {
     resids <- residuals(model, x=x.orig, s=s, type="pearson")
   }
+  assert_that(nrow(x.orig) == length(resids))
 
   ## set par
   old.par <- par()
   if (length(inds) == 1) layout <- c(1,1)
-  par(oma=c(0, 0, 2, 0), par(mfrow=layout))
+  par(oma=c(0, 0, 2, 0), mfrow=layout)
 
   ## Plotting
   for (i in inds) {
