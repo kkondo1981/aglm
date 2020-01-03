@@ -10,7 +10,10 @@
 #'   Note that this function can't plot for multiple lambda values, so it allows only
 #'   single `s` value (which means `model` is trained with multiple lambda values and plot with one of them),
 #'   or `s=NULL` (which means `model` is trained with single lambda value and plot with that value).
-#' @param resid A boolean value which indicates plot residuals.
+#' @param resid A boolean value which indicates to plot residuals,
+#'   or a character value which indicates residual type to be plotted (see the help of `residuals.AccurateGLM()`),
+#'   or a numerical vector which indicates residual values to be plotted.
+#'   Note that Pearson residual is used in the first case with `resid=TRUE`.
 #' @param ask A boolean value which indicates ask if go to next plot.
 #' @param layout A pair of integer values which indicates how many plots are drawn rawwise and columnwise respectively.
 #'
@@ -33,15 +36,27 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=FALSE
   }
 
   ## Calculates residuals
-  if (resid) {
+  use_x.orig <- !is.logical(resid) | resid
+  if (use_x.orig) {
     call.orig <- getCall(model)
-    x.orig <- eval(call.orig$x)
-    if (class(x.orig) != "data.frame") x <- data.frame(x.orig)
+    x.orig <- eval.parent(call.orig$x)
+    if (class(x.orig) != "data.frame")
+      x.orig <- data.frame(x.orig)
+    assert_that(nrow(x.orig) == length(resid))
+  }
+  if (is.numeric(resid)) {
+    resids <- resid
+    resid <- TRUE
+  } else if (is.character(resid)) {
+    resids <- residuals(model, x=x.orig, s=s, type=resid)
+    resid <- TRUE
+  } else if (resid) {
     resids <- residuals(model, x=x.orig, s=s, type="pearson")
   }
 
   ## set par
   old.par <- par()
+  if (length(inds) == 1) layout <- c(1,1)
   par(oma=c(0, 0, 2, 0), par(mfrow=layout))
 
   ## Plotting
@@ -179,11 +194,12 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=FALSE
     if (first) {
       if (resid) mtext(line=0, outer=TRUE, text="Component + Residual Plot")
       else mtext(line=0, outer=TRUE, text="Component Plot")
-      if (ask) devAskNewPage(TRUE)
+      ask.old <- devAskNewPage()
+      devAskNewPage(ask)
       first <- FALSE
     }
   }
-  if (ask) devAskNewPage(FALSE)
+  devAskNewPage(ask.old)
 
   if (!is.null(old.par$oma)) par(oma=old.par$oma)
   if (!is.null(old.par$mfrow)) par(mfrow=old.par$mfrow)
