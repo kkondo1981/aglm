@@ -15,10 +15,20 @@
 #'   or a numerical vector which indicates residual values to be plotted.
 #'   Note that Pearson residual is used in the first case with `resid=TRUE`.
 #' @param ask A boolean value which indicates ask if go to next plot.
-#' @param layout A pair of integer values which indicates how many plots are drawn rawwise and columnwise respectively.
+#' @param layout A pair of integer values which indicates how many plots are drawn rawwise and columnwise respectively,
+#' @param only_plot If `TRUE`, the function set no graphical parameters and no title.
 #'
 #' @export
-plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=FALSE, ask=TRUE, layout=c(2,2), ...) {
+#' @importFrom assertthat assert_that
+plot.AccurateGLM <- function(model,
+                             vars=NULL,
+                             verbose=TRUE,
+                             s=NULL,
+                             resid=FALSE,
+                             ask=TRUE,
+                             layout=c(2,2),
+                             only_plot=FALSE,
+                             ...) {
   nvars <- length(model@vars_info)
 
   if (is.null(vars)) {
@@ -42,22 +52,26 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=FALSE
     x.orig <- eval.parent(call.orig$x)
     if (class(x.orig) != "data.frame")
       x.orig <- data.frame(x.orig)
+
+    if (is.numeric(resid)) {
+      resids <- resid
+      resid <- TRUE
+    } else if (is.character(resid)) {
+      resids <- residuals(model, x=x.orig, s=s, type=resid)
+      resid <- TRUE
+    } else {
+      resids <- residuals(model, x=x.orig, s=s, type="pearson")
+    }
+    assert_that(nrow(x.orig) == length(resids))
   }
-  if (is.numeric(resid)) {
-    resids <- resid
-    resid <- TRUE
-  } else if (is.character(resid)) {
-    resids <- residuals(model, x=x.orig, s=s, type=resid)
-    resid <- TRUE
-  } else if (resid) {
-    resids <- residuals(model, x=x.orig, s=s, type="pearson")
-  }
-  assert_that(nrow(x.orig) == length(resids))
 
   ## set par
-  old.par <- par()
-  if (length(inds) == 1) layout <- c(1,1)
-  par(oma=c(0, 0, 2, 0), mfrow=layout)
+  if (!only_plot) {
+    old.par <- par()
+    par(oma=c(0, 0, 2, 0))
+    if (length(inds) == 1) layout <- c(1,1)
+    par(mfrow=layout)
+  }
 
   ## Plotting
   for (i in inds) {
@@ -192,8 +206,10 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=FALSE
 
 
     if (first) {
-      if (resid) mtext(line=0, outer=TRUE, text="Component + Residual Plot")
-      else mtext(line=0, outer=TRUE, text="Component Plot")
+      if (!only_plot) {
+        if (resid) mtext(line=0, outer=TRUE, text="Component + Residual Plot")
+        else mtext(line=0, outer=TRUE, text="Component Plot")
+      }
       ask.old <- devAskNewPage()
       devAskNewPage(ask)
       first <- FALSE
@@ -201,6 +217,8 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=FALSE
   }
   devAskNewPage(ask.old)
 
-  if (!is.null(old.par$oma)) par(oma=old.par$oma)
-  if (!is.null(old.par$mfrow)) par(mfrow=old.par$mfrow)
+  if (!only_plot) {
+    if (!is.null(old.par$oma)) par(oma=old.par$oma)
+    if (!is.null(old.par$mfrow)) par(mfrow=old.par$mfrow)
+  }
 }
