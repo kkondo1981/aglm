@@ -17,6 +17,7 @@
 #' @param ask A boolean value which indicates ask if go to next plot.
 #' @param layout A pair of integer values which indicates how many plots are drawn rawwise and columnwise respectively,
 #' @param only_plot If `TRUE`, the function set no graphical parameters and no title.
+#' @param main A character value which indicates titles of panels.
 #'
 #' @export
 #' @importFrom assertthat assert_that
@@ -28,6 +29,7 @@ plot.AccurateGLM <- function(model,
                              ask=TRUE,
                              layout=c(2,2),
                              only_plot=FALSE,
+                             main="",
                              ...) {
   nvars <- length(model@vars_info)
 
@@ -135,6 +137,7 @@ plot.AccurateGLM <- function(model,
       plot(x=x,
            y=comp,
            type="n",
+           main=main,
            xlab=xlab,
            ylab=ylab,
            xlim=xlim,
@@ -185,12 +188,14 @@ plot.AccurateGLM <- function(model,
         ylim[2] <- ylim[2] + 0.05 * (ylim[2] - ylim[1])
 
         boxplot(c_and_r.sample ~ x.sample,
+                main=main,
                 xlab=xlab,
                 ylab=ylab,
                 ylim=ylim)
       } else {
         barplot(comp,
                 names=lv,
+                main=main,
                 xlab=xlab,
                 ylab=ylab)
       }
