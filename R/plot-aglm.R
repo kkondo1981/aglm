@@ -10,12 +10,38 @@
 #'   Note that this function can't plot for multiple lambda values, so it allows only
 #'   single `s` value (which means `model` is trained with multiple lambda values and plot with one of them),
 #'   or `s=NULL` (which means `model` is trained with single lambda value and plot with that value).
-#' @param resid A boolean value which indicates plot residuals.
+#' @param resid A boolean value which indicates to plot residuals,
+#'   or a character value which indicates residual type to be plotted (see the help of `residuals.AccurateGLM()`),
+#'   or a numerical vector which indicates residual values to be plotted.
+#'   Note that working residuals are used in the first case with `resid=TRUE`.
+#' @param smooth_resid A boolean value which indicates whether draws smoothing lines of residuals or not,
+#'   or a character value which is one of options below:
+#'     * `"both"` draws both balls and smoothing lines.
+#'     * `"smooth_only"` draws only smoothing line.
+#'   Note that smoothing lines are only drawn for quantitative variables.
+#'   The default value is `TRUE`.
+#' @param smooth_resid_fun A function to be used to smooth partial residual values.
 #' @param ask A boolean value which indicates ask if go to next plot.
-#' @param layout A pair of integer values which indicates how many plots are drawn rawwise and columnwise respectively.
+#' @param layout A pair of integer values which indicates how many plots are drawn rawwise and columnwise respectively,
+#' @param only_plot If `TRUE`, the function set no graphical parameters and no title.
+#' @param main A character value which indicates titles of panels.
+#' @param add_rug A boolean value which indicates draw rugplot for quantitative variables.
 #'
 #' @export
-plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE, ask=TRUE, layout=c(2,2), ...) {
+#' @importFrom assertthat assert_that
+plot.AccurateGLM <- function(model,
+                             vars=NULL,
+                             verbose=TRUE,
+                             s=NULL,
+                             resid=FALSE,
+                             smooth_resid=TRUE,
+                             smooth_resid_fun=NULL,
+                             ask=TRUE,
+                             layout=c(2,2),
+                             only_plot=FALSE,
+                             main="",
+                             add_rug=FALSE,
+                             ...) {
   nvars <- length(model@vars_info)
 
   if (is.null(vars)) {
@@ -33,18 +59,46 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE,
   }
 
   ## Calculates residuals
-  if (resid) {
+  use_x.orig <- if (is.logical(resid)) resid else TRUE
+  if (use_x.orig) {
     call.orig <- getCall(model)
-    x.orig <- eval(call.orig$x)
-    if (class(x.orig) != "data.frame") x <- data.frame(x.orig)
-    y.orig <- as.numeric(drop(eval(call.orig$y)))
-    assert_that(dim(x.orig)[1] == length(y.orig))
-    resids <- predict(model, x.orig, s=s) - y.orig
+    x.orig <- eval.parent(call.orig$x)
+    if (class(x.orig) != "data.frame")
+      x.orig <- data.frame(x.orig)
+
+    if (is.numeric(resid)) {
+      resids <- resid
+      resid <- TRUE
+    } else if (is.character(resid)) {
+      resids <- residuals(model, x=x.orig, s=s, type=resid)
+      resid <- TRUE
+    } else {
+      resids <- residuals(model, x=x.orig, s=s, type="working")
+    }
+    assert_that(nrow(x.orig) == length(resids))
+  }
+
+  ## set flags for smoothing
+  if (resid) {
+    if (is.character(smooth_resid)) {
+      draws_balls <- smooth_resid == "both"
+      draws_lines <- TRUE
+    } else {
+      draws_balls <- TRUE
+      draws_lines <- smooth_resid
+    }
   }
 
   ## set par
-  par(oma=c(0, 0, 2, 0))
-  par(mfrow=layout)
+  if (!only_plot) {
+    old.par <- par()
+    par(oma=c(0, 0, 2, 0))
+    if (length(inds) == 1) layout <- c(1,1)
+    par(mfrow=layout)
+  }
+
+  ask.old <- devAskNewPage()
+  devAskNewPage(FALSE)
 
   ## Plotting
   for (i in inds) {
@@ -92,6 +146,18 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE,
         x.sample <- x.orig[, var_info$data_column_idx]
         x.sample.mat <- getMatrixRepresentationByVector(x.sample, var_info)
         c_and_r.sample <- drop(x.sample.mat %*% b) + resids
+
+        if (draws_lines) {
+          ord <- order(x.sample)
+          f <- smooth_resid_fun
+          if (is.null(f)) {
+            if (length(unique(x.sample)) >= 4 & IQR(x.sample) > 0)
+              f <- smooth.spline
+            else
+              f <- ksmooth
+          }
+          smoothed_c_and_r.sample <- f(x.sample[ord], c_and_r.sample[ord])
+        }
       }
 
       ## Plotting
@@ -100,7 +166,13 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE,
       xlim[1] <- xlim[1] - 0.05 * (xlim[2] - xlim[1])
       xlim[2] <- xlim[2] + 0.05 * (xlim[2] - xlim[1])
 
-      y.all <- c(comp, c_and_r.sample)
+      y.all <- comp
+      if (resid) {
+        if (draws_balls)
+          y.all <- c(y.all, c_and_r.sample)
+        if (draws_lines)
+          y.all <- c(y.all, smoothed_c_and_r.sample$y[!is.na(smoothed_c_and_r.sample$y)])
+      }
       ylim <- c(min(y.all), max(y.all))
       ylim[1] <- ylim[1] - 0.05 * (ylim[2] - ylim[1])
       ylim[2] <- ylim[2] + 0.05 * (ylim[2] - ylim[1])
@@ -108,22 +180,33 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE,
       plot(x=x,
            y=comp,
            type="n",
+           main=main,
            xlab=xlab,
            ylab=ylab,
            xlim=xlim,
            ylim=ylim)
 
       if (resid) {
-        points(x=x.sample,
-               y=c_and_r.sample,
-               pch=20,
-               col="grey")
+        if (draws_balls) {
+          points(x=x.sample,
+                 y=c_and_r.sample,
+                 pch=".")
+        }
+
+        if (draws_lines) {
+          lines(smoothed_c_and_r.sample,
+                col="blue",
+                lty=5)
+        }
+
+        if (add_rug) {
+          rug(x=x.sample,
+              col="gray")
+        }
       }
 
       lines(x=x,
-            y=comp,
-            col="blue",
-            lwd=3)
+            y=comp)
     } else if (var_info$type == "qual") {
       # Plot for factorial features
 
@@ -156,17 +239,16 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE,
 
       if (resid) {
         y.all <- c(comp, c_and_r.sample)
-        ylim <- c(min(y.all), max(y.all))
-        ylim[1] <- ylim[1] - 0.05 * (ylim[2] - ylim[1])
-        ylim[2] <- ylim[2] + 0.05 * (ylim[2] - ylim[1])
 
         boxplot(c_and_r.sample ~ x.sample,
+                main=main,
                 xlab=xlab,
                 ylab=ylab,
-                ylim=ylim)
+                outline=FALSE)
       } else {
         barplot(comp,
                 names=lv,
+                main=main,
                 xlab=xlab,
                 ylab=ylab)
       }
@@ -182,11 +264,18 @@ plot.AccurateGLM <- function(model, vars=NULL, verbose=TRUE, s=NULL, resid=TRUE,
 
 
     if (first) {
-      if (resid) mtext(line=0, outer=TRUE, text="Component + Residual Plot")
-      else mtext(line=0, outer=TRUE, text="Component Plot")
-      if (ask) devAskNewPage(TRUE)
+      if (!only_plot) {
+        if (resid) mtext(line=0, outer=TRUE, text="Component + Residual Plot")
+        else mtext(line=0, outer=TRUE, text="Component Plot")
+      }
+      devAskNewPage(ask)
       first <- FALSE
     }
   }
-  if (ask) devAskNewPage(FALSE)
+  devAskNewPage(ask.old)
+
+  if (!only_plot) {
+    if (!is.null(old.par$oma)) par(oma=old.par$oma)
+    if (!is.null(old.par$mfrow)) par(mfrow=old.par$mfrow)
+  }
 }
