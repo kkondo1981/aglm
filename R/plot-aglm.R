@@ -97,6 +97,9 @@ plot.AccurateGLM <- function(model,
     par(mfrow=layout)
   }
 
+  ask.old <- devAskNewPage()
+  devAskNewPage(FALSE)
+
   ## Plotting
   for (i in inds) {
     var_info <- model@vars_info[[i]]
@@ -146,9 +149,14 @@ plot.AccurateGLM <- function(model,
 
         if (draws_lines) {
           ord <- order(x.sample)
-          if (is.null(smooth_resid_fun))
-            smooth_resid_fun <- smooth.spline
-          smoothed_c_and_r.sample <- smooth_resid_fun(x.sample[ord], c_and_r.sample[ord])
+          f <- smooth_resid_fun
+          if (is.null(f)) {
+            if (length(unique(x.sample)) >= 4 & IQR(x.sample) > 0)
+              f <- smooth.spline
+            else
+              f <- ksmooth
+          }
+          smoothed_c_and_r.sample <- f(x.sample[ord], c_and_r.sample[ord])
         }
       }
 
@@ -159,10 +167,12 @@ plot.AccurateGLM <- function(model,
       xlim[2] <- xlim[2] + 0.05 * (xlim[2] - xlim[1])
 
       y.all <- comp
-      if (draws_balls)
-        y.all <- c(y.all, c_and_r.sample)
-      if (draws_lines)
-        y.all <- c(y.all, smoothed_c_and_r.sample$y[!is.na(smoothed_c_and_r.sample$y)])
+      if (resid) {
+        if (draws_balls)
+          y.all <- c(y.all, c_and_r.sample)
+        if (draws_lines)
+          y.all <- c(y.all, smoothed_c_and_r.sample$y[!is.na(smoothed_c_and_r.sample$y)])
+      }
       ylim <- c(min(y.all), max(y.all))
       ylim[1] <- ylim[1] - 0.05 * (ylim[2] - ylim[1])
       ylim[2] <- ylim[2] + 0.05 * (ylim[2] - ylim[1])
@@ -258,7 +268,6 @@ plot.AccurateGLM <- function(model,
         if (resid) mtext(line=0, outer=TRUE, text="Component + Residual Plot")
         else mtext(line=0, outer=TRUE, text="Component Plot")
       }
-      ask.old <- devAskNewPage()
       devAskNewPage(ask)
       first <- FALSE
     }
