@@ -65,7 +65,7 @@ residuals.AccurateGLM <- function(model,
     if ("fishnet" %in% cl){  # Poisson case
       yhat <- as.numeric(drop(predict(model, newx=x, newoffset=offset, s=s, type="response")))
       z <- 2 * (log((y / yhat)^y) - y + yhat)
-      resids <- sqrt(weights) * sign(z) * sqrt(abs(z))
+      resids <- sqrt(weights) * sign(y - yhat) * sqrt(abs(z))
     } else if ("lognet" %in% cl) {  # binomial case
       eta <- as.numeric(drop(predict(model, newx=x, newoffset=offset, s=s, type="link")))
       z <- 2 * (log(1 + exp(eta) - y * eta))
