@@ -207,7 +207,11 @@ lambda.min <- 0.0000544084671521754276602572675258784329344052821397781372070312
 ## Fit a model to the train data
 
 ```{r}
-best_model <- aglm(x_train,
+model_path <- "./freMTPL2freq_aglm.rda"
+if (file.exists(model_path)) {  # to save time at the 2nd run
+  load(file=model_path)
+} else {
+  best_model <- aglm(x_train,
                    y_train,
                    offset=off_train,
                    family="poisson",
@@ -215,6 +219,8 @@ best_model <- aglm(x_train,
                    lambda=lambda.min,
                    alpha=alpha.min,
                    trace.it=TRUE)
+  save(best_model, file=model_path)
+}
 ```
 
 
@@ -257,7 +263,10 @@ The calculated deviance value can be used when comparing this model to other mod
 
 We can also understand the model visually using the `plot()` function.
 It draws component curves (say, link values against specific values of explanatory variables) and residuals for the train data.
+In this case, we use deviance residuals (defferent from the default working residuals), and make it draw only smoothed lines of residuals, in order to get clearer plots.
 
 ```{r}
-plot(best_model, verbose=FALSE, ask=FALSE, resid=TRUE, layout=c(3, 3))
+plot(best_model, verbose=FALSE, ask=FALSE,
+     resid="deviance", smooth_resid="smooth_only",
+     layout=c(3, 3))
 ```
