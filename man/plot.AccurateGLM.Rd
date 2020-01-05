@@ -10,8 +10,13 @@
   verbose = TRUE,
   s = NULL,
   resid = FALSE,
+  smooth_resid = TRUE,
+  smooth_resid_fun = NULL,
   ask = TRUE,
   layout = c(2, 2),
+  only_plot = FALSE,
+  main = "",
+  add_rug = FALSE,
   ...
 )
 }
@@ -30,11 +35,26 @@ or \code{s=NULL} (which means \code{model} is trained with single lambda value a
 \item{resid}{A boolean value which indicates to plot residuals,
 or a character value which indicates residual type to be plotted (see the help of \code{residuals.AccurateGLM()}),
 or a numerical vector which indicates residual values to be plotted.
-Note that Pearson residual is used in the first case with \code{resid=TRUE}.}
+Note that working residuals are used in the first case with \code{resid=TRUE}.}
+
+\item{smooth_resid}{A boolean value which indicates whether draws smoothing lines of residuals or not,
+or a character value which is one of options below:
+* \code{"both"} draws both balls and smoothing lines.
+* \code{"smooth_only"} draws only smoothing line.
+Note that smoothing lines are only drawn for quantitative variables.
+The default value is \code{TRUE}.}
+
+\item{smooth_resid_fun}{A function to be used to smooth partial residual values.}
 
 \item{ask}{A boolean value which indicates ask if go to next plot.}
 
-\item{layout}{A pair of integer values which indicates how many plots are drawn rawwise and columnwise respectively.}
+\item{layout}{A pair of integer values which indicates how many plots are drawn rawwise and columnwise respectively,}
+
+\item{only_plot}{If \code{TRUE}, the function set no graphical parameters and no title.}
+
+\item{main}{A character value which indicates titles of panels.}
+
+\item{add_rug}{A boolean value which indicates draw rugplot for quantitative variables.}
 }
 \description{
 Plot coefficients from an AccurateGLM object
