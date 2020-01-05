@@ -24,13 +24,8 @@ x$rad <- as.ordered(x$rad)
 
 ## Plots coefs of cross-validated model
 cv.model <- cv.aglm(x, y)
-plot(cv.model, s=cv.model@lambda.min)
+plot(cv.model, s=cv.model@lambda.min, resid=TRUE, add_rug=TRUE)
 
 ## Plots coefs of specified variables only
 # plot(cv.model, s=cv.model@lambda.min, vars=c("rm", "nox"))  # use name
 # plot(cv.model, s=cv.model@lambda.min, vars=c(1, 2))  # use indices
-
-## Plot all variables pdf files
-pdf("~/plot-coefs.pdf")
-plot(cv.model, s=cv.model@lambda.min, layout=c(3,4), ask=FALSE, verbose=FALSE)
-dev.off()
