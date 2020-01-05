@@ -270,6 +270,7 @@ In this case, we use deviance residuals (defferent from the default working resi
 ```{r}
 plot(best_model, verbose=FALSE, ask=FALSE,
      resid="deviance", smooth_resid="smooth_only",
+     add_rug=TRUE,
      layout=c(2, 3))
 ```
 
