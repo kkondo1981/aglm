@@ -13,7 +13,13 @@
 #' @param resid A boolean value which indicates to plot residuals,
 #'   or a character value which indicates residual type to be plotted (see the help of `residuals.AccurateGLM()`),
 #'   or a numerical vector which indicates residual values to be plotted.
-#'   Note that Pearson residual is used in the first case with `resid=TRUE`.
+#'   Note that working residuals are used in the first case with `resid=TRUE`.
+#' @param smooth_resid A boolean value which indicates whether draws smoothing lines of residuals or not,
+#'   or a character value which is one of options below:
+#'     * `"both"` draws both balls and smoothing lines.
+#'     * `"smooth_only"` draws only smoothing line.
+#'   Note that smoothing lines are only drawn for quantitative variables.
+#'   The default value is `TRUE`.
 #' @param ask A boolean value which indicates ask if go to next plot.
 #' @param layout A pair of integer values which indicates how many plots are drawn rawwise and columnwise respectively,
 #' @param only_plot If `TRUE`, the function set no graphical parameters and no title.
@@ -26,6 +32,7 @@ plot.AccurateGLM <- function(model,
                              verbose=TRUE,
                              s=NULL,
                              resid=FALSE,
+                             smooth_resid=TRUE,
                              ask=TRUE,
                              layout=c(2,2),
                              only_plot=FALSE,
@@ -62,9 +69,20 @@ plot.AccurateGLM <- function(model,
       resids <- residuals(model, x=x.orig, s=s, type=resid)
       resid <- TRUE
     } else {
-      resids <- residuals(model, x=x.orig, s=s, type="pearson")
+      resids <- residuals(model, x=x.orig, s=s, type="working")
     }
     assert_that(nrow(x.orig) == length(resids))
+  }
+
+  ## set flags for smoothing
+  if (resid) {
+    if (is.character(smooth_resid)) {
+      draws_balls <- smooth_resid == "both"
+      draws_lines <- TRUE
+    } else {
+      draws_balls <- TRUE
+      draws_lines <- smooth_resid
+    }
   }
 
   ## set par
@@ -144,9 +162,18 @@ plot.AccurateGLM <- function(model,
            ylim=ylim)
 
       if (resid) {
-        points(x=x.sample,
-               y=c_and_r.sample,
-               pch=".")
+        if (draws_balls) {
+          points(x=x.sample,
+                 y=c_and_r.sample,
+                 pch=".")
+        }
+
+        if (draws_lines) {
+          ord <- order(x.sample)
+          lines(ksmooth(x.sample[ord], c_and_r.sample[ord]),
+                col="blue",
+                lty=5)
+        }
       }
 
       lines(x=x,
