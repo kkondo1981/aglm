@@ -222,15 +222,12 @@ plot.AccurateGLM <- function(model,
 
       if (resid) {
         y.all <- c(comp, c_and_r.sample)
-        ylim <- c(min(y.all), max(y.all))
-        ylim[1] <- ylim[1] - 0.05 * (ylim[2] - ylim[1])
-        ylim[2] <- ylim[2] + 0.05 * (ylim[2] - ylim[1])
 
         boxplot(c_and_r.sample ~ x.sample,
                 main=main,
                 xlab=xlab,
                 ylab=ylab,
-                ylim=ylim)
+                outline=FALSE)
       } else {
         barplot(comp,
                 names=lv,
