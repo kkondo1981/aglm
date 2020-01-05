@@ -1,8 +1,10 @@
 ---
 title: 'Exploring freMTPL2freq (French Motor Third-Party Liability Frequency datasete)'
 author: "Kenji Kondo"
-date: "2019/12/29"
-output: html_document
+date: "`r Sys.Date()`"
+output:
+  rmdformats::readthedown:
+    highlight: kate
 ---
 
 ```{r setup, include=FALSE}
@@ -268,5 +270,11 @@ In this case, we use deviance residuals (defferent from the default working resi
 ```{r}
 plot(best_model, verbose=FALSE, ask=FALSE,
      resid="deviance", smooth_resid="smooth_only",
-     layout=c(3, 3))
+     layout=c(2, 3))
 ```
+
+
+
+
+
+
