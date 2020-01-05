@@ -25,6 +25,7 @@
 #' @param layout A pair of integer values which indicates how many plots are drawn rawwise and columnwise respectively,
 #' @param only_plot If `TRUE`, the function set no graphical parameters and no title.
 #' @param main A character value which indicates titles of panels.
+#' @param add_rug A boolean value which indicates draw rugplot for quantitative variables.
 #'
 #' @export
 #' @importFrom assertthat assert_that
@@ -39,6 +40,7 @@ plot.AccurateGLM <- function(model,
                              layout=c(2,2),
                              only_plot=FALSE,
                              main="",
+                             add_rug=FALSE,
                              ...) {
   nvars <- length(model@vars_info)
 
@@ -185,6 +187,11 @@ plot.AccurateGLM <- function(model,
           lines(smoothed_c_and_r.sample,
                 col="blue",
                 lty=5)
+        }
+
+        if (add_rug) {
+          rug(x=x.sample,
+              col="gray")
         }
       }
 
