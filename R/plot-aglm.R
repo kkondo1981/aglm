@@ -20,6 +20,7 @@
 #'     * `"smooth_only"` draws only smoothing line.
 #'   Note that smoothing lines are only drawn for quantitative variables.
 #'   The default value is `TRUE`.
+#' @param smooth_resid_fun A function to be used to smooth partial residual values.
 #' @param ask A boolean value which indicates ask if go to next plot.
 #' @param layout A pair of integer values which indicates how many plots are drawn rawwise and columnwise respectively,
 #' @param only_plot If `TRUE`, the function set no graphical parameters and no title.
@@ -33,6 +34,7 @@ plot.AccurateGLM <- function(model,
                              s=NULL,
                              resid=FALSE,
                              smooth_resid=TRUE,
+                             smooth_resid_fun=NULL,
                              ask=TRUE,
                              layout=c(2,2),
                              only_plot=FALSE,
@@ -139,6 +141,13 @@ plot.AccurateGLM <- function(model,
         x.sample <- x.orig[, var_info$data_column_idx]
         x.sample.mat <- getMatrixRepresentationByVector(x.sample, var_info)
         c_and_r.sample <- drop(x.sample.mat %*% b) + resids
+
+        if (draws_lines) {
+          ord <- order(x.sample)
+          if (is.null(smooth_resid_fun))
+            smooth_resid_fun <- smooth.spline
+          smoothed_c_and_r.sample <- smooth_resid_fun(x.sample[ord], c_and_r.sample[ord])
+        }
       }
 
       ## Plotting
@@ -147,7 +156,11 @@ plot.AccurateGLM <- function(model,
       xlim[1] <- xlim[1] - 0.05 * (xlim[2] - xlim[1])
       xlim[2] <- xlim[2] + 0.05 * (xlim[2] - xlim[1])
 
-      y.all <- c(comp, c_and_r.sample)
+      y.all <- comp
+      if (draws_balls)
+        y.all <- c(y.all, c_and_r.sample)
+      if (draws_lines)
+        y.all <- c(y.all, smoothed_c_and_r.sample$y[!is.na(smoothed_c_and_r.sample$y)])
       ylim <- c(min(y.all), max(y.all))
       ylim[1] <- ylim[1] - 0.05 * (ylim[2] - ylim[1])
       ylim[2] <- ylim[2] + 0.05 * (ylim[2] - ylim[1])
@@ -169,8 +182,7 @@ plot.AccurateGLM <- function(model,
         }
 
         if (draws_lines) {
-          ord <- order(x.sample)
-          lines(ksmooth(x.sample[ord], c_and_r.sample[ord]),
+          lines(smoothed_c_and_r.sample,
                 col="blue",
                 lty=5)
         }
