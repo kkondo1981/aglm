@@ -230,7 +230,7 @@ newInput <- function(x,
     if (vars_info[[i]]$use_LV & is.null(vars_info[[i]]$LV_info)) {
       args <- list(x_vec=x[, i], only_info=TRUE)
       if(!is.null(nbin.max)) args <- c(args, nbin.max=nbin.max)
-      vars_info[[i]]$LV_info <- dolcall(getLVarMatForOneVec, args)
+      vars_info[[i]]$LV_info <- do.call(getLVarMatForOneVec, args)
     }
   }
 
