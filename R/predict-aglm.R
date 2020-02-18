@@ -35,8 +35,8 @@ predict.AccurateGLM <- function(model,
     var_info <- model@vars_info[[i]]
     if (var_info$type == "quan") newx[, i] <- as.numeric(newx[, i])
     else if (var_info$type == "qual") {
-      if (var_info$use_OD) newx[, i] <- ordered(newx[, i])
-      else newx[, i] <- factor(newx[, i])
+      if (var_info$use_OD & !is.ordered(newx[, i])) newx[, i] <- ordered(newx[, i])
+      else if (!is.factor(newx[, i])) newx[, i] <- factor(newx[, i])
     }
   }
   newx <- new("AGLM_Input", vars_info=model@vars_info, data=newx)

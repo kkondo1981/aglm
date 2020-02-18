@@ -161,9 +161,9 @@ newInput <- function(x,
     # For qualitative variables, holds ordered or unordered factor data
     if (vars_info[[i]]$type == "qual") {
       data_idx <- vars_info[[i]]$data_column_idx
-      if (vars_info[[i]]$use_OD) {
+      if (vars_info[[i]]$use_OD & !is.ordered(x[, data_idx])) {
         x[, data_idx] <- ordered(x[, data_idx])
-      } else {
+      } else if (!is.factor(x[, data_idx])) {
         x[, data_idx] <- factor(x[, data_idx])
       }
     }
