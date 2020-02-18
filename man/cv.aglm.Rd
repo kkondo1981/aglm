@@ -11,6 +11,7 @@ cv.aglm(
   qualitative_vars_both = NULL,
   qualitative_vars_OD_only = NULL,
   quantitative_vars = NULL,
+  use_LVar = FALSE,
   add_linear_columns = TRUE,
   add_OD_columns_of_qualitatives = TRUE,
   add_interaction_columns = FALSE,
@@ -35,6 +36,8 @@ cv.aglm(
 \item{qualitative_vars_OD_only}{A list of indices or names for specifying which columns are qualitative and need only O-dummy representations.}
 
 \item{quantitative_vars}{A list of indices or names for specyfying which columns are quantitative.}
+
+\item{use_LVar}{A boolean value which indicates whether this function uses L-variable representations or not.}
 
 \item{add_linear_columns}{A boolean value which indicates whether this function uses linear effects or not.}
 

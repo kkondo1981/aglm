@@ -17,6 +17,7 @@ newInput <- function(x,
                      qualitative_vars_both=NULL,
                      qualitative_vars_OD_only=NULL,
                      quantitative_vars=NULL,
+                     use_LVar=FALSE,
                      add_linear_columns=TRUE,
                      add_OD_columns_of_qualitatives=TRUE,
                      add_interaction_columns=TRUE,
@@ -63,6 +64,11 @@ newInput <- function(x,
         x_vec <- x[, i]
         var$OD_info$breaks <- c(min(x_vec), max(x_vec))
       }
+    }
+    var$use_LV <- var$type == "quan" & use_LVar
+    if (var$use_LV) {
+      var$use_linear <- FALSE
+      var$use_OD <- FALSE
     }
 
     vars_info[[i]] <- var
@@ -115,6 +121,7 @@ newInput <- function(x,
     var$use_linear <- FALSE
     var$use_UD <- TRUE
     var$use_OD <- FALSE
+    var$use_LV <- FALSE
 
     vars_info[[i]] <- var
   }
@@ -125,6 +132,7 @@ newInput <- function(x,
     var$use_linear <- FALSE
     var$use_UD <- FALSE
     var$use_OD <- TRUE
+    var$use_LV <- FALSE
 
     vars_info[[i]] <- var
   }
@@ -135,6 +143,7 @@ newInput <- function(x,
     var$use_linear <- FALSE
     var$use_UD <- TRUE
     var$use_OD <- TRUE
+    var$use_LV <- FALSE
 
     vars_info[[i]] <- var
   }
@@ -142,9 +151,10 @@ newInput <- function(x,
     var <- vars_info[[i]]
     var$type <- "quan"
 
-    var$use_linear <- add_linear_columns
+    var$use_linear <- !use_LVar & add_linear_columns
     var$use_UD <- FALSE
-    var$use_OD <- TRUE
+    var$use_OD <- !use_LVar
+    var$use_LV <- use_LVar
 
     vars_info[[i]] <- var
   }
@@ -175,32 +185,34 @@ newInput <- function(x,
       idx_list <- list()
       for (i in seq(nvar)) {
         v <- vars_info[[i]]
-        if (v$use_OD) idx_list <- c(idx_list, v$idx)
+        if (v$use_OD | v$use_LV) idx_list <- c(idx_list, v$idx)
       }
 
       for (i in seq(length(bins_list))) {
         idx <- idx_list[[i]]
         breaks <- bins_list[[i]]
-        vars_info[[idx]]$OD_info$breaks <- unique(sort(breaks[is.finite(breaks)]))
+        if (vars_info[[idx]]$use_OD) vars_info[[idx]]$OD_info$breaks <- unique(sort(breaks[is.finite(breaks)]))
+        if (vars_info[[idx]]$use_LV) vars_info[[idx]]$LV_info$breaks <- unique(sort(breaks[is.finite(breaks)]))
       }
     } else {
       idx_map <- list()
       if (all(sapply(bins_names, is.character))) {
         for (i in seq(nvar)) {
           v <- vars_info[[i]]
-          if (v$use_OD) idx_map[[v$name]] <- v$idx
+          if (v$use_OD | v$use_LV) idx_map[[v$name]] <- v$idx
         }
       } else {
         for (i in seq(nvar)) {
           v <- vars_info[[i]]
-          if (v$use_OD) idx_map[[v$idx]] <- v$idx
+          if (v$use_OD | v$use_LV) idx_map[[v$idx]] <- v$idx
         }
       }
 
       for (i in seq(length(bins_list))) {
         name <- bins_names[[i]]
         idx <- idx_map[[name]]
-        vars_info[[idx]]$OD_info$breaks <- bins_list[[i]]
+        if (vars_info[[idx]]$use_OD) vars_info[[idx]]$OD_info$breaks <- bins_list[[i]]
+        if (vars_info[[idx]]$use_LV) vars_info[[idx]]$LV_info$breaks <- bins_list[[i]]
       }
     }
   }
@@ -214,6 +226,11 @@ newInput <- function(x,
       args <- list(x_vec=x[, i], dummy_type=vars_info[[i]]$OD_type, only_info=TRUE)
       if(!is.null(nbin.max)) args <- c(args, nbin.max=nbin.max)
       vars_info[[i]]$OD_info <- do.call(getODummyMatForOneVec, args)
+    }
+    if (vars_info[[i]]$use_LV & is.null(vars_info[[i]]$LV_info)) {
+      args <- list(x_vec=x[, i], only_info=TRUE)
+      if(!is.null(nbin.max)) args <- c(args, nbin.max=nbin.max)
+      vars_info[[i]]$LV_info <- do.call(getLVarMatForOneVec, args)
     }
   }
 
@@ -249,6 +266,12 @@ getMatrixRepresentationByVector <- function(raw_vec, var_info, drop_OD=FALSE) {
   if (var_info$use_linear) {
     z <- matrix(raw_vec, ncol=1)
     colnames(z) <- var_info$name
+  }
+
+  if (var_info$use_LV & !drop_OD) {
+    z_LV <- getLVarMatForOneVec(raw_vec, breaks=var_info$LV_info$breaks)$dummy_mat
+    colnames(z_LV) <- paste0(var_info$name, "_LV_", seq(dim(z_LV)[2]))
+    z <- cbind(z, z_LV)
   }
 
   if (var_info$use_OD & !drop_OD) {

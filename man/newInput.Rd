@@ -10,6 +10,7 @@ newInput(
   qualitative_vars_both = NULL,
   qualitative_vars_OD_only = NULL,
   quantitative_vars = NULL,
+  use_LVar = FALSE,
   add_linear_columns = TRUE,
   add_OD_columns_of_qualitatives = TRUE,
   add_interaction_columns = TRUE,
