@@ -63,7 +63,7 @@ plot.AccurateGLM <- function(model,
   if (use_x.orig) {
     call.orig <- getCall(model)
     x.orig <- eval.parent(call.orig$x)
-    if (class(x.orig) != "data.frame")
+    if (class(x.orig)[1] != "data.frame")
       x.orig <- data.frame(x.orig)
 
     if (is.numeric(resid)) {

@@ -33,7 +33,7 @@ test_that("Check the types and forms of return value of aglm() and predict.aglm(
 
   expect_true("AccurateGLM" %in% class(res))
   expect_true("glmnet" %in% class(res@backend_models[[1]]))
-  expect_equal(class(y_pred), "matrix")
+  expect_true("matrix" %in% class(y_pred))
   expect_equal(length(y_pred), n_new_obs)
 
   # cva.aglm
@@ -72,7 +72,7 @@ test_that("Check for predict.AGLM_CV().", {
 
   expect_true("AccurateGLM" %in% class(res))
   expect_true("glmnet" %in% class(res@backend_models[[1]]))
-  expect_true(class(res@fit.preval) == "matrix")
+  expect_true("matrix" %in% class(res@fit.preval))
   expect_true(class(res@foldid) == "integer")
 
   # Generates new predictive variables
@@ -87,7 +87,7 @@ test_that("Check for predict.AGLM_CV().", {
   y_pred <- predict(res, newx, s=res@lambda.min)
   #plot(new_quan_var, y_pred)
   #points(new_quan_var, y_true, col="red")
-  expect_equal(class(y_pred), "matrix")
+  expect_true("matrix" %in% class(y_pred))
   expect_equal(length(y_pred), n_new_obs)
 })
 
@@ -105,11 +105,11 @@ test_that("Check for logical features", {
   # Generates non-linear reponse
   y <- xor(x[, 1], x[, 2])
 
-  res <- cv.aglm(x, y, family="gaussian", keep=TRUE)
+  res <- cv.aglm(x, y, family=gaussian(), keep=TRUE)
 
   expect_true("AccurateGLM" %in% class(res))
   expect_true("glmnet" %in% class(res@backend_models[[1]]))
-  expect_true(class(res@fit.preval) == "matrix")
+  expect_true("matrix" %in% class(res@fit.preval))
   expect_true(class(res@foldid) == "integer")
 
   # Generates new predictive variables
@@ -121,7 +121,7 @@ test_that("Check for logical features", {
   y_pred <- predict(res, newx, s=res@lambda.min)
   #y_true <- xor(newx[, 1], newx[, 2])
   #plot(y_true, y_pred)
-  expect_equal(class(y_pred), "matrix")
+  expect_true("matrix" %in% class(y_pred))
   expect_equal(length(y_pred), n_new_obs)
 })
 
@@ -131,7 +131,7 @@ test_that("Check for binomial family", {
   nobs <- 1000
   x1 <- rnorm(nobs); x2 <- rnorm(nobs); x <- cbind(x1, x2)
   y <- 1 * ((atan(0.25 * x1 - 0.5 * x2) / pi + 0.5) > 0.5)
-  model <- aglm(x, y, family = "binomial", alpha = 1, lambda = 0.003)
+  model <- aglm(x, y, family = binomial(), alpha = 1, lambda = 0.003)
 
   newx1 <- rnorm(100); newx2 <- rnorm(100); newx <- cbind(newx1, newx2)
   aglm.pred <- predict(model, newx)

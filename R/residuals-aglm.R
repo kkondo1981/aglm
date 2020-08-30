@@ -28,7 +28,7 @@ residuals.AccurateGLM <- function(model,
   call.orig <- getCall(model)
   if (is.null(x)) {
     x <- eval.parent(call.orig$x)
-    if (class(x) != "data.frame") x <- data.frame(x)
+    if (class(x)[1] != "data.frame") x <- data.frame(x)
   }
   if (is.null(y)) {
     y <- as.numeric(drop(eval.parent(call.orig$y)))
@@ -40,7 +40,7 @@ residuals.AccurateGLM <- function(model,
     weights <- as.numeric(drop(eval.parent(call.orig$weights)))
     if (is.null(weights) || length(weights) == 0) weights <- rep(1, length(y))
   }
-  if (class(x) != "data.frame") x <- data.frame(x)
+  if (class(x)[1] != "data.frame") x <- data.frame(x)
   assert_that(dim(x)[1] == length(y))
   assert_that(length(y) == length(weights))
 
