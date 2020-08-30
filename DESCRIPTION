@@ -1,7 +1,7 @@
 Package: aglm
 Type: Package
 Title: Accurate Generalized Linear Model (AGLM)
-Version: 0.3.1
+Version: 0.3.2
 Author: Kenji Kondo, Kazuhisa Takahashi, others
 Maintainer: Kenji Kondo <kkondo.odnokk@gmail.com>
 Description: A handy tool for actuarial modeling, which is designed to achieve both accuracy and accountability.
@@ -9,10 +9,13 @@ Description: A handy tool for actuarial modeling, which is designed to achieve b
 License: GPL-2
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
+Depends:
+    R (>= 4.0.2),
 Imports:
-    glmnet
+    glmnet (>= 4.0.2),
+    assertthat
 Suggests: 
     testthat,
     knitr,
