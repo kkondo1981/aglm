@@ -30,7 +30,7 @@ predict.AccurateGLM <- function(model,
   type <- match.arg(type)
 
   # Create an input object
-  if (class(newx) != "data.frame") newx <- data.frame(newx)
+  if (class(newx)[1] != "data.frame") newx <- data.frame(newx)
   for (i in seq(dim(newx)[2])) {
     var_info <- model@vars_info[[i]]
     if (var_info$type == "quan") newx[, i] <- as.numeric(newx[, i])

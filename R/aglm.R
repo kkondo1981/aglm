@@ -67,7 +67,8 @@ aglm <- function(x, y,
   assert_that(length(y) == dim(x@data)[1])
 
   # Check family
-  family <- match.arg(family)
+  if (is.character(family))
+    family <- match.arg(family)
 
   # Create a design matrix which is passed to backend API
   x_for_backend <- getDesignMatrix(x)
