@@ -11,6 +11,7 @@
 #' @param qualitative_vars_OD_only A list of indices or names for specifying which columns are qualitative and need only O-dummy representations.
 #' @param quantitative_vars A list of indices or names for specyfying which columns are quantitative.
 #' @param use_LVar A boolean value which indicates whether this function uses L-variable representations or not.
+#' @param LVar_extrapolation_flat A boolean value which indicates whether extrapolation for L-variable is flat or extend slop of boundary.
 #' @param add_linear_columns A boolean value which indicates whether this function uses linear effects or not.
 #' @param add_OD_columns_of_qualitatives A boolean value which indicates whether this function use O-dummy representations for qualitative and ordinal variables or not.
 #' @param add_interaction_columns A boolean value which indicates whether this function uses interaction effects or not.
@@ -36,6 +37,7 @@ cv.aglm <- function(x, y,
                     qualitative_vars_OD_only=NULL,
                     quantitative_vars=NULL,
                     use_LVar=FALSE,
+                    LVar_extrapolation_flat=FALSE,
                     add_linear_columns=TRUE,
                     add_OD_columns_of_qualitatives=TRUE,
                     add_interaction_columns=FALSE,
@@ -53,6 +55,7 @@ cv.aglm <- function(x, y,
                 qualitative_vars_OD_only=qualitative_vars_OD_only,
                 quantitative_vars=quantitative_vars,
                 use_LVar=use_LVar,
+                LVar_extrapolation_flat=LVar_extrapolation_flat,
                 add_linear_columns=add_linear_columns,
                 add_OD_columns_of_qualitatives=add_OD_columns_of_qualitatives,
                 add_interaction_columns=add_interaction_columns,
