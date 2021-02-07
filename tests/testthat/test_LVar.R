@@ -2,11 +2,17 @@ context("LVar")
 library(aglm)
 
 test_that("getLVarMatForOneVec()'s outputs are correct.", {
-  expect_equal(getLVarMatForOneVec(1:3)$dummy_mat, matrix(c(0, 1, 2, 1, 0, 1), 3, 2))
+  expect_equal(getLVarMatForOneVec(1:3)$dummy_mat, matrix(c(0, 1, 2, -1, 0, 1), 3, 2))
+  expect_equal(getLVarMatForOneVec(1:3, extrapolation_flat=TRUE)$dummy_mat,
+               matrix(c(0, 1, 1, 1, 0, 0), 3, 2))
   expect_equal(getLVarMatForOneVec(c(1, 1.5, 2, 2.3, 3), breaks=1:3)$dummy_mat,
-               matrix(c(0, 0.5, 1, 1.3, 2, 1, 0.5, 0, 0.3, 1), 5, 2))
+               matrix(c(0, 0.5, 1, 1.3, 2, -1, -0.5, 0, 0.3, 1), 5, 2))
+  expect_equal(getLVarMatForOneVec(c(1, 1.5, 2, 2.3, 3), breaks=1:3, extrapolation_flat=TRUE)$dummy_mat,
+               matrix(c(0, 0.5, 1, 1, 1, 1, 0.5, 0, 0, 0), 5, 2))
   expect_equal(getLVarMatForOneVec(c(1, 1.5, 2, 2.3, 3), breaks=c(0, 1.8, 4))$dummy_mat,
-               matrix(c(1, 1.5, 2, 2.3, 3, 0.8, 0.3, 0.2, 0.5, 1.2), 5, 2))
+               matrix(c(1, 1.5, 2, 2.3, 3, -0.8, -0.3, 0.2, 0.5, 1.2), 5, 2))
+  expect_equal(getLVarMatForOneVec(c(1, 1.5, 2, 2.3, 3), breaks=c(0, 1.8, 4), extrapolation_flat=TRUE)$dummy_mat,
+               matrix(c(1, 1.5, 1.8, 1.8, 1.8, 0.8, 0.3, 0, 0, 0), 5, 2))
 })
 
 createX <- function(nobs, nvar_numeric, seed=12345) {
