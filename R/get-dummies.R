@@ -104,6 +104,7 @@ getODummyMatForOneVec <- function(x_vec, breaks=NULL, nbin.max=100, only_info=FA
 #'   If NULL, evenly cut bins are automatically generated and used.
 #' @param nbin.max A maximum number of bins which is used. Only used when `breaks` is not set.
 #' @param only_info A boolean value. If TRUE, actual creation of dummy matrix is omitted.
+#' @param extrapolatin_flat A boolean value. If TRUE, extrapolation is flat, else extend slop of boundary.
 #'
 #' @return a list with two members `breaks` and `dummy_mat`.
 #' * `breaks`: Same as input
@@ -116,8 +117,8 @@ getODummyMatForOneVec <- function(x_vec, breaks=NULL, nbin.max=100, only_info=FA
 #'
 #' @export
 #' @importFrom assertthat assert_that
-getLVarMatForOneVec <- function(x_vec, breaks=NULL, nbin.max=100, only_info=FALSE) {
-  # Check arguments. only integer or numerical or ordered vectors are allowed.
+getLVarMatForOneVec <- function(x_vec, breaks=NULL, nbin.max=100, only_info=FALSE, extrapolation_flat=FALSE) {
+    # Check arguments. only integer or numerical or ordered vectors are allowed.
   assert_that(is.integer(x_vec) | is.numeric(x_vec) | is.ordered(x_vec))
 
   # Execute binning
@@ -128,7 +129,12 @@ getLVarMatForOneVec <- function(x_vec, breaks=NULL, nbin.max=100, only_info=FALS
   ncol <- length(binned_x$breaks) - 1
   X <- matrix(x_vec, nrow, ncol)
   B0 <- t(matrix(binned_x$breaks[1:ncol], ncol, nrow))
-  dummy_mat <- abs(X - B0)
+  if (extrapolation_flat) {
+    dummy_mat <- abs(pmax(pmin(X,max(B0)),min(B0)) - B0)
+  } else {
+    dummy_mat <- abs(X - B0)
+    dummy_mat[,c(1,ncol)] <- (X- B0)[,c(1,ncol)]
+  }
 
   if (only_info) return(list(breaks=binned_x$breaks))
   else return(list(breaks=binned_x$breaks, dummy_mat=dummy_mat))
