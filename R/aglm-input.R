@@ -18,6 +18,7 @@ newInput <- function(x,
                      qualitative_vars_OD_only=NULL,
                      quantitative_vars=NULL,
                      use_LVar=FALSE,
+                     LVar_extrapolation_flat=FALSE,
                      add_linear_columns=TRUE,
                      add_OD_columns_of_qualitatives=TRUE,
                      add_interaction_columns=TRUE,
@@ -70,6 +71,7 @@ newInput <- function(x,
       var$use_linear <- FALSE
       var$use_OD <- FALSE
     }
+    var$LV_flat <- LVar_extrapolation_flat
 
     vars_info[[i]] <- var
   }
@@ -269,7 +271,7 @@ getMatrixRepresentationByVector <- function(raw_vec, var_info, drop_OD=FALSE) {
   }
 
   if (var_info$use_LV & !drop_OD) {
-    z_LV <- getLVarMatForOneVec(raw_vec, breaks=var_info$LV_info$breaks)$dummy_mat
+    z_LV <- getLVarMatForOneVec(raw_vec, breaks=var_info$LV_info$breaks, extrapolation_flat=var_info$LV_flat)$dummy_mat
     colnames(z_LV) <- paste0(var_info$name, "_LV_", seq(dim(z_LV)[2]))
     z <- cbind(z, z_LV)
   }
