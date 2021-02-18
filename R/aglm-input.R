@@ -18,7 +18,7 @@ newInput <- function(x,
                      qualitative_vars_OD_only=NULL,
                      quantitative_vars=NULL,
                      use_LVar=FALSE,
-                     LVar_extrapolation_flat=FALSE,
+                     extrapolation="default",
                      add_linear_columns=TRUE,
                      add_OD_columns_of_qualitatives=TRUE,
                      add_interaction_columns=TRUE,
@@ -71,7 +71,7 @@ newInput <- function(x,
       var$use_linear <- FALSE
       var$use_OD <- FALSE
     }
-    var$LV_flat <- LVar_extrapolation_flat
+    var$extrap <- extrapolation
 
     vars_info[[i]] <- var
   }
@@ -266,12 +266,17 @@ getMatrixRepresentationByVector <- function(raw_vec, var_info, drop_OD=FALSE) {
   z <- NULL
 
   if (var_info$use_linear) {
+    if (var_info$extrap == "flat") {
+      raw_vec <- pmax(pmin(raw_vec, max(var_info$OD_info$breaks)), min(var_info$OD_info$breaks))
+    } else if (var_info$extrap != "default") {
+      assert_that(FALSE, msg="extrap must be 'default' or 'flat'.")
+    }
     z <- matrix(raw_vec, ncol=1)
     colnames(z) <- var_info$name
   }
 
   if (var_info$use_LV & !drop_OD) {
-    z_LV <- getLVarMatForOneVec(raw_vec, breaks=var_info$LV_info$breaks, extrapolation_flat=var_info$LV_flat)$dummy_mat
+    z_LV <- getLVarMatForOneVec(raw_vec, breaks=var_info$LV_info$breaks, extrapolation=var_info$extrap)$dummy_mat
     colnames(z_LV) <- paste0(var_info$name, "_LV_", seq(dim(z_LV)[2]))
     z <- cbind(z, z_LV)
   }
