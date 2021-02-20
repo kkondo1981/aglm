@@ -11,7 +11,9 @@
 #' @param qualitative_vars_OD_only A list of indices or names for specifying which columns are qualitative and need only O-dummy representations.
 #' @param quantitative_vars A list of indices or names for specyfying which columns are quantitative.
 #' @param use_LVar A boolean value which indicates whether this function uses L-variable representations or not.
-#' @param extrapolation A type how extrapolate for left boundary. ('flat' or 'default')
+#' @param extrapolation A character value which indicates how contribution curves outside bins are extrapolated.
+#'   * "default": No extrapolations.
+#'   * "flat": Extrapolates with flat lines.
 #' @param add_linear_columns A boolean value which indicates whether this function uses linear effects or not.
 #' @param add_OD_columns_of_qualitatives A boolean value which indicates whether this function use O-dummy representations for qualitative and ordinal variables or not.
 #' @param add_interaction_columns A boolean value which indicates whether this function uses interaction effects or not.
