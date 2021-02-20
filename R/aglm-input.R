@@ -290,7 +290,7 @@ getMatrixRepresentationByVector <- function(raw_vec, var_info, drop_OD=FALSE) {
 
   if (var_info$use_OD & !drop_OD) {
     z_OD <- getODummyMatForOneVec(x_vec, breaks=var_info$OD_info$breaks, dummy_type=var_info$OD_type)$dummy_mat
-    if (!is.null(z_LV)) {
+    if (!is.null(z_OD)) {
       colnames(z_OD) <- paste0(var_info$name, "_OD_", seq(dim(z_OD)[2]))
       z <- cbind(z, z_OD)
     }
@@ -299,7 +299,7 @@ getMatrixRepresentationByVector <- function(raw_vec, var_info, drop_OD=FALSE) {
   if (var_info$use_UD) {
     z_UD <- getUDummyMatForOneVec(x_vec, levels=var_info$UD_info$levels,
                                   drop_last=var_info$UD_info$drop_last)$dummy_mat
-    if (!is.null(z_LV)) {
+    if (!is.null(z_UD)) {
       colnames(z_UD) <- paste0(var_info$name, "_UD_", seq(dim(z_UD)[2]))
       z <- cbind(z, z_UD)
     }
