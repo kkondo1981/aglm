@@ -48,10 +48,10 @@ getUDummyMatForOneVec <- function(x_vec, levels=NULL, drop_last=TRUE, only_info=
 #'   If NULL, evenly cut bins are automatically generated and used.
 #' @param nbin.max A maximum number of bins which is used. Only used when `breaks` is not set.
 #' @param only_info A boolean value. If TRUE, actual creation of dummy matrix is omitted.
-#' @param dummy_type A character value. Choose 'C'(default) or 'J'. For integer or numeric `x_vec`,
-#'  `dummy_type='C'` is used as default. Otherwise, `dummy_type='J'` is used as default.
-#'   * 'C': Continuous-type dummies, which result continuous contribution curves.
-#'   * 'J': Jum-type dummies, which result contribution curves with jumps.
+#' @param dummy_type A character value. Choose "C"(default) or "J". For integer or numeric `x_vec`,
+#'  `dummy_type="C"` is used as default. Otherwise, `dummy_type="J"` is used as default.
+#'   * "C": Continuous-type dummies, which result continuous contribution curves.
+#'   * "J": Jum-type dummies, which result contribution curves with jumps.
 #'
 #' @return a list with two members `breaks` and `dummy_mat`.
 #' * `breaks`: Same as input
@@ -68,15 +68,15 @@ getODummyMatForOneVec <- function(x_vec, breaks=NULL, nbin.max=100, only_info=FA
   # Check arguments. only integer or numerical or ordered vectors are allowed.
   assert_that(is.integer(x_vec) | is.numeric(x_vec) | is.ordered(x_vec))
   if (is.null(dummy_type)) {
-    if (is.ordered(x_vec)) dummy_type <- 'J'
-    else dummy_type <- 'C'
+    if (is.ordered(x_vec)) dummy_type <- "J"
+    else dummy_type <- "C"
   }
 
   # Execute binning
   binned_x <- executeBinning(x_vec, breaks=breaks, nbin.max=nbin.max)
 
   # create dummy matrix for x_vec
-  if (dummy_type == 'C') {
+  if (dummy_type == "C") {
     nrow <- length(x_vec)
     ncol <- length(binned_x$breaks) - 1
     X <- matrix(x_vec, nrow, ncol)
@@ -85,12 +85,12 @@ getODummyMatForOneVec <- function(x_vec, breaks=NULL, nbin.max=100, only_info=FA
     dummy_mat <- (X - B0) / (B1 - B0)
     dummy_mat[dummy_mat <= 0] <- 0
     dummy_mat[dummy_mat >= 1] <- 1
-  } else if (dummy_type == 'J') {
+  } else if (dummy_type == "J") {
     nrow <- length(x_vec)
     ncol <- length(binned_x$breaks)
     dummy_mat <- 1 * (binned_x$labels > t(matrix(1:ncol, ncol, nrow)))
   } else {
-    assert_that(FALSE, msg="dummy_type must be 'C' or 'J'.")
+    assert_that(FALSE, msg="dummy_type must be \"C\" or \"J\".")
   }
 
   if (only_info) return(list(breaks=binned_x$breaks))

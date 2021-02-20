@@ -271,7 +271,7 @@ getMatrixRepresentationByVector <- function(raw_vec, var_info, drop_OD=FALSE) {
     # It's expected that min is the first and max is the last, but calculate them for safety.
     x_vec <- pmax(pmin(x_vec, max(breaks)), min(breaks))
   } else {
-    assert_that(var_info$extrapolation == "default", msg="extrapolation must be 'default' or 'flat'.")
+    assert_that(var_info$extrapolation == "default", msg="extrapolation must be \"default\" or \"flat\".")
   }
 
   z <- NULL
