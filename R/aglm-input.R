@@ -71,7 +71,7 @@ newInput <- function(x,
       var$use_linear <- FALSE
       var$use_OD <- FALSE
     }
-    var$extrap <- extrapolation
+    var$extrapolation <- extrapolation
 
     vars_info[[i]] <- var
   }
@@ -263,32 +263,38 @@ newInput <- function(x,
 getMatrixRepresentationByVector <- function(raw_vec, var_info, drop_OD=FALSE) {
   assert_that(var_info$type != "inter")
 
+  x_vec <- raw_vec
+  if (var_info$extrapolation == "flat") {
+    breaks <- if (var_info$use_LV) var_info$LV_info$breaks else var_info$OD_info$breaks
+    assert_that(!is.null(breaks), msg=paste0("No breaks are found for var ", var_info$name, "."))
+
+    # It's expected that min is the first and max is the last, but calculate them for safety.
+    x_vec <- pmax(pmin(x_vec, max(breaks)), min(breaks))
+  } else {
+    assert_that(var_info$extrapolation == "default", msg="extrapolation must be 'default' or 'flat'.")
+  }
+
   z <- NULL
 
   if (var_info$use_linear) {
-    if (var_info$extrap == "flat") {
-      raw_vec <- pmax(pmin(raw_vec, max(var_info$OD_info$breaks)), min(var_info$OD_info$breaks))
-    } else if (var_info$extrap != "default") {
-      assert_that(FALSE, msg="extrap must be 'default' or 'flat'.")
-    }
-    z <- matrix(raw_vec, ncol=1)
+    z <- matrix(x_vec, ncol=1)
     colnames(z) <- var_info$name
   }
 
   if (var_info$use_LV & !drop_OD) {
-    z_LV <- getLVarMatForOneVec(raw_vec, breaks=var_info$LV_info$breaks, extrapolation=var_info$extrap)$dummy_mat
+    z_LV <- getLVarMatForOneVec(x_vec, breaks=var_info$LV_info$breaks)$dummy_mat
     colnames(z_LV) <- paste0(var_info$name, "_LV_", seq(dim(z_LV)[2]))
     z <- cbind(z, z_LV)
   }
 
   if (var_info$use_OD & !drop_OD) {
-    z_OD <- getODummyMatForOneVec(raw_vec, breaks=var_info$OD_info$breaks, dummy_type=var_info$OD_type)$dummy_mat
+    z_OD <- getODummyMatForOneVec(x_vec, breaks=var_info$OD_info$breaks, dummy_type=var_info$OD_type)$dummy_mat
     colnames(z_OD) <- paste0(var_info$name, "_OD_", seq(dim(z_OD)[2]))
     z <- cbind(z, z_OD)
   }
 
   if (var_info$use_UD) {
-    z_UD <- getUDummyMatForOneVec(raw_vec, levels=var_info$UD_info$levels,
+    z_UD <- getUDummyMatForOneVec(x_vec, levels=var_info$UD_info$levels,
                                   drop_last=var_info$UD_info$drop_last)$dummy_mat
     colnames(z_UD) <- paste0(var_info$name, "_UD_", seq(dim(z_UD)[2]))
     z <- cbind(z, z_UD)

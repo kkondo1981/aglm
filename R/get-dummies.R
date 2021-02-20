@@ -104,7 +104,6 @@ getODummyMatForOneVec <- function(x_vec, breaks=NULL, nbin.max=100, only_info=FA
 #'   If NULL, evenly cut bins are automatically generated and used.
 #' @param nbin.max A maximum number of bins which is used. Only used when `breaks` is not set.
 #' @param only_info A boolean value. If TRUE, actual creation of dummy matrix is omitted.
-#' @param extrapolation A type how extrapolate for left boundary. ('flat' or 'default')
 #'
 #' @return a list with two members `breaks` and `dummy_mat`.
 #' * `breaks`: Same as input
@@ -117,18 +116,12 @@ getODummyMatForOneVec <- function(x_vec, breaks=NULL, nbin.max=100, only_info=FA
 #'
 #' @export
 #' @importFrom assertthat assert_that
-getLVarMatForOneVec <- function(x_vec, breaks=NULL, nbin.max=100, only_info=FALSE, extrapolation="default") {
-    # Check arguments. only integer or numerical or ordered vectors are allowed.
+getLVarMatForOneVec <- function(x_vec, breaks=NULL, nbin.max=100, only_info=FALSE) {
+  # Check arguments. only integer or numerical or ordered vectors are allowed.
   assert_that(is.integer(x_vec) | is.numeric(x_vec) | is.ordered(x_vec))
 
   # Execute binning
   binned_x <- executeBinning(x_vec, breaks=breaks, nbin.max=nbin.max)
-
-  if (extrapolation == "flat"){
-    x_vec <- pmax(pmin(x_vec, max(binned_x$breaks)), min(binned_x$breaks))
-  } else if (extrapolation != "default") {
-    assert_that(FALSE, msg="extrapolation must be 'default' or 'flat'.")
-  }
 
   # create dummy matrix for x_vec
   nrow <- length(x_vec)
