@@ -212,8 +212,9 @@ newInput <- function(x,
       for (i in seq(length(bins_list))) {
         name <- bins_names[[i]]
         idx <- idx_map[[name]]
-        if (vars_info[[idx]]$use_OD) vars_info[[idx]]$OD_info$breaks <- bins_list[[i]]
-        if (vars_info[[idx]]$use_LV) vars_info[[idx]]$LV_info$breaks <- bins_list[[i]]
+        breaks <- bins_list[[i]]
+        if (vars_info[[idx]]$use_OD) vars_info[[idx]]$OD_info$breaks <- unique(sort(breaks[is.finite(breaks)]))
+        if (vars_info[[idx]]$use_LV) vars_info[[idx]]$LV_info$breaks <- unique(sort(breaks[is.finite(breaks)]))
       }
     }
   }
