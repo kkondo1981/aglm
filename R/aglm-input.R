@@ -22,7 +22,7 @@ newInput <- function(x,
                      add_linear_columns=TRUE,
                      add_OD_columns_of_qualitatives=TRUE,
                      add_interaction_columns=TRUE,
-                     OD_type_of_quantitatives='C',
+                     OD_type_of_quantitatives="C",
                      nbin.max=NULL,
                      bins_list=NULL,
                      bins_names=NULL) {
@@ -52,11 +52,11 @@ newInput <- function(x,
 
     var$use_linear <- var$type == "quan" & add_linear_columns
     var$use_UD <- var$type == "qual"
-    var$use_OD <- (var$type == "quan" & OD_type_of_quantitatives != 'N') |
+    var$use_OD <- (var$type == "quan" & OD_type_of_quantitatives != "N") |
       (var$type == "qual" & is_ordered & add_OD_columns_of_qualitatives)
     if (var$use_OD) {
       if (var$type == "quan") var$OD_type <- OD_type_of_quantitatives
-      else var$OD_type <- 'J'
+      else var$OD_type <- "J"
     } else {
       if (var$type == "quan") {
         # Even cases not using O-dummies for quantitatives,

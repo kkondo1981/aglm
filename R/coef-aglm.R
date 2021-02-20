@@ -32,7 +32,7 @@ coef.AccurateGLM <- function(model, index=NULL, name=NULL, s=NULL, exact=FALSE, 
       ncol_OD <- 0
       if(var_info$use_OD) {
         ncol_OD <- length(var_info$OD_info$breaks)
-        if (var_info$OD_type == 'C') ncol_OD <- ncol_OD - 1
+        if (var_info$OD_type == "C") ncol_OD <- ncol_OD - 1
       }
 
       ncol_UD <- 0
