@@ -18,10 +18,11 @@ newInput <- function(x,
                      qualitative_vars_OD_only=NULL,
                      quantitative_vars=NULL,
                      use_LVar=FALSE,
+                     extrapolation="default",
                      add_linear_columns=TRUE,
                      add_OD_columns_of_qualitatives=TRUE,
                      add_interaction_columns=TRUE,
-                     OD_type_of_quantitatives='C',
+                     OD_type_of_quantitatives="C",
                      nbin.max=NULL,
                      bins_list=NULL,
                      bins_names=NULL) {
@@ -51,11 +52,11 @@ newInput <- function(x,
 
     var$use_linear <- var$type == "quan" & add_linear_columns
     var$use_UD <- var$type == "qual"
-    var$use_OD <- (var$type == "quan" & OD_type_of_quantitatives != 'N') |
+    var$use_OD <- (var$type == "quan" & OD_type_of_quantitatives != "N") |
       (var$type == "qual" & is_ordered & add_OD_columns_of_qualitatives)
     if (var$use_OD) {
       if (var$type == "quan") var$OD_type <- OD_type_of_quantitatives
-      else var$OD_type <- 'J'
+      else var$OD_type <- "J"
     } else {
       if (var$type == "quan") {
         # Even cases not using O-dummies for quantitatives,
@@ -67,9 +68,9 @@ newInput <- function(x,
     }
     var$use_LV <- var$type == "quan" & use_LVar
     if (var$use_LV) {
-      var$use_linear <- FALSE
       var$use_OD <- FALSE
     }
+    var$extrapolation <- extrapolation
 
     vars_info[[i]] <- var
   }
@@ -151,7 +152,7 @@ newInput <- function(x,
     var <- vars_info[[i]]
     var$type <- "quan"
 
-    var$use_linear <- !use_LVar & add_linear_columns
+    var$use_linear <- add_linear_columns
     var$use_UD <- FALSE
     var$use_OD <- !use_LVar
     var$use_LV <- use_LVar
@@ -211,8 +212,9 @@ newInput <- function(x,
       for (i in seq(length(bins_list))) {
         name <- bins_names[[i]]
         idx <- idx_map[[name]]
-        if (vars_info[[idx]]$use_OD) vars_info[[idx]]$OD_info$breaks <- bins_list[[i]]
-        if (vars_info[[idx]]$use_LV) vars_info[[idx]]$LV_info$breaks <- bins_list[[i]]
+        breaks <- bins_list[[i]]
+        if (vars_info[[idx]]$use_OD) vars_info[[idx]]$OD_info$breaks <- unique(sort(breaks[is.finite(breaks)]))
+        if (vars_info[[idx]]$use_LV) vars_info[[idx]]$LV_info$breaks <- unique(sort(breaks[is.finite(breaks)]))
       }
     }
   }
@@ -261,30 +263,47 @@ newInput <- function(x,
 getMatrixRepresentationByVector <- function(raw_vec, var_info, drop_OD=FALSE) {
   assert_that(var_info$type != "inter")
 
+  x_vec <- raw_vec
+  if (var_info$extrapolation == "flat") {
+    breaks <- if (var_info$use_LV) var_info$LV_info$breaks else var_info$OD_info$breaks
+    assert_that(!is.null(breaks), msg=paste0("No breaks are found for var ", var_info$name, "."))
+
+    # It's expected that min is the first and max is the last, but calculate them for safety.
+    x_vec <- pmax(pmin(x_vec, max(breaks)), min(breaks))
+  } else {
+    assert_that(var_info$extrapolation == "default", msg="extrapolation must be \"default\" or \"flat\".")
+  }
+
   z <- NULL
 
   if (var_info$use_linear) {
-    z <- matrix(raw_vec, ncol=1)
+    z <- matrix(x_vec, ncol=1)
     colnames(z) <- var_info$name
   }
 
   if (var_info$use_LV & !drop_OD) {
-    z_LV <- getLVarMatForOneVec(raw_vec, breaks=var_info$LV_info$breaks)$dummy_mat
-    colnames(z_LV) <- paste0(var_info$name, "_LV_", seq(dim(z_LV)[2]))
-    z <- cbind(z, z_LV)
+    z_LV <- getLVarMatForOneVec(x_vec, breaks=var_info$LV_info$breaks)$dummy_mat
+    if (!is.null(z_LV)) {
+      colnames(z_LV) <- paste0(var_info$name, "_LV_", seq(dim(z_LV)[2]))
+      z <- cbind(z, z_LV)
+    }
   }
 
   if (var_info$use_OD & !drop_OD) {
-    z_OD <- getODummyMatForOneVec(raw_vec, breaks=var_info$OD_info$breaks, dummy_type=var_info$OD_type)$dummy_mat
-    colnames(z_OD) <- paste0(var_info$name, "_OD_", seq(dim(z_OD)[2]))
-    z <- cbind(z, z_OD)
+    z_OD <- getODummyMatForOneVec(x_vec, breaks=var_info$OD_info$breaks, dummy_type=var_info$OD_type)$dummy_mat
+    if (!is.null(z_OD)) {
+      colnames(z_OD) <- paste0(var_info$name, "_OD_", seq(dim(z_OD)[2]))
+      z <- cbind(z, z_OD)
+    }
   }
 
   if (var_info$use_UD) {
-    z_UD <- getUDummyMatForOneVec(raw_vec, levels=var_info$UD_info$levels,
+    z_UD <- getUDummyMatForOneVec(x_vec, levels=var_info$UD_info$levels,
                                   drop_last=var_info$UD_info$drop_last)$dummy_mat
-    colnames(z_UD) <- paste0(var_info$name, "_UD_", seq(dim(z_UD)[2]))
-    z <- cbind(z, z_UD)
+    if (!is.null(z_UD)) {
+      colnames(z_UD) <- paste0(var_info$name, "_UD_", seq(dim(z_UD)[2]))
+      z <- cbind(z, z_UD)
+    }
   }
 
   return(z)

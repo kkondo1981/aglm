@@ -11,14 +11,17 @@
 #' @param qualitative_vars_OD_only A list of indices or names for specifying which columns are qualitative and need only O-dummy representations.
 #' @param quantitative_vars A list of indices or names for specyfying which columns are quantitative.
 #' @param use_LVar A boolean value which indicates whether this function uses L-variable representations or not.
+#' @param extrapolation A character value which indicates how contribution curves outside bins are extrapolated.
+#'   * "default": No extrapolations.
+#'   * "flat": Extrapolates with flat lines.
 #' @param add_linear_columns A boolean value which indicates whether this function uses linear effects or not.
 #' @param add_OD_columns_of_qualitatives A boolean value which indicates whether this function use O-dummy representations for qualitative and ordinal variables or not.
 #' @param add_interaction_columns A boolean value which indicates whether this function uses interaction effects or not.
 #' @param OD_type_of_quantitatives A character value which indicates how O-dummy matrices of quantitative
-#'   values are constructed. Choose 'C'(default) or 'J'.
-#'   * 'C': Continuous-type dummies, which result continuous contribution curves.
-#'   * 'J': Jum-type dummies, which result contribution curves with jumps.
-#'   * 'N': No use of O-dummies
+#'   values are constructed. Choose "C"(default) or "J".
+#'   * "C": Continuous-type dummies, which result continuous contribution curves.
+#'   * "J": Jump-type dummies, which result contribution curves with jumps.
+#'   * "N": No use of O-dummies
 #' @param family Response type. Currently "gaussian", "binomial", and "poisson" are supported.
 #' @param nbin.max a maximum number of bins which is automatically generated. Only used when `breaks` is not set.
 #' @param bins_list A list of numeric vectors, each element of which is used as breaks when binning of a quantitative variable or a qualitative variable with order.
@@ -36,10 +39,11 @@ cv.aglm <- function(x, y,
                     qualitative_vars_OD_only=NULL,
                     quantitative_vars=NULL,
                     use_LVar=FALSE,
+                    extrapolation="default",
                     add_linear_columns=TRUE,
                     add_OD_columns_of_qualitatives=TRUE,
                     add_interaction_columns=FALSE,
-                    OD_type_of_quantitatives='C',
+                    OD_type_of_quantitatives="C",
                     nbin.max=NULL,
                     bins_list=NULL,
                     bins_names=NULL,
@@ -53,6 +57,7 @@ cv.aglm <- function(x, y,
                 qualitative_vars_OD_only=qualitative_vars_OD_only,
                 quantitative_vars=quantitative_vars,
                 use_LVar=use_LVar,
+                extrapolation=extrapolation,
                 add_linear_columns=add_linear_columns,
                 add_OD_columns_of_qualitatives=add_OD_columns_of_qualitatives,
                 add_interaction_columns=add_interaction_columns,

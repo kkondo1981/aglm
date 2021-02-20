@@ -17,4 +17,3 @@ cat("lambda.min: ", lambda.min, "\n")
 
 ## Plots coefs of cross-validated model
 plot(cv.model, s=cv.model@lambda.min, resid=TRUE, add_rug=TRUE)
-
