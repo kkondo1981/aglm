@@ -39,7 +39,8 @@ coef.AccurateGLM <- function(model, index=NULL, name=NULL, s=NULL, exact=FALSE, 
       if(var_info$use_UD) ncol_UD <- length(var_info$UD_info$levels) - var_info$UD_info$drop_last
 
       ncol_LV <- 0
-      if(var_info$use_LV) ncol_LV <- length(var_info$LV_info$breaks) - 1
+      # In case length(LV_info$breaks) <= 2, there are no internal breaks, and so only a linear column is created.
+      if(var_info$use_LV & length(var_info$LV_info$breaks) > 2) ncol_LV <- length(var_info$LV_info$breaks) - 2
 
       if (i == index) {
         c <- list()

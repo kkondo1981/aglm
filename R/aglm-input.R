@@ -68,7 +68,6 @@ newInput <- function(x,
     }
     var$use_LV <- var$type == "quan" & use_LVar
     if (var$use_LV) {
-      var$use_linear <- FALSE
       var$use_OD <- FALSE
     }
     var$extrapolation <- extrapolation
@@ -153,7 +152,7 @@ newInput <- function(x,
     var <- vars_info[[i]]
     var$type <- "quan"
 
-    var$use_linear <- !use_LVar & add_linear_columns
+    var$use_linear <- add_linear_columns
     var$use_UD <- FALSE
     var$use_OD <- !use_LVar
     var$use_LV <- use_LVar
@@ -283,21 +282,27 @@ getMatrixRepresentationByVector <- function(raw_vec, var_info, drop_OD=FALSE) {
 
   if (var_info$use_LV & !drop_OD) {
     z_LV <- getLVarMatForOneVec(x_vec, breaks=var_info$LV_info$breaks)$dummy_mat
-    colnames(z_LV) <- paste0(var_info$name, "_LV_", seq(dim(z_LV)[2]))
-    z <- cbind(z, z_LV)
+    if (!is.null(z_LV)) {
+      colnames(z_LV) <- paste0(var_info$name, "_LV_", seq(dim(z_LV)[2]))
+      z <- cbind(z, z_LV)
+    }
   }
 
   if (var_info$use_OD & !drop_OD) {
     z_OD <- getODummyMatForOneVec(x_vec, breaks=var_info$OD_info$breaks, dummy_type=var_info$OD_type)$dummy_mat
-    colnames(z_OD) <- paste0(var_info$name, "_OD_", seq(dim(z_OD)[2]))
-    z <- cbind(z, z_OD)
+    if (!is.null(z_LV)) {
+      colnames(z_OD) <- paste0(var_info$name, "_OD_", seq(dim(z_OD)[2]))
+      z <- cbind(z, z_OD)
+    }
   }
 
   if (var_info$use_UD) {
     z_UD <- getUDummyMatForOneVec(x_vec, levels=var_info$UD_info$levels,
                                   drop_last=var_info$UD_info$drop_last)$dummy_mat
-    colnames(z_UD) <- paste0(var_info$name, "_UD_", seq(dim(z_UD)[2]))
-    z <- cbind(z, z_UD)
+    if (!is.null(z_LV)) {
+      colnames(z_UD) <- paste0(var_info$name, "_UD_", seq(dim(z_UD)[2]))
+      z <- cbind(z, z_UD)
+    }
   }
 
   return(z)

@@ -125,11 +125,14 @@ getLVarMatForOneVec <- function(x_vec, breaks=NULL, nbin.max=100, only_info=FALS
 
   # create dummy matrix for x_vec
   nrow <- length(x_vec)
-  ncol <- length(binned_x$breaks) - 1
-  X <- matrix(x_vec, nrow, ncol)
-  B0 <- t(matrix(binned_x$breaks[1:ncol], ncol, nrow))
-  dummy_mat <- abs(X - B0)
-  dummy_mat[, 1] <- (X- B0)[, 1]
+  ncol <- length(binned_x$breaks) - 2
+  if (ncol < 1) {
+    dummy_mat <- NULL
+  } else {
+    X <- matrix(x_vec, nrow, ncol)
+    B0 <- t(matrix(binned_x$breaks[2:(ncol + 1)], ncol, nrow))
+    dummy_mat <- abs(X - B0)
+  }
 
   if (only_info) return(list(breaks=binned_x$breaks))
   else return(list(breaks=binned_x$breaks, dummy_mat=dummy_mat))
