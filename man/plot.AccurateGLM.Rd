@@ -55,6 +55,8 @@ The default value is \code{TRUE}.}
 \item{main}{A character value which indicates titles of panels.}
 
 \item{add_rug}{A boolean value which indicates draw rugplot for quantitative variables.}
+
+\item{...}{Other arguments are currently not used.}
 }
 \description{
 Plot coefficients from an AccurateGLM object

@@ -19,6 +19,9 @@
 
 \item{newx}{An input matrix or data.frame used for predictions.}
 
+\item{s}{Value(s) of the penalty parameter \code{lambda} at which predictions are required.
+Default is the entire sequence used to create the model.}
+
 \item{type}{Type of prediction required.
 \itemize{
 \item Type \code{"link"} gives the linear predictors for \code{"binomial"}, \code{"poisson"} models, and for \code{"gaussian"} models it gives the fitted values.
@@ -28,6 +31,10 @@ Note that for \code{"binomial"} models, results are returned only for the class 
 \item Type \code{"class"} applies only to \code{"binomial"}, and produces the  class label corresponding to the maximum probability.
 \item Type \code{"nonzero"} returns a list of the indices of the nonzero coefficients for each value of \code{s}.
 }}
+
+\item{exact}{Same as predict.glmnet().}
+
+\item{newoffset}{If an offset is used in the fit, then one must be supplied for making predictions (except for type="coefficients" or type="nonzero").}
 
 \item{...}{Other arguments are passed directly to backend (currently glmnet() is used), and if not given, backend API's deault values are used.}
 }

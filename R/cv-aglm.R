@@ -26,6 +26,7 @@
 #' @param nbin.max a maximum number of bins which is automatically generated. Only used when `breaks` is not set.
 #' @param bins_list A list of numeric vectors, each element of which is used as breaks when binning of a quantitative variable or a qualitative variable with order.
 #' @param bins_names A list of column name or column index, each name or index of which specifies which column of `x` is binned used with an element of `bins_list` in the same position.
+#' @param keep Same as cv.glmnet().
 #' @param ... Other arguments are passed directly to backend (currently cv.glmnet() is used), and if not given, backend API's default values are used to call backend functions.
 #'
 #' @return Result of cross-validation.

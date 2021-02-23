@@ -26,6 +26,7 @@
 #' @param only_plot If `TRUE`, the function set no graphical parameters and no title.
 #' @param main A character value which indicates titles of panels.
 #' @param add_rug A boolean value which indicates draw rugplot for quantitative variables.
+#' @param ... Other arguments are currently not used.
 #'
 #' @export
 #' @importFrom assertthat assert_that

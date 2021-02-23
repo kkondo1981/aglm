@@ -4,8 +4,11 @@
 #' Extract coefficients from an AccurateGLM object.
 #'
 #' @param object An AccurateGLM object.
+#' @param index An integer vector of variable indices whose coefficients should be returned.
+#' @param name An character vector of variable names whose coefficients should be returned.
 #' @param s  Value(s) of the penalty parameter `lambda` at which predictions are required.
 #'   Default is the entire sequence used to create the model.
+#' @param exact Same as coef.glmnet().
 #' @param ... Other arguments are passed directly to `deviance` functions of `model@backend_models`.
 #'
 #' @importFrom assertthat assert_that

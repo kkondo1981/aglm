@@ -68,6 +68,8 @@ values are constructed. Choose "C"(default) or "J".
 
 \item{family}{Response type. Currently "gaussian", "binomial", and "poisson" are supported.}
 
+\item{keep}{Same as cv.glmnet().}
+
 \item{...}{Other arguments are passed directly to backend (currently cv.glmnet() is used), and if not given, backend API's default values are used to call backend functions.}
 }
 \value{

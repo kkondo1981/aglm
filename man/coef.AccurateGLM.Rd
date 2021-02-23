@@ -9,8 +9,14 @@
 \arguments{
 \item{object}{An AccurateGLM object.}
 
+\item{index}{An integer vector of variable indices whose coefficients should be returned.}
+
+\item{name}{An character vector of variable names whose coefficients should be returned.}
+
 \item{s}{Value(s) of the penalty parameter \code{lambda} at which predictions are required.
 Default is the entire sequence used to create the model.}
+
+\item{exact}{Same as coef.glmnet().}
 
 \item{...}{Other arguments are passed directly to \code{deviance} functions of \code{model@backend_models}.}
 }

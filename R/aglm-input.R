@@ -10,7 +10,7 @@ setClass("AGLM_Input",
          representation=representation(vars_info="list", data="data.frame"))
 
 
-#' Create a new AGLM_Input object
+# An inner-use function for creating a new AGLM_Input object
 #' @importFrom assertthat assert_that
 #' @importFrom methods new
 newInput <- function(x,
