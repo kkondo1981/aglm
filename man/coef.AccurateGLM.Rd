@@ -4,10 +4,10 @@
 \alias{coef.AccurateGLM}
 \title{Extract coefficients from an AccurateGLM object.}
 \usage{
-\method{coef}{AccurateGLM}(model, index = NULL, name = NULL, s = NULL, exact = FALSE, ...)
+\method{coef}{AccurateGLM}(object, index = NULL, name = NULL, s = NULL, exact = FALSE, ...)
 }
 \arguments{
-\item{model}{An AccurateGLM object.}
+\item{object}{An AccurateGLM object.}
 
 \item{s}{Value(s) of the penalty parameter \code{lambda} at which predictions are required.
 Default is the entire sequence used to create the model.}

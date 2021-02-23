@@ -3,7 +3,7 @@
 
 #' Make predictions from a fitted AccurateGLM
 #'
-#' @param model An AccurateGLM object.
+#' @param object An AccurateGLM object.
 #' @param newx An input matrix or data.frame used for predictions.
 #' @param type Type of prediction required.
 #'   * Type `"link"` gives the linear predictors for `"binomial"`, `"poisson"` models, and for `"gaussian"` models it gives the fitted values.
@@ -19,13 +19,19 @@
 #' @export
 #' @importFrom assertthat assert_that
 #' @importFrom glmnet predict.glmnet
-predict.AccurateGLM <- function(model,
+predict.AccurateGLM <- function(object,
                                 newx=NULL,
                                 s=NULL,
                                 type=c("link","response","coefficients","nonzero","class"),
                                 exact=FALSE,
                                 newoffset,
                                 ...) {
+  # It's necessary to use same names for some arguments as the original methods,
+  # because devtools::check() issues warnings when using inconsistent names.
+  # As a result, we sometimes should accept uncomfortable argument names,
+  # but still have rights to use preferable names internally.
+  model <- object
+
   # Check and set `type`
   type <- match.arg(type)
 

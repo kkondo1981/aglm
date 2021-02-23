@@ -5,7 +5,7 @@
 \title{Plot coefficients from an AccurateGLM object}
 \usage{
 \method{plot}{AccurateGLM}(
-  model,
+  x,
   vars = NULL,
   verbose = TRUE,
   s = NULL,
@@ -21,7 +21,7 @@
 )
 }
 \arguments{
-\item{model}{An AccurateGLM object.}
+\item{x}{An AccurateGLM object.}
 
 \item{vars}{An integer or character vectors (indices or names) specifying which variables should be plotted.}
 

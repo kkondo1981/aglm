@@ -3,7 +3,7 @@
 
 #' Plot coefficients from an AccurateGLM object
 #'
-#' @param model An AccurateGLM object.
+#' @param x An AccurateGLM object.
 #' @param vars An integer or character vectors (indices or names) specifying which variables should be plotted.
 #' @param verbose If TRUE, outputs details.
 #' @param s A numeric value specifying lambda value at which plotting is required.
@@ -29,7 +29,7 @@
 #'
 #' @export
 #' @importFrom assertthat assert_that
-plot.AccurateGLM <- function(model,
+plot.AccurateGLM <- function(x,
                              vars=NULL,
                              verbose=TRUE,
                              s=NULL,
@@ -42,6 +42,12 @@ plot.AccurateGLM <- function(model,
                              main="",
                              add_rug=FALSE,
                              ...) {
+  # It's necessary to use same names for some arguments as the original methods,
+  # because devtools::check() issues warnings when using inconsistent names.
+  # As a result, we sometimes should accept uncomfortable argument names,
+  # but still have rights to use preferable names internally.
+  model <- x
+
   nvars <- length(model@vars_info)
 
   if (is.null(vars)) {

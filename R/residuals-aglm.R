@@ -3,7 +3,7 @@
 
 #' Calculate residuals for AGLM model
 #'
-#' @param model An AccurateGLM object.
+#' @param object An AccurateGLM object.
 #' @param type Type of prediction required.
 #'   * Type `"working"` Working residuals.
 #'   * Type `"pearson"` Pearson residuals.
@@ -14,13 +14,20 @@
 #'
 #' @export
 #' @importFrom assertthat assert_that
-residuals.AccurateGLM <- function(model,
+residuals.AccurateGLM <- function(object,
                                   x=NULL,
                                   y=NULL,
                                   offset=NULL,
                                   weights=NULL,
                                   type=c("working", "pearson", "deviance"),
-                                  s=NULL) {
+                                  s=NULL,
+                                  ...) {
+  # It's necessary to use same names for some arguments as the original methods,
+  # because devtools::check() issues warnings when using inconsistent names.
+  # As a result, we sometimes should accept uncomfortable argument names,
+  # but still have rights to use preferable names internally.
+  model <- object
+
   # Check and set `type`
   type <- match.arg(type)
 

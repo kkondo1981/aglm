@@ -5,17 +5,18 @@
 \title{Calculate residuals for AGLM model}
 \usage{
 \method{residuals}{AccurateGLM}(
-  model,
+  object,
   x = NULL,
   y = NULL,
   offset = NULL,
   weights = NULL,
   type = c("working", "pearson", "deviance"),
-  s = NULL
+  s = NULL,
+  ...
 )
 }
 \arguments{
-\item{model}{An AccurateGLM object.}
+\item{object}{An AccurateGLM object.}
 
 \item{type}{Type of prediction required.
 \itemize{

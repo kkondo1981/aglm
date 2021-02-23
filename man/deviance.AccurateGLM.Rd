@@ -4,10 +4,10 @@
 \alias{deviance.AccurateGLM}
 \title{Extract the deviance from an AccurateGLM object.}
 \usage{
-\method{deviance}{AccurateGLM}(model, ...)
+\method{deviance}{AccurateGLM}(object, ...)
 }
 \arguments{
-\item{model}{An AccurateGLM object.}
+\item{object}{An AccurateGLM object.}
 
 \item{...}{Other arguments are passed directly to \code{deviance} functions of \code{model@backend_models}.}
 }

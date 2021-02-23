@@ -5,7 +5,7 @@
 \title{Make predictions from a fitted AccurateGLM}
 \usage{
 \method{predict}{AccurateGLM}(
-  model,
+  object,
   newx = NULL,
   s = NULL,
   type = c("link", "response", "coefficients", "nonzero", "class"),
@@ -15,7 +15,7 @@
 )
 }
 \arguments{
-\item{model}{An AccurateGLM object.}
+\item{object}{An AccurateGLM object.}
 
 \item{newx}{An input matrix or data.frame used for predictions.}
 
