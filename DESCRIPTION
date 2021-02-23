@@ -15,7 +15,8 @@ Depends:
     R (>= 4.0.2),
 Imports:
     glmnet (>= 4.0.2),
-    assertthat
+    assertthat,
+    methods
 Suggests: 
     testthat,
     knitr,
