@@ -5,3 +5,4 @@
 ^aglm.*\.tgz$
 ^LICENSE\.md$
 ^\.github$
+^examples/*
