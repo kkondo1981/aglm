@@ -37,6 +37,7 @@ createEqualWidthBins <- function(left, right, nbin){
 #'
 #' @export
 #' @importFrom assertthat assert_that
+#' @importFrom stats quantile
 createEqualFreqBins <- function(x_vec, nbin.max) {
   nbin.max <- as.integer(nbin.max)
   assert_that(nbin.max > 1 & length(x_vec) > 0)

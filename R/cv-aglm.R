@@ -33,6 +33,7 @@
 #' @export
 #' @importFrom assertthat assert_that
 #' @importFrom glmnet cv.glmnet
+#' @importFrom methods new
 cv.aglm <- function(x, y,
                     qualitative_vars_UD_only=NULL,
                     qualitative_vars_both=NULL,

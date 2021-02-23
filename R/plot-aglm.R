@@ -29,6 +29,22 @@
 #'
 #' @export
 #' @importFrom assertthat assert_that
+#' @importFrom utils str
+#' @importFrom utils flush.console
+#' @importFrom stats getCall
+#' @importFrom stats residuals
+#' @importFrom stats coef
+#' @importFrom stats IQR
+#' @importFrom stats smooth.spline
+#' @importFrom stats ksmooth
+#' @importFrom graphics par
+#' @importFrom graphics points
+#' @importFrom graphics lines
+#' @importFrom graphics rug
+#' @importFrom graphics mtext
+#' @importFrom graphics boxplot
+#' @importFrom graphics barplot
+#' @importFrom grDevices devAskNewPage
 plot.AccurateGLM <- function(x,
                              vars=NULL,
                              verbose=TRUE,

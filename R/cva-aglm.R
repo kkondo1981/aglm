@@ -16,6 +16,7 @@
 #'
 #' @export
 #' @importFrom assertthat assert_that
+#' @importFrom methods new
 cva.aglm <- function(x, y,
                      alpha=seq(0, 1, len=11)^3,
                      nfolds=10,

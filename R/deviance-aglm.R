@@ -7,6 +7,7 @@
 #' @param ... Other arguments are passed directly to `deviance` functions of `model@backend_models`.
 #'
 #' @export
+#' @importFrom stats deviance
 deviance.AccurateGLM <- function(object, ...) {
   # It's necessary to use same names for some arguments as the original methods,
   # because devtools::check() issues warnings when using inconsistent names.

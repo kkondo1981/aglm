@@ -19,6 +19,8 @@
 #' @export
 #' @importFrom assertthat assert_that
 #' @importFrom glmnet predict.glmnet
+#' @importFrom methods new
+#' @importFrom stats predict
 predict.AccurateGLM <- function(object,
                                 newx=NULL,
                                 s=NULL,

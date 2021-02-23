@@ -9,6 +9,7 @@
 #' @param ... Other arguments are passed directly to `deviance` functions of `model@backend_models`.
 #'
 #' @importFrom assertthat assert_that
+#' @importFrom stats coef
 #' @export
 coef.AccurateGLM <- function(object, index=NULL, name=NULL, s=NULL, exact=FALSE, ...) {
   # It's necessary to use same names for some arguments as the original methods,

@@ -14,6 +14,8 @@
 #'
 #' @export
 #' @importFrom assertthat assert_that
+#' @importFrom stats predict
+#' @importFrom stats getCall
 residuals.AccurateGLM <- function(object,
                                   x=NULL,
                                   y=NULL,
