@@ -12,6 +12,7 @@ aglm(
   qualitative_vars_OD_only = NULL,
   quantitative_vars = NULL,
   use_LVar = FALSE,
+  extrapolation = "default",
   add_linear_columns = TRUE,
   add_OD_columns_of_qualitatives = TRUE,
   add_interaction_columns = FALSE,
@@ -38,6 +39,12 @@ aglm(
 
 \item{use_LVar}{A boolean value which indicates whether this function uses L-variable representations or not.}
 
+\item{extrapolation}{A character value which indicates how contribution curves outside bins are extrapolated.
+\itemize{
+\item "default": No extrapolations.
+\item "flat": Extrapolates with flat lines.
+}}
+
 \item{add_linear_columns}{A boolean value which indicates whether this function uses linear effects or not.}
 
 \item{add_OD_columns_of_qualitatives}{A boolean value which indicates whether this function use O-dummy representations for qualitative and ordinal variables or not.}
@@ -45,11 +52,11 @@ aglm(
 \item{add_interaction_columns}{A boolean value which indicates whether this function uses intersection effects or not.}
 
 \item{OD_type_of_quantitatives}{A character value which indicates how O-dummy matrices of quantitative
-values are constructed. Choose 'C'(default) or 'J'.
+values are constructed. Choose "C"(default) or "J".
 \itemize{
-\item 'C': Continuous-type dummies, which result continuous contribution curves.
-\item 'J': Jum-type dummies, which result contribution curves with jumps.
-\item 'N': No use of O-dummies
+\item "C": Continuous-type dummies, which result continuous contribution curves.
+\item "J": Jump-type dummies, which result contribution curves with jumps.
+\item "N": No use of O-dummies
 }}
 
 \item{nbin.max}{a maximum number of bins which is automatically generated. Only used when \code{breaks} is not set.}

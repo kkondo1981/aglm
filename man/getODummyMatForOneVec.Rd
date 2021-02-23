@@ -22,11 +22,11 @@ If NULL, evenly cut bins are automatically generated and used.}
 
 \item{only_info}{A boolean value. If TRUE, actual creation of dummy matrix is omitted.}
 
-\item{dummy_type}{A character value. Choose 'C'(default) or 'J'. For integer or numeric \code{x_vec},
-\code{dummy_type='C'} is used as default. Otherwise, \code{dummy_type='J'} is used as default.
+\item{dummy_type}{A character value. Choose "C"(default) or "J". For integer or numeric \code{x_vec},
+\code{dummy_type="C"} is used as default. Otherwise, \code{dummy_type="J"} is used as default.
 \itemize{
-\item 'C': Continuous-type dummies, which result continuous contribution curves.
-\item 'J': Jum-type dummies, which result contribution curves with jumps.
+\item "C": Continuous-type dummies, which result continuous contribution curves.
+\item "J": Jum-type dummies, which result contribution curves with jumps.
 }}
 }
 \value{
