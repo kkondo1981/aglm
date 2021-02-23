@@ -3,9 +3,9 @@
 \docType{class}
 \name{CVA_AccurateGLM-class}
 \alias{CVA_AccurateGLM-class}
-\title{S4 class for the result of cva.aglm function}
+\title{S4 class for a result of cva.aglm()}
 \description{
-S4 class for the result of cva.aglm function
+S4 class for a result of cva.aglm()
 }
 \section{Slots}{
 
@@ -16,10 +16,12 @@ S4 class for the result of cva.aglm function
 
 \item{\code{nfolds}}{An integer value specifying the number of folds.}
 
-\item{\code{alpha.min}}{The alpha value which achieves the minimum loss.}
-
 \item{\code{alpha.min.index}}{An integer value specifying the index of \code{alpha.min} in \code{alpha}.}
 
+\item{\code{alpha.min}}{The alpha value which achieves the minimum loss.}
+
 \item{\code{lambda.min}}{The lambda value which achieves the minimum loss, when combined with \code{alpha.min}.}
+
+\item{\code{call}}{An object of class call, which is used to record how cva.aglm() is called.}
 }}
 

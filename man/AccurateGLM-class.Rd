@@ -3,9 +3,9 @@
 \docType{class}
 \name{AccurateGLM-class}
 \alias{AccurateGLM-class}
-\title{S4 class for fitted AGLM}
+\title{S4 class for fitted AGLM, used as a result of aglm() or cv.aglm()}
 \description{
-S4 class for fitted AGLM
+S4 class for fitted AGLM, used as a result of aglm() or cv.aglm()
 }
 \section{Slots}{
 
@@ -15,6 +15,28 @@ Currently glmnet is used as a backend and this slot holding a glmnet object.}
 
 \item{\code{vars_info}}{A list of list. Each element of \code{vars_info} represents one predictor variable and contains various informations of it.}
 
-\item{\code{others}}{slots for holding cross-validation results}
+\item{\code{lambda}}{The values of \code{lambda} used in the fits.}
+
+\item{\code{cvm}}{The mean cross-validated error.}
+
+\item{\code{cvsd}}{The estimate of standarded error of \code{cvm}.}
+
+\item{\code{cvup}}{The upper curve as \code{cvm + cvsd}.}
+
+\item{\code{cvlo}}{The lower curve as \code{cvm - cvsd}.}
+
+\item{\code{nzero}}{The number of non-zero coefficients at each lambda.}
+
+\item{\code{name}}{A text string indicating type of measure (for plotting purposes).}
+
+\item{\code{lambda.min}}{The value of \code{lambda} that gives minimum \code{cvm}.}
+
+\item{\code{lambda.1se}}{The largest value of \code{lambda} such that error is within 1 standard error of the minimum.}
+
+\item{\code{fit.preval}}{If \code{keep=TRUE}, this is the array of prevalidated fits. Some entries can be NA, if that and subsequent values of lambda are not reached for that fold.}
+
+\item{\code{foldid}}{An integer vector of values between 1 and nfold identifying what fold each observation is in.}
+
+\item{\code{call}}{An object of class call, which is used to record how cva.aglm() is called.}
 }}
 
