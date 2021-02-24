@@ -2,7 +2,7 @@
 % Please edit documentation in R/predict-aglm.R
 \name{predict.AccurateGLM}
 \alias{predict.AccurateGLM}
-\title{Make predictions from a fitted AccurateGLM}
+\title{Make predictions from a fitted \code{AccurateGLM}}
 \usage{
 \method{predict}{AccurateGLM}(
   object,
@@ -15,7 +15,7 @@
 )
 }
 \arguments{
-\item{object}{An AccurateGLM object.}
+\item{object}{An \code{AccurateGLM} object.}
 
 \item{newx}{An input matrix or data.frame used for predictions.}
 
@@ -32,15 +32,15 @@ Note that for \code{"binomial"} models, results are returned only for the class 
 \item Type \code{"nonzero"} returns a list of the indices of the nonzero coefficients for each value of \code{s}.
 }}
 
-\item{exact}{Same as predict.glmnet().}
+\item{exact}{Same as \code{predict.glmnet()}.}
 
 \item{newoffset}{If an offset is used in the fit, then one must be supplied for making predictions (except for type="coefficients" or type="nonzero").}
 
-\item{...}{Other arguments are passed directly to backend (currently glmnet() is used), and if not given, backend API's deault values are used.}
+\item{...}{Other arguments are passed directly to backend (currently \code{glmnet()} is used), and if not given, default values of the backend API are used.}
 }
 \value{
 The object returned depends on type.
 }
 \description{
-Make predictions from a fitted AccurateGLM
+Make predictions from a fitted \code{AccurateGLM}
 }

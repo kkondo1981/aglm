@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot-aglm.R
 \name{plot.AccurateGLM}
 \alias{plot.AccurateGLM}
-\title{Plot coefficients from an AccurateGLM object}
+\title{Plot coefficients from an \code{AccurateGLM} object}
 \usage{
 \method{plot}{AccurateGLM}(
   x,
@@ -21,7 +21,7 @@
 )
 }
 \arguments{
-\item{x}{An AccurateGLM object.}
+\item{x}{An \code{AccurateGLM} object.}
 
 \item{vars}{An integer or character vectors (indices or names) specifying which variables should be plotted.}
 
@@ -32,12 +32,12 @@ Note that this function can't plot for multiple lambda values, so it allows only
 single \code{s} value (which means \code{model} is trained with multiple lambda values and plot with one of them),
 or \code{s=NULL} (which means \code{model} is trained with single lambda value and plot with that value).}
 
-\item{resid}{A boolean value which indicates to plot residuals,
+\item{resid}{A logical value which indicates to plot residuals,
 or a character value which indicates residual type to be plotted (see the help of \code{residuals.AccurateGLM()}),
 or a numerical vector which indicates residual values to be plotted.
 Note that working residuals are used in the first case with \code{resid=TRUE}.}
 
-\item{smooth_resid}{A boolean value which indicates whether draws smoothing lines of residuals or not,
+\item{smooth_resid}{A logical value which indicates whether draws smoothing lines of residuals or not,
 or a character value which is one of options below:
 * \code{"both"} draws both balls and smoothing lines.
 * \code{"smooth_only"} draws only smoothing line.
@@ -46,18 +46,18 @@ The default value is \code{TRUE}.}
 
 \item{smooth_resid_fun}{A function to be used to smooth partial residual values.}
 
-\item{ask}{A boolean value which indicates ask if go to next plot.}
+\item{ask}{A logical value which indicates ask if go to next plot.}
 
-\item{layout}{A pair of integer values which indicates how many plots are drawn rawwise and columnwise respectively,}
+\item{layout}{A pair of integer values which indicates how many plots are drawn row-wise and column-wise respectively,}
 
 \item{only_plot}{If \code{TRUE}, the function set no graphical parameters and no title.}
 
 \item{main}{A character value which indicates titles of panels.}
 
-\item{add_rug}{A boolean value which indicates draw rugplot for quantitative variables.}
+\item{add_rug}{A logical value which indicates draw rug plot for quantitative variables.}
 
 \item{...}{Other arguments are currently not used.}
 }
 \description{
-Plot coefficients from an AccurateGLM object
+Plot coefficients from an \code{AccurateGLM} object
 }

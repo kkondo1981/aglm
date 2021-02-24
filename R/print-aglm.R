@@ -1,9 +1,9 @@
 # printing function for AGLM
 # witten by Kenji Kondo @ 2019/1/3
 
-#' Print an AccurateGLM object
+#' Print an `AccurateGLM` object
 #'
-#' @param x An AccurateGLM object.
+#' @param x An `AccurateGLM` object.
 #' @param digits Significant digits in printout.
 #' @param ... Other arguments are passed directly to `print` functions of `model@backend_models`.
 #'

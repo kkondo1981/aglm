@@ -6,8 +6,8 @@
 #' @param x_vec A non-numeric vector to be converted into dummy matrix.
 #' @param levels A character vector indicates unique set of possible values.
 #'   If NULL, all the unique values of `x_vec` are used.
-#' @param drop_last A boolean value. If TRUE, the last column of dummy matrix is dropped to avoid colinear
-#' @param only_info A bboolean value. If TRUE, actual creation of dummy matrix is omitted.
+#' @param drop_last A logical value. If TRUE, the last column of dummy matrix is dropped.
+#' @param only_info A logical value. If TRUE, actual creation of dummy matrix is omitted.
 #'
 #' @return a list with two members `levels` and `dummy_mat`.
 #' * `levels`: Same as input
@@ -47,11 +47,11 @@ getUDummyMatForOneVec <- function(x_vec, levels=NULL, drop_last=TRUE, only_info=
 #' @param breaks A numeric vector which indicates the boundaries of bins, of length (number of bins + 1).
 #'   If NULL, evenly cut bins are automatically generated and used.
 #' @param nbin.max A maximum number of bins which is used. Only used when `breaks` is not set.
-#' @param only_info A boolean value. If TRUE, actual creation of dummy matrix is omitted.
-#' @param dummy_type A character value. Choose "C"(default) or "J". For integer or numeric `x_vec`,
+#' @param only_info A logical value. If TRUE, actual creation of dummy matrix is omitted.
+#' @param dummy_type A character value. Choose `"C"`(default) or `"J"`. For integer or numeric `x_vec`,
 #'  `dummy_type="C"` is used as default. Otherwise, `dummy_type="J"` is used as default.
-#'   * "C": Continuous-type dummies, which result continuous contribution curves.
-#'   * "J": Jum-type dummies, which result contribution curves with jumps.
+#'   * `"C"`: Continuous-type dummies, which result continuous contribution curves.
+#'   * `"J"`: Jump-type dummies, which result contribution curves with jumps.
 #'
 #' @return a list with two members `breaks` and `dummy_mat`.
 #' * `breaks`: Same as input
@@ -103,7 +103,7 @@ getODummyMatForOneVec <- function(x_vec, breaks=NULL, nbin.max=100, only_info=FA
 #' @param breaks A numeric vector which indicates the boundaries of bins, of length (number of bins + 1).
 #'   If NULL, evenly cut bins are automatically generated and used.
 #' @param nbin.max A maximum number of bins which is used. Only used when `breaks` is not set.
-#' @param only_info A boolean value. If TRUE, actual creation of dummy matrix is omitted.
+#' @param only_info A logical value. If TRUE, actual creation of dummy matrix is omitted.
 #'
 #' @return a list with two members `breaks` and `dummy_mat`.
 #' * `breaks`: Same as input

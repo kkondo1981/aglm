@@ -3,7 +3,7 @@
 
 #' Calculate residuals for AGLM model
 #'
-#' @param object An AccurateGLM object.
+#' @param object An `AccurateGLM` object.
 #' @param x An input matrix or data.frame used for predictions in residual calculations.
 #'   If not given, `x` used for fitting the model is used.
 #' @param y A numeric vector used as true target values in residual calculations.
@@ -15,7 +15,7 @@
 #' @param type Type of prediction required.
 #'   * Type `"working"` Working residuals.
 #'   * Type `"pearson"` Pearson residuals.
-#'   * Type `"deviance"` Devian residuals.
+#'   * Type `"deviance"` Deviance residuals.
 #' @param s A numeric value specifying lambda value at which plotting is required.
 #' @param ... Other arguments are currently not used.
 #'

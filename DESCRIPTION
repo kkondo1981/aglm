@@ -8,6 +8,7 @@ Description: A handy tool for actuarial modeling, which is designed to achieve b
     AGLM is based on GLM but customized by expert actuaries for areas which require not only accuracy but also accountability.
 License: GPL-2
 Encoding: UTF-8
+Language: en-US
 LazyData: true
 RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)

@@ -14,7 +14,7 @@ If NULL, evenly cut bins are automatically generated and used.}
 
 \item{nbin.max}{A maximum number of bins which is used. Only used when \code{breaks} is not set.}
 
-\item{only_info}{A boolean value. If TRUE, actual creation of dummy matrix is omitted.}
+\item{only_info}{A logical value. If TRUE, actual creation of dummy matrix is omitted.}
 }
 \value{
 a list with two members \code{breaks} and \code{dummy_mat}.

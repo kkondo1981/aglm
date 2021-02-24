@@ -1,9 +1,9 @@
 # calculate deviances for AGLM
 # written by Kenji Kondo @ 2019/1/3
 
-#' Extract the deviance from an AccurateGLM object.
+#' Extract the deviance from an `AccurateGLM` object.
 #'
-#' @param object An AccurateGLM object.
+#' @param object An `AccurateGLM` object.
 #' @param ... Other arguments are passed directly to `deviance` functions of `model@backend_models`.
 #'
 #' @export

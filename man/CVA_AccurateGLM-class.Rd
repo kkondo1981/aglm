@@ -3,14 +3,14 @@
 \docType{class}
 \name{CVA_AccurateGLM-class}
 \alias{CVA_AccurateGLM-class}
-\title{S4 class for a result of cva.aglm()}
+\title{S4 class for a result of \code{cva.aglm()}}
 \description{
-S4 class for a result of cva.aglm()
+S4 class for a result of \code{cva.aglm()}
 }
 \section{Slots}{
 
 \describe{
-\item{\code{models_list}}{Results of cv.glmnet() for all the values of alpha.}
+\item{\code{models_list}}{Results of \code{cv.glmnet()} for all the values of alpha.}
 
 \item{\code{alpha}}{A numeric values specifying alpha values to be examined.}
 
@@ -22,6 +22,6 @@ S4 class for a result of cva.aglm()
 
 \item{\code{lambda.min}}{The lambda value which achieves the minimum loss, when combined with \code{alpha.min}.}
 
-\item{\code{call}}{An object of class call, which is used to record how cva.aglm() is called.}
+\item{\code{call}}{An object of class call, which is used to record how \code{cva.aglm()} is called.}
 }}
 

@@ -2,17 +2,17 @@
 % Please edit documentation in R/print-aglm.R
 \name{print.AccurateGLM}
 \alias{print.AccurateGLM}
-\title{Print an AccurateGLM object}
+\title{Print an \code{AccurateGLM} object}
 \usage{
 \method{print}{AccurateGLM}(x, digits = max(3, getOption("digits") - 3), ...)
 }
 \arguments{
-\item{x}{An AccurateGLM object.}
+\item{x}{An \code{AccurateGLM} object.}
 
 \item{digits}{Significant digits in printout.}
 
 \item{...}{Other arguments are passed directly to \code{print} functions of \code{model@backend_models}.}
 }
 \description{
-Print an AccurateGLM object
+Print an \code{AccurateGLM} object
 }

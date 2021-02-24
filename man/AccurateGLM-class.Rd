@@ -3,23 +3,23 @@
 \docType{class}
 \name{AccurateGLM-class}
 \alias{AccurateGLM-class}
-\title{S4 class for fitted AGLM, used as a result of aglm() or cv.aglm()}
+\title{S4 class for fitted AGLM, used as a result of \code{aglm()} or \code{cv.aglm()}}
 \description{
-S4 class for fitted AGLM, used as a result of aglm() or cv.aglm()
+S4 class for fitted AGLM, used as a result of \code{aglm()} or \code{cv.aglm()}
 }
 \section{Slots}{
 
 \describe{
 \item{\code{backend_models}}{Internally used model objects to be passed to backend functions.
-Currently glmnet is used as a backend and this slot holding a glmnet object.}
+Currently \code{glmnet} is used as a backend and this slot holding a \code{glmnet} object.}
 
-\item{\code{vars_info}}{A list of list. Each element of \code{vars_info} represents one predictor variable and contains various informations of it.}
+\item{\code{vars_info}}{A list of list. Each element of \code{vars_info} represents one predictor variable and contains various information of it.}
 
 \item{\code{lambda}}{The values of \code{lambda} used in the fits.}
 
 \item{\code{cvm}}{The mean cross-validated error.}
 
-\item{\code{cvsd}}{The estimate of standarded error of \code{cvm}.}
+\item{\code{cvsd}}{The estimate of standard error of \code{cvm}.}
 
 \item{\code{cvup}}{The upper curve as \code{cvm + cvsd}.}
 
@@ -33,10 +33,10 @@ Currently glmnet is used as a backend and this slot holding a glmnet object.}
 
 \item{\code{lambda.1se}}{The largest value of \code{lambda} such that error is within 1 standard error of the minimum.}
 
-\item{\code{fit.preval}}{If \code{keep=TRUE}, this is the array of prevalidated fits. Some entries can be NA, if that and subsequent values of lambda are not reached for that fold.}
+\item{\code{fit.preval}}{If \code{keep=TRUE}, this is the array of previously prevalidated fits. Some entries can be NA, if that and subsequent values of lambda are not reached for that fold.}
 
-\item{\code{foldid}}{An integer vector of values between 1 and nfold identifying what fold each observation is in.}
+\item{\code{foldid}}{An integer vector of values between 1 and \code{nfold} identifying what fold each observation is in.}
 
-\item{\code{call}}{An object of class call, which is used to record how cva.aglm() is called.}
+\item{\code{call}}{An object of class call, which is used to record how \code{cva.aglm()} is called.}
 }}
 

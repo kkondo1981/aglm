@@ -16,7 +16,7 @@
 )
 }
 \arguments{
-\item{object}{An AccurateGLM object.}
+\item{object}{An \code{AccurateGLM} object.}
 
 \item{x}{An input matrix or data.frame used for predictions in residual calculations.
 If not given, \code{x} used for fitting the model is used.}
@@ -34,7 +34,7 @@ If not given, \code{weights} used for fitting the model is used.}
 \itemize{
 \item Type \code{"working"} Working residuals.
 \item Type \code{"pearson"} Pearson residuals.
-\item Type \code{"deviance"} Devian residuals.
+\item Type \code{"deviance"} Deviance residuals.
 }}
 
 \item{s}{A numeric value specifying lambda value at which plotting is required.}
