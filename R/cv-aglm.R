@@ -69,7 +69,7 @@ cv.aglm <- function(x, y,
   # Check y
   y <- drop(y)
   #assert_that(class(y) == "integer" | class(y) == "numeric")
-  if (family != "cox") {
+  if (family[1] != "cox") {
     y <- as.numeric(y)
   }
   assert_that(length(y) == dim(x@data)[1])

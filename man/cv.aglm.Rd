@@ -20,7 +20,7 @@ cv.aglm(
   nbin.max = NULL,
   bins_list = NULL,
   bins_names = NULL,
-  family = c("gaussian", "binomial", "poisson"),
+  family = c("gaussian", "binomial", "poisson", "cox"),
   keep = FALSE,
   ...
 )

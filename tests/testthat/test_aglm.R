@@ -105,7 +105,7 @@ test_that("Check for logical features", {
   # Generates non-linear reponse
   y <- xor(x[, 1], x[, 2])
 
-  res <- cv.aglm(x, y, family=gaussian(), keep=TRUE)
+  res <- cv.aglm(x, y, family="gaussian", keep=TRUE)
 
   expect_true("AccurateGLM" %in% class(res))
   expect_true("glmnet" %in% class(res@backend_models[[1]]))
