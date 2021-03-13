@@ -47,7 +47,7 @@ cv.aglm <- function(x, y,
                     nbin.max=NULL,
                     bins_list=NULL,
                     bins_names=NULL,
-                    family=c("gaussian","binomial","poisson"),
+                    family=c("gaussian","binomial","poisson","cox"),
                     keep=FALSE,
                     ...) {
   # Create an input object
@@ -69,7 +69,9 @@ cv.aglm <- function(x, y,
   # Check y
   y <- drop(y)
   #assert_that(class(y) == "integer" | class(y) == "numeric")
-  y <- as.numeric(y)
+  if (family != "cox") {
+    y <- as.numeric(y)
+  }
   assert_that(length(y) == dim(x@data)[1])
 
   # Check family
@@ -82,7 +84,9 @@ cv.aglm <- function(x, y,
   # Data size
   nobs <- dim(x_for_backend)[1]
   nvars <- dim(x_for_backend)[2]
-  assert_that(length(y) == nobs)
+  if (family != "cox") {
+    assert_that(length(y) == nobs)
+  }
 
   # Call backend
   args <- list(x=x_for_backend,

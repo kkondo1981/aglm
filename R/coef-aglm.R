@@ -23,7 +23,7 @@ coef.AccurateGLM <- function(model, index=NULL, name=NULL, s=NULL, exact=FALSE, 
   # If `index` or `name` is set, returns coefficients of that variable.
   if (!is.null(index)) {
     nvars <- length(model@vars_info)
-    off0 <- 1  # not 0 because the first column is used as intercept.
+    off0 <- ifelse(model@call$family == "cox", 0, 1)  # the first column (0) is used as intercept other than cox
     for (i in seq(nvars)) {
       var_info <- model@vars_info[[i]]
       ncol_linear <- 0

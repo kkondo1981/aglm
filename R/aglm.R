@@ -47,7 +47,7 @@ aglm <- function(x, y,
                  nbin.max=NULL,
                  bins_list=NULL,
                  bins_names=NULL,
-                 family=c("gaussian","binomial","poisson"),
+                 family=c("gaussian","binomial","poisson","cox"),
                  ...) {
   # Create an input object
   x <- newInput(x,
@@ -67,7 +67,9 @@ aglm <- function(x, y,
 
   # Check y
   y <- drop(y)
-  y <- as.numeric(y)
+  if (family != "cox") {
+    y <- as.numeric(y)
+  }
   #assert_that(class(y) == "integer" | class(y) == "numeric")
   assert_that(length(y) == dim(x@data)[1])
 
