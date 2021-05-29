@@ -2,7 +2,7 @@
 % Please edit documentation in R/aglm.R
 \name{aglm}
 \alias{aglm}
-\title{fit an AGLM model}
+\title{Fit an AGLM model}
 \usage{
 aglm(
   x,
@@ -25,53 +25,64 @@ aglm(
 )
 }
 \arguments{
-\item{x}{An input matrix or data.frame to be fitted.}
-
-\item{y}{An integer or numeric vector which represents response variable.}
-
-\item{qualitative_vars_UD_only}{A list of indices or names for specifying which columns are qualitative and need only U-dummy representations.}
-
-\item{qualitative_vars_both}{A list of indices or names for specifying which columns are qualitative and need both U-dummy and O-dummy representations.}
-
-\item{qualitative_vars_OD_only}{A list of indices or names for specifying which columns are qualitative and need only O-dummy representations.}
-
-\item{quantitative_vars}{A list of indices or names for specifying which columns are quantitative.}
-
-\item{use_LVar}{A boolean value which indicates whether this function uses L-variable representations or not.}
-
-\item{extrapolation}{A character value which indicates how contribution curves outside bins are extrapolated.
+\item{x}{A design matrix.
+Usually a \code{data.frame} object is expected, but a \code{matrix} object is fine if all columns are of a same class.
+Each column may have one of the following classes, and \code{aglm} will automatically determine how to handle it:
 \itemize{
-\item "default": No extrapolations.
-\item "flat": Extrapolates with flat lines.
+\item \code{numeric}: interpreted as a quantitative variable. \code{aglm} performs discretization by binning, and creates dummy variables suitable for ordered values (named O-dummies).
+\item \code{factor} (unordered) or \code{logical} : interpreted as a qualitative variable without order. \code{aglm} creates dummy variables suitable for unordered values (named U-dummies).
+\item \code{ordered}: interpreted as a qualitative variable with order. \code{aglm} creates both O-dummies and U-dummies.
+These dummy variables are added to \code{x} and form a larger matrix, which is used internally as an actual design matrix.
+If you need to change the default behavior, use the following options: \code{qualitative_vars_UD_only}, \code{qualitative_vars_both}, \code{qualitative_vars_OD_only}, and \code{quantitative_vars}.
 }}
 
-\item{add_linear_columns}{A boolean value which indicates whether this function uses linear effects or not.}
+\item{y}{A response variable.}
 
-\item{add_OD_columns_of_qualitatives}{A boolean value which indicates whether this function use O-dummy representations for qualitative and ordinal variables or not.}
-
-\item{add_interaction_columns}{A boolean value which indicates whether this function uses intersection effects or not.}
-
-\item{OD_type_of_quantitatives}{A character value which indicates how O-dummy matrices of quantitative
-values are constructed. Choose \code{"C"}(default) or \code{"J"}.
+\item{qualitative_vars_UD_only}{Used to change the default behavior of \code{aglm} for given variables.
+Variables specified by this parameter are considered as qualitative variables and only U-dummies are created as auxiliary columns.
+This parameter may have one of the following classes:
 \itemize{
-\item \code{"C"}: Continuous-type dummies, which result continuous contribution curves.
-\item \code{"J"}: Jump-type dummies, which result contribution curves with jumps.
-\item \code{"N"}: No use of O-dummies
+\item \code{integer}: specifying variables by index.
+\item \code{character}: specifying variables by name.
 }}
 
-\item{nbin.max}{a maximum number of bins which is automatically generated. Only used when \code{breaks} is not set.}
+\item{qualitative_vars_both}{Same as \code{qualitative_vars_UD_only}, except that both O-dummies and U-dummies are created for specified variables.}
 
-\item{bins_list}{A list of numeric vectors, each element of which is used as breaks when binning of a quantitative variable or a qualitative variable with order.}
+\item{qualitative_vars_OD_only}{Same as \code{qualitative_vars_UD_only}, except that both only O-dummies are created for specified variables.}
 
-\item{bins_names}{A list of column name or column index, each name or index of which specifies which column of \code{x} is binned used with an element of \code{bins_list} in the same position.}
+\item{quantitative_vars}{Same as \code{qualitative_vars_UD_only}, except that specified variables are considered as quantitative variables.}
 
-\item{family}{Response type. Currently \code{"gaussian"}, \code{"binomial"}, and \code{"poisson"} are supported.}
+\item{use_LVar}{Used to get predictions without jumps by \code{aglm}.
+By default, \code{aglm} uses O-dummies as the representation of a quantitative variable, but the resulting linear combination form a step function and has a jump at each break of binning.
+To avoid this, set \code{use_LVar=TRUE} to use a different type of auxiliary variable (named L-Variables), such that the linear combination form a piecewise linear functions and is continuous.}
 
-\item{...}{Other arguments are passed directly to backend (currently \code{glmnet()} is used), and if not given, default values of the backend API are used to call backend functions.}
+\item{extrapolation}{Used to control values of linear combination for quantitative variables, outside where the data exists.
+Currently, this parameter is useful only when \code{use_LVar=TRUE}, where values of a linear combination outside the data is extended based on the slope of the edges of the region where the data exists.
+You can set \code{extrapolation="flat"} to get constant values outside the data instead.}
+
+\item{add_linear_columns}{By default, for quantitative variables, \code{aglm} expands them by adding dummies and the original columns, i.e. the linear effects, are remained in the resulting model.
+You can set \code{add_linear_columns=FALSE} to drop linear effects.}
+
+\item{add_OD_columns_of_qualitatives}{Set to \code{FALSE} if you do not want to use O-dummies for qualitative variables with order (usually, columns with \code{ordered} class).}
+
+\item{add_interaction_columns}{If this parameter is set to \code{TRUE}, \code{aglm} creates an additional auxiliary variable \code{x_i * x_j} for each pair \verb{(x_i, x_j)} of variables.}
+
+\item{OD_type_of_quantitatives}{Used to control the shape of linear combinations obtained by O-dummies for quantitative variables (deprecated).}
+
+\item{nbin.max}{An integer representing the maximum number of bins when \code{aglm} perform binning for quantitative variables.}
+
+\item{bins_list}{Used to set custom bins for variables with O-dummies.}
+
+\item{bins_names}{Used to set custom bins for variables with O-dummies.}
+
+\item{family}{A \code{family} object or a string representing the type of the error distribution.
+Currently \code{aglm} supports \code{gaussian}, \code{binomial}, and \code{poisson}.}
+
+\item{...}{Other arguments are passed directly when calling \code{glmnet()}.}
 }
 \value{
-An \code{AccurateGLM} object, fitted to the data \verb{(x, y)}
+A model object fitted to the data.
 }
 \description{
-fit an AGLM model
+Fit an AGLM model
 }
