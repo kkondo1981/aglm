@@ -1,10 +1,12 @@
 # predicting function for AGLM model
 # written by Kenji Kondo @ 2019/1/3
 
-#' Make predictions from a fitted AccurateGLM
+#' Make predictions from a fitted `AccurateGLM`
 #'
-#' @param model An AccurateGLM object.
+#' @param object An `AccurateGLM` object.
 #' @param newx An input matrix or data.frame used for predictions.
+#' @param s Value(s) of the penalty parameter `lambda` at which predictions are required.
+#'   Default is the entire sequence used to create the model.
 #' @param type Type of prediction required.
 #'   * Type `"link"` gives the linear predictors for `"binomial"`, `"poisson"` models, and for `"gaussian"` models it gives the fitted values.
 #'   * Type `"response"` gives the fitted probabilities for `"binomial"`, fitted mean for `"poisson"`, and for `"gaussian"` models it is equivalent to type `"link"`.
@@ -12,20 +14,30 @@
 #'     Note that for `"binomial"` models, results are returned only for the class corresponding to the second level of the factor response.
 #'   * Type `"class"` applies only to `"binomial"`, and produces the  class label corresponding to the maximum probability.
 #'   * Type `"nonzero"` returns a list of the indices of the nonzero coefficients for each value of `s`.
-#' @param ... Other arguments are passed directly to backend (currently glmnet() is used), and if not given, backend API's deault values are used.
+#' @param exact Same as `predict.glmnet()`.
+#' @param newoffset If an offset is used in the fit, then one must be supplied for making predictions (except for type="coefficients" or type="nonzero").
+#' @param ... Other arguments are passed directly to backend (currently `glmnet()` is used), and if not given, default values of the backend API are used.
 #'
 #' @return The object returned depends on type.
 #'
 #' @export
 #' @importFrom assertthat assert_that
 #' @importFrom glmnet predict.glmnet
-predict.AccurateGLM <- function(model,
+#' @importFrom methods new
+#' @importFrom stats predict
+predict.AccurateGLM <- function(object,
                                 newx=NULL,
                                 s=NULL,
                                 type=c("link","response","coefficients","nonzero","class"),
                                 exact=FALSE,
                                 newoffset,
                                 ...) {
+  # It's necessary to use same names for some arguments as the original methods,
+  # because devtools::check() issues warnings when using inconsistent names.
+  # As a result, we sometimes should accept uncomfortable argument names,
+  # but still have rights to use preferable names internally.
+  model <- object
+
   # Check and set `type`
   type <- match.arg(type)
 

@@ -5,26 +5,41 @@
 \title{Calculate residuals for AGLM model}
 \usage{
 \method{residuals}{AccurateGLM}(
-  model,
+  object,
   x = NULL,
   y = NULL,
   offset = NULL,
   weights = NULL,
   type = c("working", "pearson", "deviance"),
-  s = NULL
+  s = NULL,
+  ...
 )
 }
 \arguments{
-\item{model}{An AccurateGLM object.}
+\item{object}{An \code{AccurateGLM} object.}
+
+\item{x}{An input matrix or data.frame used for predictions in residual calculations.
+If not given, \code{x} used for fitting the model is used.}
+
+\item{y}{A numeric vector used as true target values in residual calculations.
+If not given, \code{y} used for fitting the model is used.}
+
+\item{offset}{A numeric offset values used for predictions in residual calculations.
+If not given, \code{offset} used for fitting the model is used.}
+
+\item{weights}{A numeric weight values, corresponding with exposure size.
+If not given, \code{weights} used for fitting the model is used.}
 
 \item{type}{Type of prediction required.
 \itemize{
 \item Type \code{"working"} Working residuals.
 \item Type \code{"pearson"} Pearson residuals.
-\item Type \code{"deviance"} Devian residuals.
+\item Type \code{"deviance"} Deviance residuals.
 }}
 
 \item{s}{A numeric value specifying lambda value at which plotting is required.}
+
+\item{...}{Other arguments are currently not used.}
 }
 \value{
 The object returned depends on type.

@@ -3,3 +3,6 @@
 ^aglm\.Rcheck$
 ^aglm.*\.tar\.gz$
 ^aglm.*\.tgz$
+^LICENSE\.md$
+^\.github$
+^examples/*

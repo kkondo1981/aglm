@@ -1,35 +1,52 @@
 # plotting function for AGLM
 # written by Kenji Kondo @ 2019/1/3
 
-#' Plot coefficients from an AccurateGLM object
+#' Plot coefficients from an `AccurateGLM` object
 #'
-#' @param model An AccurateGLM object.
+#' @param x An `AccurateGLM` object.
 #' @param vars An integer or character vectors (indices or names) specifying which variables should be plotted.
 #' @param verbose If TRUE, outputs details.
 #' @param s A numeric value specifying lambda value at which plotting is required.
 #'   Note that this function can't plot for multiple lambda values, so it allows only
 #'   single `s` value (which means `model` is trained with multiple lambda values and plot with one of them),
 #'   or `s=NULL` (which means `model` is trained with single lambda value and plot with that value).
-#' @param resid A boolean value which indicates to plot residuals,
+#' @param resid A logical value which indicates to plot residuals,
 #'   or a character value which indicates residual type to be plotted (see the help of `residuals.AccurateGLM()`),
 #'   or a numerical vector which indicates residual values to be plotted.
 #'   Note that working residuals are used in the first case with `resid=TRUE`.
-#' @param smooth_resid A boolean value which indicates whether draws smoothing lines of residuals or not,
+#' @param smooth_resid A logical value which indicates whether draws smoothing lines of residuals or not,
 #'   or a character value which is one of options below:
 #'     * `"both"` draws both balls and smoothing lines.
 #'     * `"smooth_only"` draws only smoothing line.
 #'   Note that smoothing lines are only drawn for quantitative variables.
 #'   The default value is `TRUE`.
 #' @param smooth_resid_fun A function to be used to smooth partial residual values.
-#' @param ask A boolean value which indicates ask if go to next plot.
-#' @param layout A pair of integer values which indicates how many plots are drawn rawwise and columnwise respectively,
+#' @param ask A logical value which indicates ask if go to next plot.
+#' @param layout A pair of integer values which indicates how many plots are drawn row-wise and column-wise respectively,
 #' @param only_plot If `TRUE`, the function set no graphical parameters and no title.
 #' @param main A character value which indicates titles of panels.
-#' @param add_rug A boolean value which indicates draw rugplot for quantitative variables.
+#' @param add_rug A logical value which indicates draw rug plot for quantitative variables.
+#' @param ... Other arguments are currently not used.
 #'
 #' @export
 #' @importFrom assertthat assert_that
-plot.AccurateGLM <- function(model,
+#' @importFrom utils str
+#' @importFrom utils flush.console
+#' @importFrom stats getCall
+#' @importFrom stats residuals
+#' @importFrom stats coef
+#' @importFrom stats IQR
+#' @importFrom stats smooth.spline
+#' @importFrom stats ksmooth
+#' @importFrom graphics par
+#' @importFrom graphics points
+#' @importFrom graphics lines
+#' @importFrom graphics rug
+#' @importFrom graphics mtext
+#' @importFrom graphics boxplot
+#' @importFrom graphics barplot
+#' @importFrom grDevices devAskNewPage
+plot.AccurateGLM <- function(x,
                              vars=NULL,
                              verbose=TRUE,
                              s=NULL,
@@ -42,6 +59,12 @@ plot.AccurateGLM <- function(model,
                              main="",
                              add_rug=FALSE,
                              ...) {
+  # It's necessary to use same names for some arguments as the original methods,
+  # because devtools::check() issues warnings when using inconsistent names.
+  # As a result, we sometimes should accept uncomfortable argument names,
+  # but still have rights to use preferable names internally.
+  model <- x
+
   nvars <- length(model@vars_info)
 
   if (is.null(vars)) {

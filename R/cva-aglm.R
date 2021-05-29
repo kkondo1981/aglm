@@ -8,14 +8,15 @@
 #' @param y An integer or numeric vector which represents response variable.
 #' @param alpha A numeric vector which represents alpha values to be examined.
 #' @param nfolds The number of folds. The default value is 10.
-#' @param foldid An integer vector of values between 1 and nfold identifying what fold each observation is in.
+#' @param foldid An integer vector of values between 1 and `nfold` identifying what fold each observation is in.
 #' @param parallel.alpha not implemented yet.
-#' @param ... Other arguments are passed directly to cv.aglm().
+#' @param ... Other arguments are passed directly to `cv.aglm()`.
 #'
 #' @return Result of cross-validation. See `CVA_AccurateGLM`'s document for more details.
 #'
 #' @export
 #' @importFrom assertthat assert_that
+#' @importFrom methods new
 cva.aglm <- function(x, y,
                      alpha=seq(0, 1, len=11)^3,
                      nfolds=10,

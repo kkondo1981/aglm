@@ -9,30 +9,32 @@
 #' @param qualitative_vars_UD_only A list of indices or names for specifying which columns are qualitative and need only U-dummy representations.
 #' @param qualitative_vars_both A list of indices or names for specifying which columns are qualitative and need both U-dummy and O-dummy representations.
 #' @param qualitative_vars_OD_only A list of indices or names for specifying which columns are qualitative and need only O-dummy representations.
-#' @param quantitative_vars A list of indices or names for specyfying which columns are quantitative.
+#' @param quantitative_vars A list of indices or names for specifying which columns are quantitative.
 #' @param use_LVar A boolean value which indicates whether this function uses L-variable representations or not.
 #' @param extrapolation A character value which indicates how contribution curves outside bins are extrapolated.
-#'   * "default": No extrapolations.
-#'   * "flat": Extrapolates with flat lines.
+#'   * `"default"`: No extrapolations.
+#'   * `"flat"`: Extrapolates with flat lines.
 #' @param add_linear_columns A boolean value which indicates whether this function uses linear effects or not.
 #' @param add_OD_columns_of_qualitatives A boolean value which indicates whether this function use O-dummy representations for qualitative and ordinal variables or not.
 #' @param add_interaction_columns A boolean value which indicates whether this function uses interaction effects or not.
 #' @param OD_type_of_quantitatives A character value which indicates how O-dummy matrices of quantitative
-#'   values are constructed. Choose "C"(default) or "J".
-#'   * "C": Continuous-type dummies, which result continuous contribution curves.
-#'   * "J": Jump-type dummies, which result contribution curves with jumps.
-#'   * "N": No use of O-dummies
-#' @param family Response type. Currently "gaussian", "binomial", and "poisson" are supported.
+#'   values are constructed. Choose `"C"`(default) or `"J"`.
+#'   * `"C"`: Continuous-type dummies, which result continuous contribution curves.
+#'   * `"J"`: Jump-type dummies, which result contribution curves with jumps.
+#'   * `"N"`: No use of O-dummies
+#' @param family Response type. Currently `"gaussian"`, `"binomial"`, and `"poisson"` are supported.
 #' @param nbin.max a maximum number of bins which is automatically generated. Only used when `breaks` is not set.
 #' @param bins_list A list of numeric vectors, each element of which is used as breaks when binning of a quantitative variable or a qualitative variable with order.
 #' @param bins_names A list of column name or column index, each name or index of which specifies which column of `x` is binned used with an element of `bins_list` in the same position.
-#' @param ... Other arguments are passed directly to backend (currently cv.glmnet() is used), and if not given, backend API's default values are used to call backend functions.
+#' @param keep Same as `cv.glmnet()`.
+#' @param ... Other arguments are passed directly to backend (currently `cv.glmnet()` is used), and if not given, default values of the backend API are used to call backend functions.
 #'
 #' @return Result of cross-validation.
 #'
 #' @export
 #' @importFrom assertthat assert_that
 #' @importFrom glmnet cv.glmnet
+#' @importFrom methods new
 cv.aglm <- function(x, y,
                     qualitative_vars_UD_only=NULL,
                     qualitative_vars_both=NULL,

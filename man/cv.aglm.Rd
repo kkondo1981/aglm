@@ -36,14 +36,14 @@ cv.aglm(
 
 \item{qualitative_vars_OD_only}{A list of indices or names for specifying which columns are qualitative and need only O-dummy representations.}
 
-\item{quantitative_vars}{A list of indices or names for specyfying which columns are quantitative.}
+\item{quantitative_vars}{A list of indices or names for specifying which columns are quantitative.}
 
 \item{use_LVar}{A boolean value which indicates whether this function uses L-variable representations or not.}
 
 \item{extrapolation}{A character value which indicates how contribution curves outside bins are extrapolated.
 \itemize{
-\item "default": No extrapolations.
-\item "flat": Extrapolates with flat lines.
+\item \code{"default"}: No extrapolations.
+\item \code{"flat"}: Extrapolates with flat lines.
 }}
 
 \item{add_linear_columns}{A boolean value which indicates whether this function uses linear effects or not.}
@@ -53,11 +53,11 @@ cv.aglm(
 \item{add_interaction_columns}{A boolean value which indicates whether this function uses interaction effects or not.}
 
 \item{OD_type_of_quantitatives}{A character value which indicates how O-dummy matrices of quantitative
-values are constructed. Choose "C"(default) or "J".
+values are constructed. Choose \code{"C"}(default) or \code{"J"}.
 \itemize{
-\item "C": Continuous-type dummies, which result continuous contribution curves.
-\item "J": Jump-type dummies, which result contribution curves with jumps.
-\item "N": No use of O-dummies
+\item \code{"C"}: Continuous-type dummies, which result continuous contribution curves.
+\item \code{"J"}: Jump-type dummies, which result contribution curves with jumps.
+\item \code{"N"}: No use of O-dummies
 }}
 
 \item{nbin.max}{a maximum number of bins which is automatically generated. Only used when \code{breaks} is not set.}
@@ -66,9 +66,11 @@ values are constructed. Choose "C"(default) or "J".
 
 \item{bins_names}{A list of column name or column index, each name or index of which specifies which column of \code{x} is binned used with an element of \code{bins_list} in the same position.}
 
-\item{family}{Response type. Currently "gaussian", "binomial", and "poisson" are supported.}
+\item{family}{Response type. Currently \code{"gaussian"}, \code{"binomial"}, and \code{"poisson"} are supported.}
 
-\item{...}{Other arguments are passed directly to backend (currently cv.glmnet() is used), and if not given, backend API's default values are used to call backend functions.}
+\item{keep}{Same as \code{cv.glmnet()}.}
+
+\item{...}{Other arguments are passed directly to backend (currently \code{cv.glmnet()} is used), and if not given, default values of the backend API are used to call backend functions.}
 }
 \value{
 Result of cross-validation.

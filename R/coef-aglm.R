@@ -1,16 +1,26 @@
 # calculate deviances for AGLM
 # written by Kenji Kondo @ 2019/1/3
 
-#' Extract coefficients from an AccurateGLM object.
+#' Extract coefficients from an `AccurateGLM` object.
 #'
-#' @param model An AccurateGLM object.
+#' @param object An `AccurateGLM` object.
+#' @param index An integer vector of variable indices whose coefficients should be returned.
+#' @param name An character vector of variable names whose coefficients should be returned.
 #' @param s  Value(s) of the penalty parameter `lambda` at which predictions are required.
 #'   Default is the entire sequence used to create the model.
+#' @param exact Same as `coef.glmnet()`.
 #' @param ... Other arguments are passed directly to `deviance` functions of `model@backend_models`.
 #'
 #' @importFrom assertthat assert_that
+#' @importFrom stats coef
 #' @export
-coef.AccurateGLM <- function(model, index=NULL, name=NULL, s=NULL, exact=FALSE, ...) {
+coef.AccurateGLM <- function(object, index=NULL, name=NULL, s=NULL, exact=FALSE, ...) {
+  # It's necessary to use same names for some arguments as the original methods,
+  # because devtools::check() issues warnings when using inconsistent names.
+  # As a result, we sometimes should accept uncomfortable argument names,
+  # but still have rights to use preferable names internally.
+  model <- object
+
   coefs <- coef(model@backend_models[[1]], s, exact, ...)
 
   # If `name` is set, `index` is overwritten.

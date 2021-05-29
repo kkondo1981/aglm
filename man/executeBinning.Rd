@@ -21,7 +21,7 @@ Ignore if \code{breaks} is set.}
 a list which has two members \code{labels} and \code{breaks}.
 \itemize{
 \item \code{labels}: an integer vector of \code{length(x_vec)}.
-\code{(labels[i]==k)} indicates the i-th element of x_vec is in the k-th bin.
+\code{(labels[i]==k)} indicates the \code{i-th} element of \code{x_vec} is in the \code{k-th} bin.
 \item \code{breaks}: a numeric vector which indicates the boundaries of bins, of length (number of bins - 1).
 }
 }

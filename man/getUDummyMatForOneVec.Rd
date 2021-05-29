@@ -17,9 +17,9 @@ getUDummyMatForOneVec(
 \item{levels}{A character vector indicates unique set of possible values.
 If NULL, all the unique values of \code{x_vec} are used.}
 
-\item{drop_last}{A boolean value. If TRUE, the last column of dummy matrix is dropped to avoid colinear}
+\item{drop_last}{A logical value. If TRUE, the last column of dummy matrix is dropped.}
 
-\item{only_info}{A bboolean value. If TRUE, actual creation of dummy matrix is omitted.}
+\item{only_info}{A logical value. If TRUE, actual creation of dummy matrix is omitted.}
 }
 \value{
 a list with two members \code{levels} and \code{dummy_mat}.

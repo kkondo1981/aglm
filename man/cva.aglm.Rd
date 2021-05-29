@@ -23,11 +23,11 @@ cva.aglm(
 
 \item{nfolds}{The number of folds. The default value is 10.}
 
-\item{foldid}{An integer vector of values between 1 and nfold identifying what fold each observation is in.}
+\item{foldid}{An integer vector of values between 1 and \code{nfold} identifying what fold each observation is in.}
 
 \item{parallel.alpha}{not implemented yet.}
 
-\item{...}{Other arguments are passed directly to cv.aglm().}
+\item{...}{Other arguments are passed directly to \code{cv.aglm()}.}
 }
 \value{
 Result of cross-validation. See \code{CVA_AccurateGLM}'s document for more details.

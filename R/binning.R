@@ -37,6 +37,7 @@ createEqualWidthBins <- function(left, right, nbin){
 #'
 #' @export
 #' @importFrom assertthat assert_that
+#' @importFrom stats quantile
 createEqualFreqBins <- function(x_vec, nbin.max) {
   nbin.max <- as.integer(nbin.max)
   assert_that(nbin.max > 1 & length(x_vec) > 0)
@@ -65,7 +66,7 @@ createEqualFreqBins <- function(x_vec, nbin.max) {
 #'
 #' @return a list which has two members `labels` and `breaks`.
 #' * `labels`: an integer vector of `length(x_vec)`.
-#'   `(labels[i]==k)` indicates the i-th element of x_vec is in the k-th bin.
+#'   `(labels[i]==k)` indicates the `i-th` element of `x_vec` is in the `k-th` bin.
 #' * `breaks`: a numeric vector which indicates the boundaries of bins, of length (number of bins - 1).
 #'
 #' @export
