@@ -27,6 +27,9 @@
 #'   See \link{predict.glmnet} for more details.
 #'
 #'
+#' @example examples/predict-and-plot-1.R
+#'
+#'
 #' @author
 #'   * Kenji Kondo,
 #'   * Kazuhisa Takahashi and Banno (worked on L-Variable related features)

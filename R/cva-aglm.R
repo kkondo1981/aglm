@@ -31,6 +31,9 @@
 #'   See \link{CVA_AccurateGLM-class} for more details.
 #'
 #'
+#' @example examples/cva-aglm-1.R
+#'
+#'
 #' @author
 #'   * Kenji Kondo,
 #'   * Kazuhisa Takahashi and Banno (worked on L-Variable related features)

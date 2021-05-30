@@ -58,7 +58,7 @@ By default, \code{aglm} uses O-dummies as the representation of a quantitative v
 To avoid this, set \code{use_LVar=TRUE} to use a different type of auxiliary variable (named L-Variables), such that the linear combination form a piecewise linear functions and is continuous.}
 
 \item{extrapolation}{Used to control values of linear combination for quantitative variables, outside where the data exists.
-Currently, this parameter is useful only when \code{use_LVar=TRUE}, where values of a linear combination outside the data is extended based on the slope of the edges of the region where the data exists.
+By default, values of a linear combination outside the data is extended based on the slope of the edges of the region where the data exists.
 You can set \code{extrapolation="flat"} to get constant values outside the data instead.}
 
 \item{add_linear_columns}{By default, for quantitative variables, \code{aglm} expands them by adding dummies and the original columns, i.e. the linear effects, are remained in the resulting model.
@@ -89,6 +89,119 @@ See \link{AccurateGLM-class} for more details.
 \description{
 A basic fitting function with given \eqn{\alpha} and \eqn{\lambda} (s).
 See \link{aglm-package} for more details on \eqn{\alpha} and \eqn{\lambda}.
+}
+\examples{
+
+#################### Gaussian case ####################
+
+library(MASS) # For Boston
+library(aglm)
+
+## Read data
+xy <- Boston # xy is a data.frame to be processed.
+colnames(xy)[ncol(xy)] <- "y" # Let medv be the objective variable, y.
+
+## Split data into train and test
+n <- nrow(xy) # Sample size.
+set.seed(2018) # For reproducibility.
+test.id <- sample(n, round(n/4)) # ID numbders for test data.
+test <- xy[test.id,] # test is the data.frame for testing.
+train <- xy[-test.id,] # train is the data.frame for training.
+x <- train[-ncol(xy)]
+y <- train$y
+newx <- test[-ncol(xy)]
+y_true <- test$y
+
+## Fit the model
+model <- aglm(x, y)  # alpha=1 (the default value)
+
+## Predict for various alpha and lambda
+lambda <- 0.1
+y_pred <- predict(model, newx=newx, s=lambda)
+rmse <- sqrt(mean((y_true - y_pred)^2))
+cat(sprintf("RMSE for lambda=\%.2f: \%.5f \n\n", lambda, rmse))
+
+lambda <- 1.0
+y_pred <- predict(model, newx=newx, s=lambda)
+rmse <- sqrt(mean((y_true - y_pred)^2))
+cat(sprintf("RMSE for lambda=\%.2f: \%.5f \n\n", lambda, rmse))
+
+alpha <- 0
+model <- aglm(x, y, alpha=alpha)
+
+lambda <- 0.1
+y_pred <- predict(model, newx=newx, s=lambda)
+rmse <- sqrt(mean((y_true - y_pred)^2))
+cat(sprintf("RMSE for alpha=\%.2f and lambda=\%.2f: \%.5f \n\n", alpha, lambda, rmse))
+
+#################### Binomial case ####################
+
+library(aglm)
+library(faraway)
+
+## Read data
+xy <- nes96
+
+## Split data into train and test
+n <- nrow(xy) # Sample size.
+set.seed(2018) # For reproducibility.
+test.id <- sample(n, round(n/5)) # ID numbders for test data.
+test <- xy[test.id,] # test is the data.frame for testing.
+train <- xy[-test.id,] # train is the data.frame for training.
+x <- train[, c("popul", "TVnews", "selfLR", "ClinLR", "DoleLR", "PID", "age", "educ", "income")]
+y <- train$vote
+newx <- test[, c("popul", "TVnews", "selfLR", "ClinLR", "DoleLR", "PID", "age", "educ", "income")]
+
+## Fit the model
+model <- aglm(x, y, family="binomial")
+
+## Make the confusion matrix
+lambda <- 0.1
+y_true <- test$vote
+y_pred <- levels(y_true)[as.integer(predict(model, newx, s=lambda, type="class"))]
+
+print(table(y_true, y_pred))
+
+#################### use_LVar and extrapolation ####################
+
+library(MASS) # For Boston
+library(aglm)
+
+## Randomly created train and test data
+set.seed(2021)
+sd <- 0.2
+x <- 2 * runif(1000) + 1
+f <- function(x){x^3 - 6 * x^2 + 13 * x}
+y <- f(x) + rnorm(1000, sd = sd)
+xy <- data.frame(x=x, y=y)
+x_test <- seq(0.75, 3.25, length.out=101)
+y_test <- f(x_test) + rnorm(101, sd=sd)
+xy_test <- data.frame(x=x_test, y=y_test)
+
+## Plot
+nbin.max <- 10
+models <- c(cv.aglm(x, y, use_LVar=FALSE, extrapolation="default", nbin.max=nbin.max),
+            cv.aglm(x, y, use_LVar=FALSE, extrapolation="flat", nbin.max=nbin.max),
+            cv.aglm(x, y, use_LVar=TRUE, extrapolation="default", nbin.max=nbin.max),
+            cv.aglm(x, y, use_LVar=TRUE, extrapolation="flat", nbin.max=nbin.max))
+
+titles <- c("O-Dummies with extrapolation=\"default\"",
+            "O-Dummies with extrapolation=\"flat\"",
+            "L-Variables with extrapolation=\"default\"",
+            "L-Variables with extrapolation=\"flat\"")
+
+par.old <- par(mfrow=c(2, 2))
+for (i in 1:4) {
+  model <- models[[i]]
+  title <- titles[[i]]
+
+  pred <- predict(model, newx=x_test, s=model@lambda.min, type="response")
+
+  plot(x_test, y_test, pch=20, col="grey", main=title)
+  lines(x_test, f(x_test), lty="dashed", lwd=2)  # the theoretical line
+  lines(x_test, pred, col="blue", lwd=3)  # the smoothed line by the model
+}
+par(par.old)
 }
 \references{
 Suguru Fujita, Toyoto Tanaka, Kenji Kondo and Hirokazu Iwasawa. (2020)

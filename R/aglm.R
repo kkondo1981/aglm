@@ -40,7 +40,7 @@
 #'
 #' @param extrapolation
 #'   Used to control values of linear combination for quantitative variables, outside where the data exists.
-#'   Currently, this parameter is useful only when `use_LVar=TRUE`, where values of a linear combination outside the data is extended based on the slope of the edges of the region where the data exists.
+#'   By default, values of a linear combination outside the data is extended based on the slope of the edges of the region where the data exists.
 #'   You can set `extrapolation="flat"` to get constant values outside the data instead.
 #'
 #' @param add_linear_columns
@@ -76,6 +76,11 @@
 #'   A model object fitted to the data.
 #'   Functions such as `predict` and `plot` can be applied to the returned object.
 #'   See \link{AccurateGLM-class} for more details.
+#'
+#'
+#' @example examples/aglm-1.R
+#' @example examples/aglm-2.R
+#' @example examples/lvar-and-extrapolation.R
 #'
 #'
 #' @author

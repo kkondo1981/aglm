@@ -64,6 +64,9 @@
 #'   See \link{AccurateGLM-class} for more details.
 #'
 #'
+#' @example examples/cv-aglm-1.R
+#'
+#'
 #' @author
 #'   * Kenji Kondo,
 #'   * Kazuhisa Takahashi and Banno (worked on L-Variable related features)
