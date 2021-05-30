@@ -30,7 +30,8 @@ If not given, \code{offset} for fitting is used.}
 \item{weights}{Sample weights.
 If not given, \code{weights} for fitting is used.}
 
-\item{type}{A string representing type of deviance:
+\item{type}{\loadmathjax
+A string representing type of deviance:
 \itemize{
 \item \code{"working"} get working residual
 \mjsdeqn{r^W_i = (y_i - \mu_i) \left(\frac{\partial \eta}{\partial \mu}\right)_{\mu=\mu_i},}
@@ -51,7 +52,7 @@ where \eqn{d_i} is the contribution to deviance.
 A numeric vector representing calculated residuals.
 }
 \description{
-\loadmathjax
+Get residuals of various types
 }
 \author{
 Kenji Kondo

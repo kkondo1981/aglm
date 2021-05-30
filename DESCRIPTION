@@ -21,6 +21,7 @@ Suggests:
     knitr,
     rmarkdown,
     MASS,
+    faraway,
     mathjaxr
 RdMacros:
     mathjaxr

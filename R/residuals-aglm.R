@@ -1,7 +1,5 @@
 #' Get residuals of various types
 #'
-#' \loadmathjax
-#'
 #' @param object
 #'   A model object obtained from `aglm()` or `cv.aglm()`.
 #'
@@ -22,6 +20,7 @@
 #'   If not given, `weights` for fitting is used.
 #'
 #' @param type
+#'   \loadmathjax
 #'   A string representing type of deviance:
 #'   * `"working"` get working residual
 #'      \mjsdeqn{r^W_i = (y_i - \mu_i) \left(\frac{\partial \eta}{\partial \mu}\right)_{\mu=\mu_i},}
