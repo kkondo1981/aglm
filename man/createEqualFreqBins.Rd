@@ -2,19 +2,22 @@
 % Please edit documentation in R/binning.R
 \name{createEqualFreqBins}
 \alias{createEqualFreqBins}
-\title{Create bins by Equal Freq Binning}
+\title{Create bins (equal frequency binning)}
 \usage{
 createEqualFreqBins(x_vec, nbin.max)
 }
 \arguments{
-\item{x_vec}{A reference integer or numeric or ordered vector to be binned.}
+\item{x_vec}{A numeric vector, whose quantiles are used as breaks.}
 
-\item{nbin.max}{An integer value which indicates the maximum counts of bins.
-Note that this function makes \code{min(nbin.max, length(x_vec))} counts of bins.}
+\item{nbin.max}{The maximum number of bins.}
 }
 \value{
-a numeric vector which indicates the boundaries of bins, with \code{nbin} elements.
+A numeric vector representing breaks obtained by binning.
+Note that the number of bins is equal to \code{min(nbin.max, length(x_vec))}.
 }
 \description{
-Create bins by Equal Freq Binning
+Create bins (equal frequency binning)
+}
+\author{
+Kenji Kondo
 }

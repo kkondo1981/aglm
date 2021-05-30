@@ -1,3 +1,6 @@
+
+#################### use_LVar and extrapolation ####################
+
 library(MASS) # For Boston
 library(aglm)
 
@@ -12,11 +15,12 @@ x_test <- seq(0.75, 3.25, length.out=101)
 y_test <- f(x_test) + rnorm(101, sd=sd)
 xy_test <- data.frame(x=x_test, y=y_test)
 
-## Sample plot for extrapolation="default"
-models <- c(cv.aglm(x, y, extrapolation="default"),
-            cv.aglm(x, y, extrapolation="flat"),
-            cv.aglm(x, y, use_LVar=TRUE, extrapolation="default"),
-            cv.aglm(x, y, use_LVar=TRUE, extrapolation="flat"))
+## Plot
+nbin.max <- 10
+models <- c(cv.aglm(x, y, use_LVar=FALSE, extrapolation="default", nbin.max=nbin.max),
+            cv.aglm(x, y, use_LVar=FALSE, extrapolation="flat", nbin.max=nbin.max),
+            cv.aglm(x, y, use_LVar=TRUE, extrapolation="default", nbin.max=nbin.max),
+            cv.aglm(x, y, use_LVar=TRUE, extrapolation="flat", nbin.max=nbin.max))
 
 titles <- c("O-Dummies with extrapolation=\"default\"",
             "O-Dummies with extrapolation=\"flat\"",

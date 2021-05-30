@@ -2,15 +2,18 @@
 % Please edit documentation in R/deviance-aglm.R
 \name{deviance.AccurateGLM}
 \alias{deviance.AccurateGLM}
-\title{Extract the deviance from an \code{AccurateGLM} object.}
+\title{Get deviance}
 \usage{
 \method{deviance}{AccurateGLM}(object, ...)
 }
 \arguments{
-\item{object}{An \code{AccurateGLM} object.}
+\item{object}{A model object obtained from \code{aglm()} or \code{cv.aglm()}.}
 
-\item{...}{Other arguments are passed directly to \code{deviance} functions of \code{model@backend_models}.}
+\item{...}{Other arguments are passed directly to \code{deviance.glmnet()}.}
 }
 \description{
-Extract the deviance from an \code{AccurateGLM} object.
+Get deviance
+}
+\author{
+Kenji Kondo
 }

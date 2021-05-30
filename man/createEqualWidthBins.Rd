@@ -2,20 +2,23 @@
 % Please edit documentation in R/binning.R
 \name{createEqualWidthBins}
 \alias{createEqualWidthBins}
-\title{Create bins by Equal Width Binning}
+\title{Create bins (equal width binning)}
 \usage{
 createEqualWidthBins(left, right, nbin)
 }
 \arguments{
-\item{left}{left value of the original interval.}
+\item{left}{The leftmost value of the interval to be binned.}
 
-\item{right}{right value of the original interval.}
+\item{right}{The rightmost value of the interval to be binned.}
 
-\item{nbin}{number of bins to be created.}
+\item{nbin}{The number of bins.}
 }
 \value{
-a numeric vector which indicates the boundaries of bins, with \code{nbin} elements.
+A numeric vector representing breaks obtained by binning.
 }
 \description{
-Create bins by Equal Width Binning
+Create bins (equal width binning)
+}
+\author{
+Kenji Kondo
 }

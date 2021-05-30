@@ -1,11 +1,18 @@
-# printing function for AGLM
-# witten by Kenji Kondo @ 2019/1/3
-
-#' Print an `AccurateGLM` object
+#' Display textual information of the model
 #'
-#' @param x An `AccurateGLM` object.
-#' @param digits Significant digits in printout.
-#' @param ... Other arguments are passed directly to `print` functions of `model@backend_models`.
+#' @param x
+#'   A model object obtained from `aglm()` or `cv.aglm()`.
+#'
+#' @param digits
+#'   Used to control significant digits in printout.
+#'
+#' @param ...
+#'   Other arguments are passed directly to `print.glmnet()`.
+#'
+#'
+#' @author
+#' Kenji Kondo
+#'
 #'
 #' @export
 print.AccurateGLM <- function(x, digits=max(3, getOption("digits") - 3), ...) {

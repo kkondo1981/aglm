@@ -1,3 +1,6 @@
+
+#################### using plot() and predict() ####################
+
 library(MASS) # For Boston
 library(aglm)
 
@@ -16,12 +19,24 @@ y <- train$y
 newx <- test[-ncol(xy)]
 y_true <- test$y
 
-## Select the best lambda
-lambda.min <- cv.aglm(x, y)@lambda.min
-cat("lambda.min: ", lambda.min, "\n")
+## With the result of aglm()
+model <- aglm(x, y)
+lambda <- 0.1
 
-## Predict y for newx
-model <- aglm(x, y, lambda=lambda.min)
-y_pred <- predict(model, newx=newx)
-cat("RMSE: ", sqrt(mean((y_true - y_pred)^2)), "\n")
+plot(model, s=lambda, resid=TRUE, add_rug=TRUE,
+     verbose=FALSE, layout=c(3, 3))
+
+y_pred <- predict(model, newx=newx, s=lambda)
 plot(y_true, y_pred)
+
+## With the result of cv.aglm()
+model <- cv.aglm(x, y)
+lambda <- model@lambda.min
+
+plot(model, s=lambda, resid=TRUE, add_rug=TRUE,
+     verbose=FALSE, layout=c(3, 3))
+
+y_pred <- predict(model, newx=newx, s=lambda)
+plot(y_true, y_pred)
+
+

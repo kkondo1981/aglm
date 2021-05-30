@@ -2,17 +2,20 @@
 % Please edit documentation in R/print-aglm.R
 \name{print.AccurateGLM}
 \alias{print.AccurateGLM}
-\title{Print an \code{AccurateGLM} object}
+\title{Display textual information of the model}
 \usage{
 \method{print}{AccurateGLM}(x, digits = max(3, getOption("digits") - 3), ...)
 }
 \arguments{
-\item{x}{An \code{AccurateGLM} object.}
+\item{x}{A model object obtained from \code{aglm()} or \code{cv.aglm()}.}
 
-\item{digits}{Significant digits in printout.}
+\item{digits}{Used to control significant digits in printout.}
 
-\item{...}{Other arguments are passed directly to \code{print} functions of \code{model@backend_models}.}
+\item{...}{Other arguments are passed directly to \code{print.glmnet()}.}
 }
 \description{
-Print an \code{AccurateGLM} object
+Display textual information of the model
+}
+\author{
+Kenji Kondo
 }

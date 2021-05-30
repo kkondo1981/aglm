@@ -20,4 +20,8 @@ Suggests:
     testthat,
     knitr,
     rmarkdown,
-    MASS
+    MASS,
+    faraway,
+    mathjaxr
+RdMacros:
+    mathjaxr
