@@ -3,25 +3,28 @@
 \docType{class}
 \name{CVA_AccurateGLM-class}
 \alias{CVA_AccurateGLM-class}
-\title{S4 class for a result of \code{cva.aglm()}}
+\title{Class for results of \code{cva.aglm()}}
 \description{
-S4 class for a result of \code{cva.aglm()}
+Class for results of \code{cva.aglm()}
 }
 \section{Slots}{
 
 \describe{
-\item{\code{models_list}}{Results of \code{cv.glmnet()} for all the values of alpha.}
+\item{\code{models_list}}{A list consists of \code{cv.glmnet()}'s results for all \eqn{\alpha} values.}
 
-\item{\code{alpha}}{A numeric values specifying alpha values to be examined.}
+\item{\code{alpha}}{Same as in \link{cv.aglm}.}
 
-\item{\code{nfolds}}{An integer value specifying the number of folds.}
+\item{\code{nfolds}}{Same as in \link{cv.aglm}.}
 
-\item{\code{alpha.min.index}}{An integer value specifying the index of \code{alpha.min} in \code{alpha}.}
+\item{\code{alpha.min.index}}{The index of \code{alpha.min} in the vector \code{alpha}.}
 
-\item{\code{alpha.min}}{The alpha value which achieves the minimum loss.}
+\item{\code{alpha.min}}{The \eqn{\alpha} value achieving the minimum loss among all the values of \code{alpha}.}
 
-\item{\code{lambda.min}}{The lambda value which achieves the minimum loss, when combined with \code{alpha.min}.}
+\item{\code{lambda.min}}{The \eqn{\lambda} value achieving the minimum loss when \eqn{\alpha} is equal to \code{alpha.min}.}
 
-\item{\code{call}}{An object of class call, which is used to record how \code{cva.aglm()} is called.}
+\item{\code{call}}{An object of class \code{call}, corresponding to the function call when this \code{CVA_AccurateGLM} object is created.}
 }}
 
+\author{
+Kenji Kondo
+}

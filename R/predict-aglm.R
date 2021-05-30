@@ -1,24 +1,42 @@
-# predicting function for AGLM model
-# written by Kenji Kondo @ 2019/1/3
+#' Make predictions for new data
+#'
+#' @param object
+#'   A model object obtained from `aglm()` or `cv.aglm()`.
+#'
+#' @param newx
+#'   A design matrix for new data.
+#'   See the description of `x` in \link{aglm} for more details.
+#'
+#' @param s
+#'   Same as in \link{predict.glmnet}.
+#'
+#' @param type
+#'   Same as in \link{predict.glmnet}.
+#'
+#' @param exact
+#'   Same as in \link{predict.glmnet}.
+#'
+#' @param newoffset
+#'   Same as in \link{predict.glmnet}.
 
-#' Make predictions from a fitted `AccurateGLM`
+#' @param ...
+#'   Other arguments are passed directly when calling `predict.glmnet()`.
 #'
-#' @param object An `AccurateGLM` object.
-#' @param newx An input matrix or data.frame used for predictions.
-#' @param s Value(s) of the penalty parameter `lambda` at which predictions are required.
-#'   Default is the entire sequence used to create the model.
-#' @param type Type of prediction required.
-#'   * Type `"link"` gives the linear predictors for `"binomial"`, `"poisson"` models, and for `"gaussian"` models it gives the fitted values.
-#'   * Type `"response"` gives the fitted probabilities for `"binomial"`, fitted mean for `"poisson"`, and for `"gaussian"` models it is equivalent to type `"link"`.
-#'   * Type `"coefficients"` computes the coefficients at the requested values for `s`.
-#'     Note that for `"binomial"` models, results are returned only for the class corresponding to the second level of the factor response.
-#'   * Type `"class"` applies only to `"binomial"`, and produces the  class label corresponding to the maximum probability.
-#'   * Type `"nonzero"` returns a list of the indices of the nonzero coefficients for each value of `s`.
-#' @param exact Same as `predict.glmnet()`.
-#' @param newoffset If an offset is used in the fit, then one must be supplied for making predictions (except for type="coefficients" or type="nonzero").
-#' @param ... Other arguments are passed directly to backend (currently `glmnet()` is used), and if not given, default values of the backend API are used.
+#' @return
+#'   The returned object depends on `type`.
+#'   See \link{predict.glmnet} for more details.
 #'
-#' @return The object returned depends on type.
+#'
+#' @author
+#'   * Kenji Kondo,
+#'   * Kazuhisa Takahashi and Banno (worked on L-Variable related features)
+#'
+#'
+#' @references Suguru Fujita, Toyoto Tanaka, Kenji Kondo and Hirokazu Iwasawa. (2020)
+#' \emph{AGLM: A Hybrid Modeling Method of GLM and Data Science Techniques}, \cr
+#' \url{https://www.institutdesactuaires.com/global/gene/link.php?doc_id=16273&fg=1} \cr
+#' \emph{Actuarial Colloquium Paris 2020}
+#'
 #'
 #' @export
 #' @importFrom assertthat assert_that

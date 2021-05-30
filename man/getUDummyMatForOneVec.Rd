@@ -2,7 +2,7 @@
 % Please edit documentation in R/get-dummies.R
 \name{getUDummyMatForOneVec}
 \alias{getUDummyMatForOneVec}
-\title{Get U-dummy matrix for one-dimensional vector}
+\title{Create a U-dummy matrix for one variable}
 \usage{
 getUDummyMatForOneVec(
   x_vec,
@@ -12,25 +12,27 @@ getUDummyMatForOneVec(
 )
 }
 \arguments{
-\item{x_vec}{A non-numeric vector to be converted into dummy matrix.}
+\item{x_vec}{A vector representing original variable.
+The class of \code{x_vec} should be one of \code{integer}, \code{character}, or \code{factor}.}
 
-\item{levels}{A character vector indicates unique set of possible values.
-If NULL, all the unique values of \code{x_vec} are used.}
+\item{levels}{A character vector representing values of \code{x_vec} used to create U-dummies.
+If \code{NULL}, all the unique values of \code{x_vec} are used to create dummies.}
 
-\item{drop_last}{A logical value. If TRUE, the last column of dummy matrix is dropped.}
+\item{drop_last}{If \code{TRUE}, the last column of the resulting matrix is dropped to avoid multicollinearity.}
 
-\item{only_info}{A logical value. If TRUE, actual creation of dummy matrix is omitted.}
+\item{only_info}{If \code{TRUE}, only information fields of returned values are filled and no dummy matrix is returned.}
 }
 \value{
-a list with two members \code{levels} and \code{dummy_mat}.
+A list with the following fields:
 \itemize{
-\item \code{levels}: Same as input
-\item \code{drop_last}: Same as input
-\item \code{dummy_mat}: An integer matrix with size (length of \code{x_vec}, length of \code{levels} or minus 1 when \code{drop_last=TRUE}).
-\code{dummy_mat[i, j]} is 1 if and only if \code{x_vec[i] == levels[j]}, and 0 otherwise.
-Omitted if \code{only_info=TRUE}
+\item \code{levels}: Same as input.
+\item \code{drop_last}: Same as input.
+\item \code{dummy_mat}: The created U-dummy matrix (only if \code{only_info=FALSE}).
 }
 }
 \description{
-Get U-dummy matrix for one-dimensional vector
+Create a U-dummy matrix for one variable
+}
+\author{
+Kenji Kondo
 }

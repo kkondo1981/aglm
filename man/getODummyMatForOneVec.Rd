@@ -2,7 +2,7 @@
 % Please edit documentation in R/get-dummies.R
 \name{getODummyMatForOneVec}
 \alias{getODummyMatForOneVec}
-\title{Get O-dummy matrix for one-dimensional vector}
+\title{Create a O-dummy matrix for one variable}
 \usage{
 getODummyMatForOneVec(
   x_vec,
@@ -13,34 +13,26 @@ getODummyMatForOneVec(
 )
 }
 \arguments{
-\item{x_vec}{An integer or numeric vector to be converted into dummy matrix.}
+\item{x_vec}{A numeric vector representing original variable.}
 
-\item{breaks}{A numeric vector which indicates the boundaries of bins, of length (number of bins + 1).
-If NULL, evenly cut bins are automatically generated and used.}
+\item{breaks}{A numeric vector representing breaks of bins (If \code{NULL}, automatically generated).}
 
-\item{nbin.max}{A maximum number of bins which is used. Only used when \code{breaks} is not set.}
+\item{nbin.max}{The maximum number of bins (used only if \code{breaks=NULL}).}
 
-\item{only_info}{A logical value. If TRUE, actual creation of dummy matrix is omitted.}
+\item{only_info}{If \code{TRUE}, only information fields of returned values are filled and no dummy matrix is returned.}
 
-\item{dummy_type}{A character value. Choose \code{"C"}(default) or \code{"J"}. For integer or numeric \code{x_vec},
-\code{dummy_type="C"} is used as default. Otherwise, \code{dummy_type="J"} is used as default.
-\itemize{
-\item \code{"C"}: Continuous-type dummies, which result continuous contribution curves.
-\item \code{"J"}: Jump-type dummies, which result contribution curves with jumps.
-}}
+\item{dummy_type}{Used to control the shape of linear combinations obtained by O-dummies for quantitative variables (deprecated).}
 }
 \value{
-a list with two members \code{breaks} and \code{dummy_mat}.
+a list with the following fields:
 \itemize{
 \item \code{breaks}: Same as input
-\item \code{dummy_mat}: An integer matrix with size (length of \code{x_vec}, length of \code{breaks} minus 1).
-\code{dummy_mat[i, j]} is 1 if and only if \verb{breaks[i] < x_vec[i] <= breaks[i+1]}, and 0 otherwise.
-Note that, in case where \code{x_vec[i]} is outside of \verb{(breaks[1], breaks[length(breaks)]]},
-\code{x_vec[i]} is considered to be in the first bin if \code{x_vec[i] <= breaks[1]}, and
-be in the last bin if \code{x_vec[i] > breaks[length(breaks)]}.
-Omitted if \code{only_info=TRUE}
+\item \code{dummy_mat}: The created O-dummy matrix (only if \code{only_info=FALSE}).
 }
 }
 \description{
-Get O-dummy matrix for one-dimensional vector
+Create a O-dummy matrix for one variable
+}
+\author{
+Kenji Kondo
 }

@@ -1,11 +1,7 @@
-# handling inputs of AGLM model
-# written by Kenji Kondo @ 2019/1/2
-
-
 #' S4 class for input
 #'
-#' @slot vars_info A list of list. Each element has some information of one feature.
-#' @slot data A data.frame which contains original data itself.
+#' @slot vars_info A list, each of whose element is information of one variable.
+#' @slot data The original data.
 setClass("AGLM_Input",
          representation=representation(vars_info="list", data="data.frame"))
 
@@ -310,6 +306,7 @@ getMatrixRepresentationByVector <- function(raw_vec, var_info, drop_OD=FALSE) {
   return(z)
 }
 
+
 #' @importFrom assertthat assert_that
 getMatrixRepresentation <- function(x, idx, drop_OD=FALSE) {
   var_info <- x@vars_info[[idx]]
@@ -356,13 +353,6 @@ getMatrixRepresentation <- function(x, idx, drop_OD=FALSE) {
 }
 
 
-#' Get design-matrix representation of AGLM_Input objects
-#'
-#' @param x An AGLM_Input object
-#'
-#' @return A data.frame which represents the matrix representation of `x`.
-#'
-#' @export
 #' @importFrom assertthat assert_that
 getDesignMatrix <- function(x) {
   # Check arguments

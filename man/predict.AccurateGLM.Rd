@@ -2,7 +2,7 @@
 % Please edit documentation in R/predict-aglm.R
 \name{predict.AccurateGLM}
 \alias{predict.AccurateGLM}
-\title{Make predictions from a fitted \code{AccurateGLM}}
+\title{Make predictions for new data}
 \usage{
 \method{predict}{AccurateGLM}(
   object,
@@ -15,32 +15,37 @@
 )
 }
 \arguments{
-\item{object}{An \code{AccurateGLM} object.}
+\item{object}{A model object obtained from \code{aglm()} or \code{cv.aglm()}.}
 
-\item{newx}{An input matrix or data.frame used for predictions.}
+\item{newx}{A design matrix for new data.
+See the description of \code{x} in \link{aglm} for more details.}
 
-\item{s}{Value(s) of the penalty parameter \code{lambda} at which predictions are required.
-Default is the entire sequence used to create the model.}
+\item{s}{Same as in \link{predict.glmnet}.}
 
-\item{type}{Type of prediction required.
-\itemize{
-\item Type \code{"link"} gives the linear predictors for \code{"binomial"}, \code{"poisson"} models, and for \code{"gaussian"} models it gives the fitted values.
-\item Type \code{"response"} gives the fitted probabilities for \code{"binomial"}, fitted mean for \code{"poisson"}, and for \code{"gaussian"} models it is equivalent to type \code{"link"}.
-\item Type \code{"coefficients"} computes the coefficients at the requested values for \code{s}.
-Note that for \code{"binomial"} models, results are returned only for the class corresponding to the second level of the factor response.
-\item Type \code{"class"} applies only to \code{"binomial"}, and produces the  class label corresponding to the maximum probability.
-\item Type \code{"nonzero"} returns a list of the indices of the nonzero coefficients for each value of \code{s}.
-}}
+\item{type}{Same as in \link{predict.glmnet}.}
 
-\item{exact}{Same as \code{predict.glmnet()}.}
+\item{exact}{Same as in \link{predict.glmnet}.}
 
-\item{newoffset}{If an offset is used in the fit, then one must be supplied for making predictions (except for type="coefficients" or type="nonzero").}
+\item{newoffset}{Same as in \link{predict.glmnet}.}
 
-\item{...}{Other arguments are passed directly to backend (currently \code{glmnet()} is used), and if not given, default values of the backend API are used.}
+\item{...}{Other arguments are passed directly when calling \code{predict.glmnet()}.}
 }
 \value{
-The object returned depends on type.
+The returned object depends on \code{type}.
+See \link{predict.glmnet} for more details.
 }
 \description{
-Make predictions from a fitted \code{AccurateGLM}
+Make predictions for new data
+}
+\references{
+Suguru Fujita, Toyoto Tanaka, Kenji Kondo and Hirokazu Iwasawa. (2020)
+\emph{AGLM: A Hybrid Modeling Method of GLM and Data Science Techniques}, \cr
+\url{https://www.institutdesactuaires.com/global/gene/link.php?doc_id=16273&fg=1} \cr
+\emph{Actuarial Colloquium Paris 2020}
+}
+\author{
+\itemize{
+\item Kenji Kondo,
+\item Kazuhisa Takahashi and Banno (worked on L-Variable related features)
+}
 }

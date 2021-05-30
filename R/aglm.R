@@ -1,4 +1,7 @@
-#' Fit an AGLM model
+#' Fit an AGLM model with no cross-validation
+#'
+#' A basic fitting function with given \eqn{\alpha} and \eqn{\lambda} (s).
+#' See \link{aglm-package} for more details on \eqn{\alpha} and \eqn{\lambda}.
 #'
 #' @param x
 #'   A design matrix.
@@ -8,6 +11,7 @@
 #'   * `factor` (unordered) or `logical` : interpreted as a qualitative variable without order. `aglm` creates dummy variables suitable for unordered values (named U-dummies).
 #'   * `ordered`: interpreted as a qualitative variable with order. `aglm` creates both O-dummies and U-dummies.
 #'   These dummy variables are added to `x` and form a larger matrix, which is used internally as an actual design matrix.
+#'
 #'   If you need to change the default behavior, use the following options: `qualitative_vars_UD_only`, `qualitative_vars_both`, `qualitative_vars_OD_only`, and `quantitative_vars`.
 #'
 #' @param y
@@ -65,9 +69,25 @@
 #' @param bins_names
 #'   Used to set custom bins for variables with O-dummies.
 #'
-#' @param ... Other arguments are passed directly when calling `glmnet()`.
+#' @param ...
+#'   Other arguments are passed directly when calling `glmnet()`.
 #'
-#' @return A model object fitted to the data.
+#' @return
+#'   A model object fitted to the data.
+#'   Functions such as `predict` and `plot` can be applied to the returned object.
+#'   See \link{AccurateGLM-class} for more details.
+#'
+#'
+#' @author
+#'   * Kenji Kondo,
+#'   * Kazuhisa Takahashi and Banno (worked on L-Variable related features)
+#'
+#'
+#' @references Suguru Fujita, Toyoto Tanaka, Kenji Kondo and Hirokazu Iwasawa. (2020)
+#' \emph{AGLM: A Hybrid Modeling Method of GLM and Data Science Techniques}, \cr
+#' \url{https://www.institutdesactuaires.com/global/gene/link.php?doc_id=16273&fg=1} \cr
+#' \emph{Actuarial Colloquium Paris 2020}
+#'
 #'
 #' @export
 #' @importFrom assertthat assert_that

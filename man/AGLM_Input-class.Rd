@@ -10,8 +10,8 @@ S4 class for input
 \section{Slots}{
 
 \describe{
-\item{\code{vars_info}}{A list of list. Each element has some information of one feature.}
+\item{\code{vars_info}}{A list, each of whose element is information of one variable.}
 
-\item{\code{data}}{A data.frame which contains original data itself.}
+\item{\code{data}}{The original data.}
 }}
 

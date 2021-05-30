@@ -2,7 +2,7 @@
 % Please edit documentation in R/aglm.R
 \name{aglm}
 \alias{aglm}
-\title{Fit an AGLM model}
+\title{Fit an AGLM model with no cross-validation}
 \usage{
 aglm(
   x,
@@ -33,8 +33,9 @@ Each column may have one of the following classes, and \code{aglm} will automati
 \item \code{factor} (unordered) or \code{logical} : interpreted as a qualitative variable without order. \code{aglm} creates dummy variables suitable for unordered values (named U-dummies).
 \item \code{ordered}: interpreted as a qualitative variable with order. \code{aglm} creates both O-dummies and U-dummies.
 These dummy variables are added to \code{x} and form a larger matrix, which is used internally as an actual design matrix.
-If you need to change the default behavior, use the following options: \code{qualitative_vars_UD_only}, \code{qualitative_vars_both}, \code{qualitative_vars_OD_only}, and \code{quantitative_vars}.
-}}
+}
+
+If you need to change the default behavior, use the following options: \code{qualitative_vars_UD_only}, \code{qualitative_vars_both}, \code{qualitative_vars_OD_only}, and \code{quantitative_vars}.}
 
 \item{y}{A response variable.}
 
@@ -82,7 +83,22 @@ Currently \code{aglm} supports \code{gaussian}, \code{binomial}, and \code{poiss
 }
 \value{
 A model object fitted to the data.
+Functions such as \code{predict} and \code{plot} can be applied to the returned object.
+See \link{AccurateGLM-class} for more details.
 }
 \description{
-Fit an AGLM model
+A basic fitting function with given \eqn{\alpha} and \eqn{\lambda} (s).
+See \link{aglm-package} for more details on \eqn{\alpha} and \eqn{\lambda}.
+}
+\references{
+Suguru Fujita, Toyoto Tanaka, Kenji Kondo and Hirokazu Iwasawa. (2020)
+\emph{AGLM: A Hybrid Modeling Method of GLM and Data Science Techniques}, \cr
+\url{https://www.institutdesactuaires.com/global/gene/link.php?doc_id=16273&fg=1} \cr
+\emph{Actuarial Colloquium Paris 2020}
+}
+\author{
+\itemize{
+\item Kenji Kondo,
+\item Kazuhisa Takahashi and Banno (worked on L-Variable related features)
+}
 }

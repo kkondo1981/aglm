@@ -3,40 +3,42 @@
 \docType{class}
 \name{AccurateGLM-class}
 \alias{AccurateGLM-class}
-\title{S4 class for fitted AGLM, used as a result of \code{aglm()} or \code{cv.aglm()}}
+\title{Class for results of \code{aglm()} and \code{cv.aglm()}}
 \description{
-S4 class for fitted AGLM, used as a result of \code{aglm()} or \code{cv.aglm()}
+Class for results of \code{aglm()} and \code{cv.aglm()}
 }
 \section{Slots}{
 
 \describe{
-\item{\code{backend_models}}{Internally used model objects to be passed to backend functions.
-Currently \code{glmnet} is used as a backend and this slot holding a \code{glmnet} object.}
+\item{\code{backend_models}}{The fitted backend \code{glmnet} model is stored.}
 
-\item{\code{vars_info}}{A list of list. Each element of \code{vars_info} represents one predictor variable and contains various information of it.}
+\item{\code{vars_info}}{A list, each of whose element is information of one variable.}
 
-\item{\code{lambda}}{The values of \code{lambda} used in the fits.}
+\item{\code{lambda}}{Same as in the result of \link{cv.glmnet}.}
 
-\item{\code{cvm}}{The mean cross-validated error.}
+\item{\code{cvm}}{Same as in the result of \link{cv.glmnet}.}
 
-\item{\code{cvsd}}{The estimate of standard error of \code{cvm}.}
+\item{\code{cvsd}}{Same as in the result of \link{cv.glmnet}.}
 
-\item{\code{cvup}}{The upper curve as \code{cvm + cvsd}.}
+\item{\code{cvup}}{Same as in the result of \link{cv.glmnet}.}
 
-\item{\code{cvlo}}{The lower curve as \code{cvm - cvsd}.}
+\item{\code{cvlo}}{Same as in the result of \link{cv.glmnet}.}
 
-\item{\code{nzero}}{The number of non-zero coefficients at each lambda.}
+\item{\code{nzero}}{Same as in the result of \link{cv.glmnet}.}
 
-\item{\code{name}}{A text string indicating type of measure (for plotting purposes).}
+\item{\code{name}}{Same as in the result of \link{cv.glmnet}.}
 
-\item{\code{lambda.min}}{The value of \code{lambda} that gives minimum \code{cvm}.}
+\item{\code{lambda.min}}{Same as in the result of \link{cv.glmnet}.}
 
-\item{\code{lambda.1se}}{The largest value of \code{lambda} such that error is within 1 standard error of the minimum.}
+\item{\code{lambda.1se}}{Same as in the result of \link{cv.glmnet}.}
 
-\item{\code{fit.preval}}{If \code{keep=TRUE}, this is the array of previously prevalidated fits. Some entries can be NA, if that and subsequent values of lambda are not reached for that fold.}
+\item{\code{fit.preval}}{Same as in the result of \link{cv.glmnet}.}
 
-\item{\code{foldid}}{An integer vector of values between 1 and \code{nfold} identifying what fold each observation is in.}
+\item{\code{foldid}}{Same as in the result of \link{cv.glmnet}.}
 
-\item{\code{call}}{An object of class call, which is used to record how \code{cva.aglm()} is called.}
+\item{\code{call}}{An object of class \code{call}, corresponding to the function call when this \code{AccurateGLM} object is created.}
 }}
 
+\author{
+Kenji Kondo
+}

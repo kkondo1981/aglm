@@ -2,24 +2,27 @@
 % Please edit documentation in R/coef-aglm.R
 \name{coef.AccurateGLM}
 \alias{coef.AccurateGLM}
-\title{Extract coefficients from an \code{AccurateGLM} object.}
+\title{Get coefficients}
 \usage{
 \method{coef}{AccurateGLM}(object, index = NULL, name = NULL, s = NULL, exact = FALSE, ...)
 }
 \arguments{
-\item{object}{An \code{AccurateGLM} object.}
+\item{object}{A model object obtained from \code{aglm()} or \code{cv.aglm()}.}
 
-\item{index}{An integer vector of variable indices whose coefficients should be returned.}
+\item{index}{An integer value representing the index of variable whose coefficients are required.}
 
-\item{name}{An character vector of variable names whose coefficients should be returned.}
+\item{name}{A string representing the name of variable whose coefficients are required.
+Note that if both \code{index} and \code{name} are set, \code{index} is discarded.}
 
-\item{s}{Value(s) of the penalty parameter \code{lambda} at which predictions are required.
-Default is the entire sequence used to create the model.}
+\item{s}{Same as in \link{coef.glmnet}.}
 
-\item{exact}{Same as \code{coef.glmnet()}.}
+\item{exact}{Same as in \link{coef.glmnet}.}
 
-\item{...}{Other arguments are passed directly to \code{deviance} functions of \code{model@backend_models}.}
+\item{...}{Other arguments are passed directly to \code{coef.glmnet()}.}
 }
 \description{
-Extract coefficients from an \code{AccurateGLM} object.
+Get coefficients
+}
+\author{
+Kenji Kondo
 }
