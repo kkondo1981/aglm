@@ -29,11 +29,13 @@ aglm(
 Usually a \code{data.frame} object is expected, but a \code{matrix} object is fine if all columns are of a same class.
 Each column may have one of the following classes, and \code{aglm} will automatically determine how to handle it:
 \itemize{
-\item \code{numeric}: interpreted as a quantitative variable. \code{aglm} performs discretization by binning, and creates dummy variables suitable for ordered values (named O-dummies).
+\item \code{numeric}: interpreted as a quantitative variable. \code{aglm} performs discretization by binning, and creates dummy variables suitable for ordered values (named O-dummies/L-variables).
 \item \code{factor} (unordered) or \code{logical} : interpreted as a qualitative variable without order. \code{aglm} creates dummy variables suitable for unordered values (named U-dummies).
 \item \code{ordered}: interpreted as a qualitative variable with order. \code{aglm} creates both O-dummies and U-dummies.
-These dummy variables are added to \code{x} and form a larger matrix, which is used internally as an actual design matrix.
 }
+
+These dummy variables are added to \code{x} and form a larger matrix, which is used internally as an actual design matrix.
+See \href{https://www.institutdesactuaires.com/global/gene/link.php?doc_id=16273&fg=1}{our paper} for more details on O-dummies, U-dummies, and L-variables.
 
 If you need to change the default behavior, use the following options: \code{qualitative_vars_UD_only}, \code{qualitative_vars_both}, \code{qualitative_vars_OD_only}, and \code{quantitative_vars}.}
 
@@ -53,9 +55,9 @@ This parameter may have one of the following classes:
 
 \item{quantitative_vars}{Same as \code{qualitative_vars_UD_only}, except that specified variables are considered as quantitative variables.}
 
-\item{use_LVar}{Used to get predictions without jumps by \code{aglm}.
-By default, \code{aglm} uses O-dummies as the representation of a quantitative variable, but the resulting linear combination form a step function and has a jump at each break of binning.
-To avoid this, set \code{use_LVar=TRUE} to use a different type of auxiliary variable (named L-Variables), such that the linear combination form a piecewise linear functions and is continuous.}
+\item{use_LVar}{Set to use L-variables.
+By default, \code{aglm} uses O-dummies as the representation of a quantitative variable.
+If \code{use_LVar=TRUE}, L-variables are used instead.}
 
 \item{extrapolation}{Used to control values of linear combination for quantitative variables, outside where the data exists.
 By default, values of a linear combination outside the data is extended based on the slope of the edges of the region where the data exists.

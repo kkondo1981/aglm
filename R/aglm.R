@@ -7,10 +7,12 @@
 #'   A design matrix.
 #'   Usually a `data.frame` object is expected, but a `matrix` object is fine if all columns are of a same class.
 #'   Each column may have one of the following classes, and `aglm` will automatically determine how to handle it:
-#'   * `numeric`: interpreted as a quantitative variable. `aglm` performs discretization by binning, and creates dummy variables suitable for ordered values (named O-dummies).
+#'   * `numeric`: interpreted as a quantitative variable. `aglm` performs discretization by binning, and creates dummy variables suitable for ordered values (named O-dummies/L-variables).
 #'   * `factor` (unordered) or `logical` : interpreted as a qualitative variable without order. `aglm` creates dummy variables suitable for unordered values (named U-dummies).
 #'   * `ordered`: interpreted as a qualitative variable with order. `aglm` creates both O-dummies and U-dummies.
+#'
 #'   These dummy variables are added to `x` and form a larger matrix, which is used internally as an actual design matrix.
+#'   See \href{https://www.institutdesactuaires.com/global/gene/link.php?doc_id=16273&fg=1}{our paper} for more details on O-dummies, U-dummies, and L-variables.
 #'
 #'   If you need to change the default behavior, use the following options: `qualitative_vars_UD_only`, `qualitative_vars_both`, `qualitative_vars_OD_only`, and `quantitative_vars`.
 #'
@@ -34,9 +36,9 @@
 #'   Same as `qualitative_vars_UD_only`, except that specified variables are considered as quantitative variables.
 #'
 #' @param use_LVar
-#'   Used to get predictions without jumps by `aglm`.
-#'   By default, `aglm` uses O-dummies as the representation of a quantitative variable, but the resulting linear combination form a step function and has a jump at each break of binning.
-#'   To avoid this, set `use_LVar=TRUE` to use a different type of auxiliary variable (named L-Variables), such that the linear combination form a piecewise linear functions and is continuous.
+#'   Set to use L-variables.
+#'   By default, `aglm` uses O-dummies as the representation of a quantitative variable.
+#'   If `use_LVar=TRUE`, L-variables are used instead.
 #'
 #' @param extrapolation
 #'   Used to control values of linear combination for quantitative variables, outside where the data exists.
