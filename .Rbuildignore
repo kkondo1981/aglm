@@ -4,5 +4,6 @@
 ^aglm.*\.tar\.gz$
 ^aglm.*\.tgz$
 ^LICENSE\.md$
+^cran-comments\.md
 ^\.github$
 ^examples/*
