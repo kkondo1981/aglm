@@ -15,13 +15,13 @@ Depends:
 Imports:
     glmnet (>= 4.0.2),
     assertthat,
-    methods
+    methods,
+    mathjaxr
 Suggests: 
     testthat,
     knitr,
     rmarkdown,
     MASS,
-    faraway,
-    mathjaxr
+    faraway
 RdMacros:
     mathjaxr
