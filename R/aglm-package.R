@@ -26,7 +26,7 @@
 #' and \eqn{\lambda} determines the strength of the regularization.
 #'
 #' Searching hyper-parameters \eqn{\alpha} and \eqn{\lambda} is often useful to get better results, but usually time-consuming.
-#' That's why the `aglm` package provides three fitting functions with different strategies for spcifying hyper-parameters as follows:
+#' That's why the `aglm` package provides three fitting functions with different strategies for specifying hyper-parameters as follows:
 #'   * \link{aglm}: A basic fitting function with given \eqn{\alpha} and \eqn{\lambda} (s).
 #'   * \link{cv.aglm}: A fitting function with given \eqn{\alpha} and cross-validation for \eqn{\lambda}.
 #'   * \link{cva.aglm}: A fitting function with cross-validation for both \eqn{\alpha} and \eqn{\lambda}.

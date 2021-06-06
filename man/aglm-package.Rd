@@ -33,7 +33,7 @@ where \eqn{\beta_jk} is the k-th coefficient of auxiliary variables for the j-th
 and \eqn{\lambda} determines the strength of the regularization.
 
 Searching hyper-parameters \eqn{\alpha} and \eqn{\lambda} is often useful to get better results, but usually time-consuming.
-That's why the \code{aglm} package provides three fitting functions with different strategies for spcifying hyper-parameters as follows:
+That's why the \code{aglm} package provides three fitting functions with different strategies for specifying hyper-parameters as follows:
 \itemize{
 \item \link{aglm}: A basic fitting function with given \eqn{\alpha} and \eqn{\lambda} (s).
 \item \link{cv.aglm}: A fitting function with given \eqn{\alpha} and cross-validation for \eqn{\lambda}.

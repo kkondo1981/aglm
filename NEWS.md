@@ -1,5 +1,5 @@
 # aglm 0.4.0
-- Rewirtes all documents and examples.
+- Updated all documents and examples.
 
 # aglm 0.3.2
 - Fixed to use `R` 4.0 and `glmnet` 4.0.
