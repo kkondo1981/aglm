@@ -59,6 +59,9 @@ x <- train[, c("popul", "TVnews", "selfLR", "ClinLR", "DoleLR", "PID", "age", "e
 y <- train$vote
 newx <- test[, c("popul", "TVnews", "selfLR", "ClinLR", "DoleLR", "PID", "age", "educ", "income")]
 
+# NOTE: Codes bellow will take considerable time, so run it when you have time.
+\dontrun{
+
 ## Fit the model
 cva_result <- cva.aglm(x, y, family="binomial")
 
@@ -74,6 +77,8 @@ y_pred <- levels(y_true)[as.integer(predict(model, newx, s=lambda, type="class")
 
 cat(sprintf("Confusion matrix for alpha=\%.5f and lambda=\%.5f:\n", alpha, lambda))
 print(table(y_true, y_pred))
+
+}
 }
 \references{
 Suguru Fujita, Toyoto Tanaka, Kenji Kondo and Hirokazu Iwasawa. (2020)
