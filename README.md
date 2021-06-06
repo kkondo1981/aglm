@@ -1,4 +1,4 @@
-# What is it?
+# What is this?
 Accurate Generalized Linear Model (AGLM) is defined as a regularized GLM which applying a sort of feature transformations using a discretization of numerical features and specific coding methodologies of dummy variables.
 More details can be found in [our paper](https://www.institutdesactuaires.com/global/gene/link.php?doc_id=16273&fg=1).
 
