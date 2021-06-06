@@ -20,7 +20,7 @@ newx <- test[-ncol(xy)]
 y_true <- test$y
 
 ## Fit the model
-model <- aglm(x, y)  # alpha=1 (the default value)
+model <- aglm(y ~ ., data=xy)  # alpha=1 (the default value)
 
 ## Predict for various alpha and lambda
 lambda <- 0.1
@@ -34,7 +34,7 @@ rmse <- sqrt(mean((y_true - y_pred)^2))
 cat(sprintf("RMSE for lambda=%.2f: %.5f \n\n", lambda, rmse))
 
 alpha <- 0
-model <- aglm(x, y, alpha=alpha)
+model <- aglm.fit(x, y, alpha=alpha)
 
 lambda <- 0.1
 y_pred <- predict(model, newx=newx, s=lambda)

@@ -100,22 +100,27 @@
 #' @importFrom assertthat assert_that
 #' @importFrom glmnet glmnet
 #' @importFrom methods new
-aglm <- function(x, y,
-                 qualitative_vars_UD_only=NULL,
-                 qualitative_vars_both=NULL,
-                 qualitative_vars_OD_only=NULL,
-                 quantitative_vars=NULL,
-                 use_LVar=FALSE,
-                 extrapolation="default",
-                 add_linear_columns=TRUE,
-                 add_OD_columns_of_qualitatives=TRUE,
-                 add_interaction_columns=FALSE,
-                 OD_type_of_quantitatives="C",
-                 nbin.max=NULL,
-                 bins_list=NULL,
-                 bins_names=NULL,
-                 family=c("gaussian","binomial","poisson"),
-                 ...) {
+#'
+#' @name aglm
+NULL
+
+
+aglm.base <- function(x, y,
+                      qualitative_vars_UD_only=NULL,
+                      qualitative_vars_both=NULL,
+                      qualitative_vars_OD_only=NULL,
+                      quantitative_vars=NULL,
+                      use_LVar=FALSE,
+                      extrapolation="default",
+                      add_linear_columns=TRUE,
+                      add_OD_columns_of_qualitatives=TRUE,
+                      add_interaction_columns=FALSE,
+                      OD_type_of_quantitatives="C",
+                      nbin.max=NULL,
+                      bins_list=NULL,
+                      bins_names=NULL,
+                      family=c("gaussian","binomial","poisson"),
+                      ...) {
   # Create an input object
   x <- newInput(x,
                 qualitative_vars_UD_only=qualitative_vars_UD_only,
@@ -158,4 +163,67 @@ aglm <- function(x, y,
   glmnet_result <- do.call(glmnet, args)
 
   return(new("AccurateGLM", backend_models=list(glmnet=glmnet_result), vars_info=x@vars_info, call=match.call()))
+}
+
+
+#' @rdname aglm
+aglm <- function(formula,
+                 data,
+                 family=c("gaussian","binomial","poisson"),
+                 weights=NULL,
+                 offset=NULL,
+                 subset=NULL,
+                 na.action=getOption("na.action"),
+                 drop.unused.levels=FALSE,
+                 xlev=NULL,
+                 ...) {
+  cl <- match.call(expand.dots=FALSE)
+  cl[[1]] <- quote(stats::model.frame)
+  mf <- eval.parent(cl)
+
+  # The intercept term is not necessary in the original design matrix.
+  tf <- attr(mf, "terms")
+  attr(tf, "intercept") <- 0
+
+  x <- model.matrix(tf, mf)
+  y <- model.response(mf)
+  weights <- model.weights(mf)
+  offset <- model.offset(mf)
+
+  model <- aglm.base(x=x,
+                     y=y,
+                     family=family,
+                     weights=weights,
+                     offset=offset,
+                     ...)
+  model@call[[1]] <- match.call()
+
+  return(model)
+}
+
+
+#' @rdname aglm
+#' @export
+aglm.fit <- function(x, y,
+                     qualitative_vars_UD_only=NULL,
+                     qualitative_vars_both=NULL,
+                     qualitative_vars_OD_only=NULL,
+                     quantitative_vars=NULL,
+                     use_LVar=FALSE,
+                     extrapolation="default",
+                     add_linear_columns=TRUE,
+                     add_OD_columns_of_qualitatives=TRUE,
+                     add_interaction_columns=FALSE,
+                     OD_type_of_quantitatives="C",
+                     nbin.max=NULL,
+                     bins_list=NULL,
+                     bins_names=NULL,
+                     family=c("gaussian","binomial","poisson"),
+                     ...) {
+  cl <- match.call()
+  cl[[1]] <- quote(aglm.base)
+  model <- eval(cl)
+  model@call[[1]] <- match.call()
+
+  return(model)
 }
