@@ -3,18 +3,42 @@
 \docType{class}
 \name{AccurateGLM-class}
 \alias{AccurateGLM-class}
-\title{S4 class for fitted AGLM}
+\title{Class for results of \code{aglm()} and \code{cv.aglm()}}
 \description{
-S4 class for fitted AGLM
+Class for results of \code{aglm()} and \code{cv.aglm()}
 }
 \section{Slots}{
 
 \describe{
-\item{\code{backend_models}}{Internally used model objects to be passed to backend functions.
-Currently glmnet is used as a backend and this slot holding a glmnet object.}
+\item{\code{backend_models}}{The fitted backend \code{glmnet} model is stored.}
 
-\item{\code{vars_info}}{A list of list. Each element of \code{vars_info} represents one predictor variable and contains various informations of it.}
+\item{\code{vars_info}}{A list, each of whose element is information of one variable.}
 
-\item{\code{others}}{slots for holding cross-validation results}
+\item{\code{lambda}}{Same as in the result of \link{cv.glmnet}.}
+
+\item{\code{cvm}}{Same as in the result of \link{cv.glmnet}.}
+
+\item{\code{cvsd}}{Same as in the result of \link{cv.glmnet}.}
+
+\item{\code{cvup}}{Same as in the result of \link{cv.glmnet}.}
+
+\item{\code{cvlo}}{Same as in the result of \link{cv.glmnet}.}
+
+\item{\code{nzero}}{Same as in the result of \link{cv.glmnet}.}
+
+\item{\code{name}}{Same as in the result of \link{cv.glmnet}.}
+
+\item{\code{lambda.min}}{Same as in the result of \link{cv.glmnet}.}
+
+\item{\code{lambda.1se}}{Same as in the result of \link{cv.glmnet}.}
+
+\item{\code{fit.preval}}{Same as in the result of \link{cv.glmnet}.}
+
+\item{\code{foldid}}{Same as in the result of \link{cv.glmnet}.}
+
+\item{\code{call}}{An object of class \code{call}, corresponding to the function call when this \code{AccurateGLM} object is created.}
 }}
 
+\author{
+Kenji Kondo
+}

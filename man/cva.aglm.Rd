@@ -2,7 +2,7 @@
 % Please edit documentation in R/cva-aglm.R
 \name{cva.aglm}
 \alias{cva.aglm}
-\title{Cross-validation for both alpha and lambda}
+\title{Fit an AGLM model with cross-validation for both \eqn{\alpha} and \eqn{\lambda}}
 \usage{
 cva.aglm(
   x,
@@ -15,23 +15,80 @@ cva.aglm(
 )
 }
 \arguments{
-\item{x}{An input matrix or data.frame to be fitted.}
+\item{x}{A design matrix.
+See \link{aglm} for more details.}
 
-\item{y}{An integer or numeric vector which represents response variable.}
+\item{y}{A response variable.}
 
-\item{alpha}{A numeric vector which represents alpha values to be examined.}
+\item{alpha}{A numeric vector representing \eqn{\alpha} values to be examined in cross-validation.}
 
-\item{nfolds}{The number of folds. The default value is 10.}
+\item{nfolds}{An integer value representing the number of folds.}
 
-\item{foldid}{An integer vector of values between 1 and nfold identifying what fold each observation is in.}
+\item{foldid}{An integer vector with the same length as observations.
+Each element should take a value from 1 to \code{nfolds}, identifying which fold it belongs.}
 
-\item{parallel.alpha}{not implemented yet.}
+\item{parallel.alpha}{(not used yet)}
 
-\item{...}{Other arguments are passed directly to cv.aglm().}
+\item{...}{Other arguments are passed directly to \code{cv.aglm()}.}
 }
 \value{
-Result of cross-validation. See \code{CVA_AccurateGLM}'s document for more details.
+An object storing fitted models and information of cross-validation.
+See \link{CVA_AccurateGLM-class} for more details.
 }
 \description{
-Cross-validation for both alpha and lambda
+A fitting function with cross-validation for both \eqn{\alpha} and \eqn{\lambda}.
+See \link{aglm-package} for more details on \eqn{\alpha} and \eqn{\lambda}.
+}
+\examples{
+
+#################### Cross-validation for alpha and lambda ####################
+
+library(aglm)
+library(faraway)
+
+## Read data
+xy <- nes96
+
+## Split data into train and test
+n <- nrow(xy) # Sample size.
+set.seed(2018) # For reproducibility.
+test.id <- sample(n, round(n/5)) # ID numbders for test data.
+test <- xy[test.id,] # test is the data.frame for testing.
+train <- xy[-test.id,] # train is the data.frame for training.
+x <- train[, c("popul", "TVnews", "selfLR", "ClinLR", "DoleLR", "PID", "age", "educ", "income")]
+y <- train$vote
+newx <- test[, c("popul", "TVnews", "selfLR", "ClinLR", "DoleLR", "PID", "age", "educ", "income")]
+
+# NOTE: Codes bellow will take considerable time, so run it when you have time.
+\donttest{
+
+## Fit the model
+cva_result <- cva.aglm(x, y, family="binomial")
+
+alpha <- cva_result@alpha.min
+lambda <- cva_result@lambda.min
+
+mod_idx <- cva_result@alpha.min.index
+model <- cva_result@models_list[[mod_idx]]
+
+## Make the confusion matrix
+y_true <- test$vote
+y_pred <- levels(y_true)[as.integer(predict(model, newx, s=lambda, type="class"))]
+
+cat(sprintf("Confusion matrix for alpha=\%.5f and lambda=\%.5f:\n", alpha, lambda))
+print(table(y_true, y_pred))
+
+}
+}
+\references{
+Suguru Fujita, Toyoto Tanaka, Kenji Kondo and Hirokazu Iwasawa. (2020)
+\emph{AGLM: A Hybrid Modeling Method of GLM and Data Science Techniques}, \cr
+\url{https://www.institutdesactuaires.com/global/gene/link.php?doc_id=16273&fg=1} \cr
+\emph{Actuarial Colloquium Paris 2020}
+}
+\author{
+\itemize{
+\item Kenji Kondo,
+\item Kazuhisa Takahashi and Hikari Banno (worked on L-Variable related features)
+}
 }

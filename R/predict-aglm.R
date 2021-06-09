@@ -1,31 +1,64 @@
-# predicting function for AGLM model
-# written by Kenji Kondo @ 2019/1/3
+#' Make predictions for new data
+#'
+#' @param object
+#'   A model object obtained from `aglm()` or `cv.aglm()`.
+#'
+#' @param newx
+#'   A design matrix for new data.
+#'   See the description of `x` in \link{aglm} for more details.
+#'
+#' @param s
+#'   Same as in \link{predict.glmnet}.
+#'
+#' @param type
+#'   Same as in \link{predict.glmnet}.
+#'
+#' @param exact
+#'   Same as in \link{predict.glmnet}.
+#'
+#' @param newoffset
+#'   Same as in \link{predict.glmnet}.
 
-#' Make predictions from a fitted AccurateGLM
+#' @param ...
+#'   Other arguments are passed directly when calling `predict.glmnet()`.
 #'
-#' @param model An AccurateGLM object.
-#' @param newx An input matrix or data.frame used for predictions.
-#' @param type Type of prediction required.
-#'   * Type `"link"` gives the linear predictors for `"binomial"`, `"poisson"` models, and for `"gaussian"` models it gives the fitted values.
-#'   * Type `"response"` gives the fitted probabilities for `"binomial"`, fitted mean for `"poisson"`, and for `"gaussian"` models it is equivalent to type `"link"`.
-#'   * Type `"coefficients"` computes the coefficients at the requested values for `s`.
-#'     Note that for `"binomial"` models, results are returned only for the class corresponding to the second level of the factor response.
-#'   * Type `"class"` applies only to `"binomial"`, and produces the  class label corresponding to the maximum probability.
-#'   * Type `"nonzero"` returns a list of the indices of the nonzero coefficients for each value of `s`.
-#' @param ... Other arguments are passed directly to backend (currently glmnet() is used), and if not given, backend API's deault values are used.
+#' @return
+#'   The returned object depends on `type`.
+#'   See \link{predict.glmnet} for more details.
 #'
-#' @return The object returned depends on type.
+#'
+#' @example examples/predict-and-plot-1.R
+#'
+#'
+#' @author
+#'   * Kenji Kondo,
+#'   * Kazuhisa Takahashi and Hikari Banno (worked on L-Variable related features)
+#'
+#'
+#' @references Suguru Fujita, Toyoto Tanaka, Kenji Kondo and Hirokazu Iwasawa. (2020)
+#' \emph{AGLM: A Hybrid Modeling Method of GLM and Data Science Techniques}, \cr
+#' \url{https://www.institutdesactuaires.com/global/gene/link.php?doc_id=16273&fg=1} \cr
+#' \emph{Actuarial Colloquium Paris 2020}
+#'
 #'
 #' @export
 #' @importFrom assertthat assert_that
 #' @importFrom glmnet predict.glmnet
-predict.AccurateGLM <- function(model,
+#' @importFrom methods new
+#' @importFrom stats predict
+predict.AccurateGLM <- function(object,
                                 newx=NULL,
                                 s=NULL,
                                 type=c("link","response","coefficients","nonzero","class"),
                                 exact=FALSE,
                                 newoffset,
                                 ...) {
+  # It's necessary to use same names for some arguments as the original methods,
+  # because devtools::check() issues warnings when using inconsistent names.
+  # As a result, we sometimes should accept uncomfortable argument names,
+  # but still have rights to use preferable names internally.
+  model <- object
+
   # Check and set `type`
   type <- match.arg(type)
 

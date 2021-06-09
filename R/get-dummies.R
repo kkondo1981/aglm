@@ -1,20 +1,18 @@
-# utility functions for get dummy variables from various data
-# written by Kenji Kondo @ 2019/1/1
-
-#' Get U-dummy matrix for one-dimensional vector
+#' Create a U-dummy matrix for one variable
 #'
-#' @param x_vec A non-numeric vector to be converted into dummy matrix.
-#' @param levels A character vector indicates unique set of possible values.
-#'   If NULL, all the unique values of `x_vec` are used.
-#' @param drop_last A boolean value. If TRUE, the last column of dummy matrix is dropped to avoid colinear
-#' @param only_info A bboolean value. If TRUE, actual creation of dummy matrix is omitted.
+#' @param x_vec A vector representing original variable.
+#'   The class of `x_vec` should be one of `integer`, `character`, or `factor`.
+#' @param levels A character vector representing values of `x_vec` used to create U-dummies.
+#'   If `NULL`, all the unique values of `x_vec` are used to create dummies.
+#' @param drop_last If `TRUE`, the last column of the resulting matrix is dropped to avoid multicollinearity.
+#' @param only_info If `TRUE`, only information fields of returned values are filled and no dummy matrix is returned.
 #'
-#' @return a list with two members `levels` and `dummy_mat`.
-#' * `levels`: Same as input
-#' * `drop_last`: Same as input
-#' * `dummy_mat`: An integer matrix with size (length of `x_vec`, length of `levels` or minus 1 when `drop_last=TRUE`).
-#'   `dummy_mat[i, j]` is 1 if and only if `x_vec[i] == levels[j]`, and 0 otherwise.
-#'   Omitted if `only_info=TRUE`
+#' @return A list with the following fields:
+#' * `levels`: Same as input.
+#' * `drop_last`: Same as input.
+#' * `dummy_mat`: The created U-dummy matrix (only if `only_info=FALSE`).
+#'
+#' @author Kenji Kondo
 #'
 #' @export
 #' @importFrom assertthat assert_that
@@ -41,26 +39,19 @@ getUDummyMatForOneVec <- function(x_vec, levels=NULL, drop_last=TRUE, only_info=
 }
 
 
-#' Get O-dummy matrix for one-dimensional vector
+#' Create a O-dummy matrix for one variable
 #'
-#' @param x_vec An integer or numeric vector to be converted into dummy matrix.
-#' @param breaks A numeric vector which indicates the boundaries of bins, of length (number of bins + 1).
-#'   If NULL, evenly cut bins are automatically generated and used.
-#' @param nbin.max A maximum number of bins which is used. Only used when `breaks` is not set.
-#' @param only_info A boolean value. If TRUE, actual creation of dummy matrix is omitted.
-#' @param dummy_type A character value. Choose "C"(default) or "J". For integer or numeric `x_vec`,
-#'  `dummy_type="C"` is used as default. Otherwise, `dummy_type="J"` is used as default.
-#'   * "C": Continuous-type dummies, which result continuous contribution curves.
-#'   * "J": Jum-type dummies, which result contribution curves with jumps.
+#' @param x_vec A numeric vector representing original variable.
+#' @param breaks A numeric vector representing breaks of bins (If `NULL`, automatically generated).
+#' @param nbin.max The maximum number of bins (used only if `breaks=NULL`).
+#' @param only_info If `TRUE`, only information fields of returned values are filled and no dummy matrix is returned.
+#' @param dummy_type Used to control the shape of linear combinations obtained by O-dummies for quantitative variables (deprecated).
 #'
-#' @return a list with two members `breaks` and `dummy_mat`.
+#' @return A list with the following fields:
 #' * `breaks`: Same as input
-#' * `dummy_mat`: An integer matrix with size (length of `x_vec`, length of `breaks` minus 1).
-#'   `dummy_mat[i, j]` is 1 if and only if `breaks[i] < x_vec[i] <= breaks[i+1]`, and 0 otherwise.
-#'   Note that, in case where `x_vec[i]` is outside of `(breaks[1], breaks[length(breaks)]]`,
-#'   `x_vec[i]` is considered to be in the first bin if `x_vec[i] <= breaks[1]`, and
-#'   be in the last bin if `x_vec[i] > breaks[length(breaks)]`.
-#'   Omitted if `only_info=TRUE`
+#' * `dummy_mat`: The created O-dummy matrix (only if `only_info=FALSE`).
+#'
+#' @author Kenji Kondo
 #'
 #' @export
 #' @importFrom assertthat assert_that
@@ -97,22 +88,19 @@ getODummyMatForOneVec <- function(x_vec, breaks=NULL, nbin.max=100, only_info=FA
   else return(list(breaks=binned_x$breaks, dummy_mat=dummy_mat))
 }
 
-#' Get L-variable matrix for one-dimensional vector
+
+#' Create L-variable matrix for one variable
 #'
-#' @param x_vec An integer or numeric vector to be converted into dummy matrix.
-#' @param breaks A numeric vector which indicates the boundaries of bins, of length (number of bins + 1).
-#'   If NULL, evenly cut bins are automatically generated and used.
-#' @param nbin.max A maximum number of bins which is used. Only used when `breaks` is not set.
-#' @param only_info A boolean value. If TRUE, actual creation of dummy matrix is omitted.
+#' @param x_vec A numeric vector representing original variable.
+#' @param breaks A numeric vector representing breaks of bins (If `NULL`, automatically generated).
+#' @param nbin.max The maximum number of bins (used only if `breaks=NULL`).
+#' @param only_info If `TRUE`, only information fields of returned values are filled and no dummy matrix is returned.
 #'
-#' @return a list with two members `breaks` and `dummy_mat`.
+#' @return A list with the following fields:
 #' * `breaks`: Same as input
-#' * `dummy_mat`: An integer matrix with size (length of `x_vec`, length of `breaks` minus 1).
-#'   `dummy_mat[i, j]` is 1 if and only if `breaks[i] < x_vec[i] <= breaks[i+1]`, and 0 otherwise.
-#'   Note that, in case where `x_vec[i]` is outside of `(breaks[1], breaks[length(breaks)]]`,
-#'   `x_vec[i]` is considered to be in the first bin if `x_vec[i] <= breaks[1]`, and
-#'   be in the last bin if `x_vec[i] > breaks[length(breaks)]`.
-#'   Omitted if `only_info=TRUE`
+#' * `dummy_mat`: The created L-variable matrix (only if `only_info=FALSE`).
+#'
+#' @author Kenji Kondo
 #'
 #' @export
 #' @importFrom assertthat assert_that

@@ -2,33 +2,58 @@
 % Please edit documentation in R/residuals-aglm.R
 \name{residuals.AccurateGLM}
 \alias{residuals.AccurateGLM}
-\title{Calculate residuals for AGLM model}
+\title{Get residuals of various types}
 \usage{
 \method{residuals}{AccurateGLM}(
-  model,
+  object,
   x = NULL,
   y = NULL,
   offset = NULL,
   weights = NULL,
   type = c("working", "pearson", "deviance"),
-  s = NULL
+  s = NULL,
+  ...
 )
 }
 \arguments{
-\item{model}{An AccurateGLM object.}
+\item{object}{A model object obtained from \code{aglm()} or \code{cv.aglm()}.}
 
-\item{type}{Type of prediction required.
+\item{x}{A design matrix.
+If not given, \code{x} for fitting is used.}
+
+\item{y}{A response variable.
+If not given, \code{y} for fitting is used.}
+
+\item{offset}{An offset values.
+If not given, \code{offset} for fitting is used.}
+
+\item{weights}{Sample weights.
+If not given, \code{weights} for fitting is used.}
+
+\item{type}{\loadmathjax
+A string representing type of deviance:
 \itemize{
-\item Type \code{"working"} Working residuals.
-\item Type \code{"pearson"} Pearson residuals.
-\item Type \code{"deviance"} Devian residuals.
+\item \code{"working"} get working residual
+\mjsdeqn{r^W_i = (y_i - \mu_i) \left(\frac{\partial \eta}{\partial \mu}\right)_{\mu=\mu_i},}
+where \eqn{y_i} is a response value, \eqn{\mu} is GLM mean, and \eqn{\eta=g^{-1}(\mu)} with the link function \eqn{g}.
+\item \code{"pearson"} get Pearson residuals
+\mjsdeqn{r^P_i = \frac{y_i - \mu_i}{\sqrt{V(\mu_i)}},}
+where \eqn{V} is the variance function.
+\item \code{"deviance"} get deviance residuals
+\mjsdeqn{r^D_i = {\rm sign}(y_i - \mu_i) \sqrt{d_i},}
+where \eqn{d_i} is the contribution to deviance.
 }}
 
-\item{s}{A numeric value specifying lambda value at which plotting is required.}
+\item{s}{A numeric value specifying \eqn{\lambda} at which residuals are calculated.}
+
+\item{...}{Other arguments are currently not used and just discarded.}
 }
 \value{
-The object returned depends on type.
+A numeric vector representing calculated residuals.
 }
 \description{
-Calculate residuals for AGLM model
+Get residuals of various types
+}
+\author{
+Kenji Kondo
 }

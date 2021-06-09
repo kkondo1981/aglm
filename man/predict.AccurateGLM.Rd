@@ -2,10 +2,10 @@
 % Please edit documentation in R/predict-aglm.R
 \name{predict.AccurateGLM}
 \alias{predict.AccurateGLM}
-\title{Make predictions from a fitted AccurateGLM}
+\title{Make predictions for new data}
 \usage{
 \method{predict}{AccurateGLM}(
-  model,
+  object,
   newx = NULL,
   s = NULL,
   type = c("link", "response", "coefficients", "nonzero", "class"),
@@ -15,25 +15,81 @@
 )
 }
 \arguments{
-\item{model}{An AccurateGLM object.}
+\item{object}{A model object obtained from \code{aglm()} or \code{cv.aglm()}.}
 
-\item{newx}{An input matrix or data.frame used for predictions.}
+\item{newx}{A design matrix for new data.
+See the description of \code{x} in \link{aglm} for more details.}
 
-\item{type}{Type of prediction required.
-\itemize{
-\item Type \code{"link"} gives the linear predictors for \code{"binomial"}, \code{"poisson"} models, and for \code{"gaussian"} models it gives the fitted values.
-\item Type \code{"response"} gives the fitted probabilities for \code{"binomial"}, fitted mean for \code{"poisson"}, and for \code{"gaussian"} models it is equivalent to type \code{"link"}.
-\item Type \code{"coefficients"} computes the coefficients at the requested values for \code{s}.
-Note that for \code{"binomial"} models, results are returned only for the class corresponding to the second level of the factor response.
-\item Type \code{"class"} applies only to \code{"binomial"}, and produces the  class label corresponding to the maximum probability.
-\item Type \code{"nonzero"} returns a list of the indices of the nonzero coefficients for each value of \code{s}.
-}}
+\item{s}{Same as in \link{predict.glmnet}.}
 
-\item{...}{Other arguments are passed directly to backend (currently glmnet() is used), and if not given, backend API's deault values are used.}
+\item{type}{Same as in \link{predict.glmnet}.}
+
+\item{exact}{Same as in \link{predict.glmnet}.}
+
+\item{newoffset}{Same as in \link{predict.glmnet}.}
+
+\item{...}{Other arguments are passed directly when calling \code{predict.glmnet()}.}
 }
 \value{
-The object returned depends on type.
+The returned object depends on \code{type}.
+See \link{predict.glmnet} for more details.
 }
 \description{
-Make predictions from a fitted AccurateGLM
+Make predictions for new data
+}
+\examples{
+
+#################### using plot() and predict() ####################
+
+library(MASS) # For Boston
+library(aglm)
+
+## Read data
+xy <- Boston # xy is a data.frame to be processed.
+colnames(xy)[ncol(xy)] <- "y" # Let medv be the objective variable, y.
+
+## Split data into train and test
+n <- nrow(xy) # Sample size.
+set.seed(2018) # For reproducibility.
+test.id <- sample(n, round(n/4)) # ID numbders for test data.
+test <- xy[test.id,] # test is the data.frame for testing.
+train <- xy[-test.id,] # train is the data.frame for training.
+x <- train[-ncol(xy)]
+y <- train$y
+newx <- test[-ncol(xy)]
+y_true <- test$y
+
+## With the result of aglm()
+model <- aglm(x, y)
+lambda <- 0.1
+
+plot(model, s=lambda, resid=TRUE, add_rug=TRUE,
+     verbose=FALSE, layout=c(3, 3))
+
+y_pred <- predict(model, newx=newx, s=lambda)
+plot(y_true, y_pred)
+
+## With the result of cv.aglm()
+model <- cv.aglm(x, y)
+lambda <- model@lambda.min
+
+plot(model, s=lambda, resid=TRUE, add_rug=TRUE,
+     verbose=FALSE, layout=c(3, 3))
+
+y_pred <- predict(model, newx=newx, s=lambda)
+plot(y_true, y_pred)
+
+
+}
+\references{
+Suguru Fujita, Toyoto Tanaka, Kenji Kondo and Hirokazu Iwasawa. (2020)
+\emph{AGLM: A Hybrid Modeling Method of GLM and Data Science Techniques}, \cr
+\url{https://www.institutdesactuaires.com/global/gene/link.php?doc_id=16273&fg=1} \cr
+\emph{Actuarial Colloquium Paris 2020}
+}
+\author{
+\itemize{
+\item Kenji Kondo,
+\item Kazuhisa Takahashi and Hikari Banno (worked on L-Variable related features)
+}
 }

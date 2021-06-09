@@ -1,38 +1,105 @@
-# fitting function for AGLM model
-# written by Kenji Kondo @ 2019/1/1
-
-
-#' fit an AGLM model
+#' Fit an AGLM model with no cross-validation
 #'
-#' @param x An input matrix or data.frame to be fitted.
-#' @param y An integer or numeric vector which represents response variable.
-#' @param qualitative_vars_UD_only A list of indices or names for specifying which columns are qualitative and need only U-dummy representations.
-#' @param qualitative_vars_both A list of indices or names for specifying which columns are qualitative and need both U-dummy and O-dummy representations.
-#' @param qualitative_vars_OD_only A list of indices or names for specifying which columns are qualitative and need only O-dummy representations.
-#' @param quantitative_vars A list of indices or names for specyfying which columns are quantitative.
-#' @param use_LVar A boolean value which indicates whether this function uses L-variable representations or not.
-#' @param extrapolation A character value which indicates how contribution curves outside bins are extrapolated.
-#'   * "default": No extrapolations.
-#'   * "flat": Extrapolates with flat lines.
-#' @param add_linear_columns A boolean value which indicates whether this function uses linear effects or not.
-#' @param add_OD_columns_of_qualitatives A boolean value which indicates whether this function use O-dummy representations for qualitative and ordinal variables or not.
-#' @param add_interaction_columns A boolean value which indicates whether this function uses intersection effects or not.
-#' @param OD_type_of_quantitatives A character value which indicates how O-dummy matrices of quantitative
-#'   values are constructed. Choose "C"(default) or "J".
-#'   * "C": Continuous-type dummies, which result continuous contribution curves.
-#'   * "J": Jump-type dummies, which result contribution curves with jumps.
-#'   * "N": No use of O-dummies
-#' @param family Response type. Currently "gaussian", "binomial", and "poisson" are supported.
-#' @param nbin.max a maximum number of bins which is automatically generated. Only used when `breaks` is not set.
-#' @param bins_list A list of numeric vectors, each element of which is used as breaks when binning of a quantitative variable or a qualitative variable with order.
-#' @param bins_names A list of column name or column index, each name or index of which specifies which column of `x` is binned used with an element of `bins_list` in the same position.
-#' @param ... Other arguments are passed directly to backend (currently glmnet() is used), and if not given, backend API's default values are used to call backend functions.
+#' A basic fitting function with given \eqn{\alpha} and \eqn{\lambda} (s).
+#' See \link{aglm-package} for more details on \eqn{\alpha} and \eqn{\lambda}.
 #'
-#' @return An AccurateGLM object, fitted to the data (x, y)
+#' @param x
+#'   A design matrix.
+#'   Usually a `data.frame` object is expected, but a `matrix` object is fine if all columns are of a same class.
+#'   Each column may have one of the following classes, and `aglm` will automatically determine how to handle it:
+#'   * `numeric`: interpreted as a quantitative variable. `aglm` performs discretization by binning, and creates dummy variables suitable for ordered values (named O-dummies/L-variables).
+#'   * `factor` (unordered) or `logical` : interpreted as a qualitative variable without order. `aglm` creates dummy variables suitable for unordered values (named U-dummies).
+#'   * `ordered`: interpreted as a qualitative variable with order. `aglm` creates both O-dummies and U-dummies.
+#'
+#'   These dummy variables are added to `x` and form a larger matrix, which is used internally as an actual design matrix.
+#'   See \href{https://www.institutdesactuaires.com/global/gene/link.php?doc_id=16273&fg=1}{our paper} for more details on O-dummies, U-dummies, and L-variables.
+#'
+#'   If you need to change the default behavior, use the following options: `qualitative_vars_UD_only`, `qualitative_vars_both`, `qualitative_vars_OD_only`, and `quantitative_vars`.
+#'
+#' @param y
+#'   A response variable.
+#'
+#' @param qualitative_vars_UD_only
+#'   Used to change the default behavior of `aglm` for given variables.
+#'   Variables specified by this parameter are considered as qualitative variables and only U-dummies are created as auxiliary columns.
+#'   This parameter may have one of the following classes:
+#'   * `integer`: specifying variables by index.
+#'   * `character`: specifying variables by name.
+#'
+#' @param qualitative_vars_both
+#'   Same as `qualitative_vars_UD_only`, except that both O-dummies and U-dummies are created for specified variables.
+#'
+#' @param qualitative_vars_OD_only
+#'   Same as `qualitative_vars_UD_only`, except that both only O-dummies are created for specified variables.
+#'
+#' @param quantitative_vars
+#'   Same as `qualitative_vars_UD_only`, except that specified variables are considered as quantitative variables.
+#'
+#' @param use_LVar
+#'   Set to use L-variables.
+#'   By default, `aglm` uses O-dummies as the representation of a quantitative variable.
+#'   If `use_LVar=TRUE`, L-variables are used instead.
+#'
+#' @param extrapolation
+#'   Used to control values of linear combination for quantitative variables, outside where the data exists.
+#'   By default, values of a linear combination outside the data is extended based on the slope of the edges of the region where the data exists.
+#'   You can set `extrapolation="flat"` to get constant values outside the data instead.
+#'
+#' @param add_linear_columns
+#'   By default, for quantitative variables, `aglm` expands them by adding dummies and the original columns, i.e. the linear effects, are remained in the resulting model.
+#'   You can set `add_linear_columns=FALSE` to drop linear effects.
+#'
+#' @param add_OD_columns_of_qualitatives
+#'   Set to `FALSE` if you do not want to use O-dummies for qualitative variables with order (usually, columns with `ordered` class).
+#'
+#' @param add_interaction_columns
+#'   If this parameter is set to `TRUE`, `aglm` creates an additional auxiliary variable `x_i * x_j` for each pair `(x_i, x_j)` of variables.
+#'
+#' @param OD_type_of_quantitatives
+#'   Used to control the shape of linear combinations obtained by O-dummies for quantitative variables (deprecated).
+#'
+#' @param family
+#'   A `family` object or a string representing the type of the error distribution.
+#'   Currently `aglm` supports `gaussian`, `binomial`, and `poisson`.
+#'
+#' @param nbin.max
+#'   An integer representing the maximum number of bins when `aglm` perform binning for quantitative variables.
+#'
+#' @param bins_list
+#'   Used to set custom bins for variables with O-dummies.
+#'
+#' @param bins_names
+#'   Used to set custom bins for variables with O-dummies.
+#'
+#' @param ...
+#'   Other arguments are passed directly when calling `glmnet()`.
+#'
+#' @return
+#'   A model object fitted to the data.
+#'   Functions such as `predict` and `plot` can be applied to the returned object.
+#'   See \link{AccurateGLM-class} for more details.
+#'
+#'
+#' @example examples/aglm-1.R
+#' @example examples/aglm-2.R
+#' @example examples/lvar-and-extrapolation.R
+#'
+#'
+#' @author
+#'   * Kenji Kondo,
+#'   * Kazuhisa Takahashi and Hikari Banno (worked on L-Variable related features)
+#'
+#'
+#' @references Suguru Fujita, Toyoto Tanaka, Kenji Kondo and Hirokazu Iwasawa. (2020)
+#' \emph{AGLM: A Hybrid Modeling Method of GLM and Data Science Techniques}, \cr
+#' \url{https://www.institutdesactuaires.com/global/gene/link.php?doc_id=16273&fg=1} \cr
+#' \emph{Actuarial Colloquium Paris 2020}
+#'
 #'
 #' @export
 #' @importFrom assertthat assert_that
 #' @importFrom glmnet glmnet
+#' @importFrom methods new
 aglm <- function(x, y,
                  qualitative_vars_UD_only=NULL,
                  qualitative_vars_both=NULL,

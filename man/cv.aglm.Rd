@@ -2,7 +2,7 @@
 % Please edit documentation in R/cv-aglm.R
 \name{cv.aglm}
 \alias{cv.aglm}
-\title{Cross-validation for AGLM models}
+\title{Fit an AGLM model with cross-validation for \eqn{\lambda}}
 \usage{
 cv.aglm(
   x,
@@ -26,53 +26,97 @@ cv.aglm(
 )
 }
 \arguments{
-\item{x}{An input matrix or data.frame to be fitted.}
+\item{x}{A design matrix.
+See \link{aglm} for more details.}
 
-\item{y}{An integer or numeric vector which represents response variable.}
+\item{y}{A response variable.}
 
-\item{qualitative_vars_UD_only}{A list of indices or names for specifying which columns are qualitative and need only U-dummy representations.}
+\item{qualitative_vars_UD_only}{Same as in \link{aglm}.}
 
-\item{qualitative_vars_both}{A list of indices or names for specifying which columns are qualitative and need both U-dummy and O-dummy representations.}
+\item{qualitative_vars_both}{Same as in \link{aglm}.}
 
-\item{qualitative_vars_OD_only}{A list of indices or names for specifying which columns are qualitative and need only O-dummy representations.}
+\item{qualitative_vars_OD_only}{Same as in \link{aglm}.}
 
-\item{quantitative_vars}{A list of indices or names for specyfying which columns are quantitative.}
+\item{quantitative_vars}{Same as in \link{aglm}.}
 
-\item{use_LVar}{A boolean value which indicates whether this function uses L-variable representations or not.}
+\item{use_LVar}{Same as in \link{aglm}.}
 
-\item{extrapolation}{A character value which indicates how contribution curves outside bins are extrapolated.
-\itemize{
-\item "default": No extrapolations.
-\item "flat": Extrapolates with flat lines.
-}}
+\item{extrapolation}{Same as in \link{aglm}.}
 
-\item{add_linear_columns}{A boolean value which indicates whether this function uses linear effects or not.}
+\item{add_linear_columns}{Same as in \link{aglm}.}
 
-\item{add_OD_columns_of_qualitatives}{A boolean value which indicates whether this function use O-dummy representations for qualitative and ordinal variables or not.}
+\item{add_OD_columns_of_qualitatives}{Same as in \link{aglm}.}
 
-\item{add_interaction_columns}{A boolean value which indicates whether this function uses interaction effects or not.}
+\item{add_interaction_columns}{Same as in \link{aglm}.}
 
-\item{OD_type_of_quantitatives}{A character value which indicates how O-dummy matrices of quantitative
-values are constructed. Choose "C"(default) or "J".
-\itemize{
-\item "C": Continuous-type dummies, which result continuous contribution curves.
-\item "J": Jump-type dummies, which result contribution curves with jumps.
-\item "N": No use of O-dummies
-}}
+\item{OD_type_of_quantitatives}{Same as in \link{aglm}.}
 
-\item{nbin.max}{a maximum number of bins which is automatically generated. Only used when \code{breaks} is not set.}
+\item{nbin.max}{Same as in \link{aglm}.}
 
-\item{bins_list}{A list of numeric vectors, each element of which is used as breaks when binning of a quantitative variable or a qualitative variable with order.}
+\item{bins_list}{Same as in \link{aglm}.}
 
-\item{bins_names}{A list of column name or column index, each name or index of which specifies which column of \code{x} is binned used with an element of \code{bins_list} in the same position.}
+\item{bins_names}{Same as in \link{aglm}.}
 
-\item{family}{Response type. Currently "gaussian", "binomial", and "poisson" are supported.}
+\item{family}{Same as in \link{aglm}.}
 
-\item{...}{Other arguments are passed directly to backend (currently cv.glmnet() is used), and if not given, backend API's default values are used to call backend functions.}
+\item{keep}{Set to \code{TRUE} if you need the \code{fit.preval} field in the returned value, as in \code{cv.glmnet()}.}
+
+\item{...}{Other arguments are passed directly when calling \code{cv.glmnet()}.}
 }
 \value{
-Result of cross-validation.
+A model object fitted to the data with cross-validation results.
+Functions such as \code{predict} and \code{plot} can be applied to the returned object, same as the result of \code{aglm()}.
+See \link{AccurateGLM-class} for more details.
 }
 \description{
-Cross-validation for AGLM models
+A fitting function with given \eqn{\alpha} and cross-validation for \eqn{\lambda}.
+See \link{aglm-package} for more details on \eqn{\alpha} and \eqn{\lambda}.
+}
+\examples{
+
+#################### Cross-validation for lambda ####################
+
+library(aglm)
+library(faraway)
+
+## Read data
+xy <- nes96
+
+## Split data into train and test
+n <- nrow(xy) # Sample size.
+set.seed(2018) # For reproducibility.
+test.id <- sample(n, round(n/5)) # ID numbders for test data.
+test <- xy[test.id,] # test is the data.frame for testing.
+train <- xy[-test.id,] # train is the data.frame for training.
+x <- train[, c("popul", "TVnews", "selfLR", "ClinLR", "DoleLR", "PID", "age", "educ", "income")]
+y <- train$vote
+newx <- test[, c("popul", "TVnews", "selfLR", "ClinLR", "DoleLR", "PID", "age", "educ", "income")]
+
+# NOTE: Codes bellow will take considerable time, so run it when you have time.
+\donttest{
+
+## Fit the model
+model <- cv.aglm(x, y, family="binomial")
+
+## Make the confusion matrix
+lambda <- model@lambda.min
+y_true <- test$vote
+y_pred <- levels(y_true)[as.integer(predict(model, newx, s=lambda, type="class"))]
+
+cat(sprintf("Confusion matrix for lambda=\%.5f:\n", lambda))
+print(table(y_true, y_pred))
+
+}
+}
+\references{
+Suguru Fujita, Toyoto Tanaka, Kenji Kondo and Hirokazu Iwasawa. (2020)
+\emph{AGLM: A Hybrid Modeling Method of GLM and Data Science Techniques}, \cr
+\url{https://www.institutdesactuaires.com/global/gene/link.php?doc_id=16273&fg=1} \cr
+\emph{Actuarial Colloquium Paris 2020}
+}
+\author{
+\itemize{
+\item Kenji Kondo,
+\item Kazuhisa Takahashi and Hikari Banno (worked on L-Variable related features)
+}
 }

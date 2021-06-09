@@ -2,18 +2,40 @@
 % Please edit documentation in R/coef-aglm.R
 \name{coef.AccurateGLM}
 \alias{coef.AccurateGLM}
-\title{Extract coefficients from an AccurateGLM object.}
+\title{Get coefficients}
 \usage{
-\method{coef}{AccurateGLM}(model, index = NULL, name = NULL, s = NULL, exact = FALSE, ...)
+\method{coef}{AccurateGLM}(object, index = NULL, name = NULL, s = NULL, exact = FALSE, ...)
 }
 \arguments{
-\item{model}{An AccurateGLM object.}
+\item{object}{A model object obtained from \code{aglm()} or \code{cv.aglm()}.}
 
-\item{s}{Value(s) of the penalty parameter \code{lambda} at which predictions are required.
-Default is the entire sequence used to create the model.}
+\item{index}{An integer value representing the index of variable whose coefficients are required.}
 
-\item{...}{Other arguments are passed directly to \code{deviance} functions of \code{model@backend_models}.}
+\item{name}{A string representing the name of variable whose coefficients are required.
+Note that if both \code{index} and \code{name} are set, \code{index} is discarded.}
+
+\item{s}{Same as in \link{coef.glmnet}.}
+
+\item{exact}{Same as in \link{coef.glmnet}.}
+
+\item{...}{Other arguments are passed directly to \code{coef.glmnet()}.}
+}
+\value{
+If \code{index} or \code{name} is given, the function returns a list with the one or combination
+of the following fields, consisting of coefficients related to the specified variable.
+\itemize{
+\item \code{coef.linear}: A coefficient of the linear term. (If any)
+\item \code{coef.OD}: Coefficients of O-dummies. (If any)
+\item \code{coef.UD}: Coefficients of U-dummies. (If any)
+\item \code{coef.LV}: Coefficients of L-variables. (If any)
+}
+
+If both \code{index} and \code{name} are not given, the function returns entire coefficients
+corresponding to the internal designed matrix.
 }
 \description{
-Extract coefficients from an AccurateGLM object.
+Get coefficients
+}
+\author{
+Kenji Kondo
 }

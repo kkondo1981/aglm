@@ -1,17 +1,14 @@
-# handling inputs of AGLM model
-# written by Kenji Kondo @ 2019/1/2
-
-
 #' S4 class for input
 #'
-#' @slot vars_info A list of list. Each element has some information of one feature.
-#' @slot data A data.frame which contains original data itself.
+#' @slot vars_info A list, each of whose element is information of one variable.
+#' @slot data The original data.
 setClass("AGLM_Input",
          representation=representation(vars_info="list", data="data.frame"))
 
 
-#' Create a new AGLM_Input object
+# An inner-use function for creating a new AGLM_Input object
 #' @importFrom assertthat assert_that
+#' @importFrom methods new
 newInput <- function(x,
                      qualitative_vars_UD_only=NULL,
                      qualitative_vars_both=NULL,
@@ -86,11 +83,11 @@ newInput <- function(x,
     cl <- class(idxs_or_names)
     idxs <- seq(length(var_names))
     if (cl == "integer") {
-      is_hit <- function(idx) {return(idx %in% idxs_or_names)}
-      idxs <- idxs[sapply(idxs, is_hit)]
+      is_hit_i <- function(idx) {return(idx %in% idxs_or_names)}
+      idxs <- idxs[sapply(idxs, is_hit_i)]
     } else if (cl == "character") {
-      is_hit <- function(var_name) {return(var_name %in% idxs_or_names)}
-      idxs <- idxs[sapply(var_names, is_hit)]
+      is_hit_c <- function(var_name) {return(var_name %in% idxs_or_names)}
+      idxs <- idxs[sapply(var_names, is_hit_c)]
     } else {
       assert_that(FALSE, msg="qualitative_vars_UD_only, qualitative_vars_both, qualitative_vars_both, quantitative_vars should be integer or character vectors.")
     }
@@ -309,6 +306,8 @@ getMatrixRepresentationByVector <- function(raw_vec, var_info, drop_OD=FALSE) {
   return(z)
 }
 
+
+#' @importFrom assertthat assert_that
 getMatrixRepresentation <- function(x, idx, drop_OD=FALSE) {
   var_info <- x@vars_info[[idx]]
   z <- NULL
@@ -347,20 +346,13 @@ getMatrixRepresentation <- function(x, idx, drop_OD=FALSE) {
     }
     colnames(z) <- nm
   } else {
-    assert_true(FALSE)  # never expects to come here
+    assert_that(FALSE)  # never expects to come here
   }
 
   return(z)
 }
 
 
-#' Get design-matrix representation of AGLM_Input objects
-#'
-#' @param x An AGLM_Input object
-#'
-#' @return A data.frame which represents the matrix representation of `x`.
-#'
-#' @export
 #' @importFrom assertthat assert_that
 getDesignMatrix <- function(x) {
   # Check arguments

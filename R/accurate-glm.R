@@ -1,13 +1,21 @@
-# S4 class for fitted AGLM
-# written by Kenji Kondo @ 2019/1/2
-
-
-#' S4 class for fitted AGLM
+#' Class for results of `aglm()` and `cv.aglm()`
 #'
-#' @slot backend_models Internally used model objects to be passed to backend functions.
-#'   Currently glmnet is used as a backend and this slot holding a glmnet object.
-#' @slot vars_info A list of list. Each element of `vars_info` represents one predictor variable and contains various informations of it.
-#' @slot others slots for holding cross-validation results
+#' @slot backend_models The fitted backend `glmnet` model is stored.
+#' @slot vars_info A list, each of whose element is information of one variable.
+#' @slot lambda Same as in the result of \link{cv.glmnet}.
+#' @slot cvm Same as in the result of \link{cv.glmnet}.
+#' @slot cvsd Same as in the result of \link{cv.glmnet}.
+#' @slot cvup Same as in the result of \link{cv.glmnet}.
+#' @slot cvlo Same as in the result of \link{cv.glmnet}.
+#' @slot nzero Same as in the result of \link{cv.glmnet}.
+#' @slot name Same as in the result of \link{cv.glmnet}.
+#' @slot lambda.min Same as in the result of \link{cv.glmnet}.
+#' @slot lambda.1se Same as in the result of \link{cv.glmnet}.
+#' @slot fit.preval Same as in the result of \link{cv.glmnet}.
+#' @slot foldid Same as in the result of \link{cv.glmnet}.
+#' @slot call An object of class `call`, corresponding to the function call when this `AccurateGLM` object is created.
+#'
+#' @author Kenji Kondo
 #'
 #' @export
 setClass("AccurateGLM",
@@ -26,14 +34,18 @@ setClass("AccurateGLM",
                                        foldid="integer",
                                        call="ANY"))
 
-#' S4 class for the result of cva.aglm function
+
+#' Class for results of `cva.aglm()`
 #'
-#' @slot models_list Results of cv.glmnet() for all the values of alpha.
-#' @slot alpha A numeric values specifying alpha values to be examined.
-#' @slot nfolds An integer value specifying the number of folds.
-#' @slot alpha.min The alpha value which achieves the minimum loss.
-#' @slot alpha.min.index An integer value specifying the index of `alpha.min` in `alpha`.
-#' @slot lambda.min The lambda value which achieves the minimum loss, when combined with `alpha.min`.
+#' @slot models_list A list consists of `cv.glmnet()`'s results for all \eqn{\alpha} values.
+#' @slot alpha Same as in \link{cv.aglm}.
+#' @slot nfolds Same as in \link{cv.aglm}.
+#' @slot alpha.min.index The index of `alpha.min` in the vector `alpha`.
+#' @slot alpha.min The \eqn{\alpha} value achieving the minimum loss among all the values of `alpha`.
+#' @slot lambda.min The \eqn{\lambda} value achieving the minimum loss when \eqn{\alpha} is equal to `alpha.min`.
+#' @slot call An object of class `call`, corresponding to the function call when this `CVA_AccurateGLM` object is created.
+#'
+#' @author Kenji Kondo
 #'
 #' @export
 setClass("CVA_AccurateGLM",

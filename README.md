@@ -1,20 +1,21 @@
-### What is it?
-A handy tool for actuarial modeling, which is designed to achieve both accuracy and accountability.
+# What is this?
+Accurate Generalized Linear Model (AGLM) is defined as a regularized GLM which applying a sort of feature transformations using a discretization of numerical features and specific coding methodologies of dummy variables.
+More details can be found in [our paper](https://www.institutdesactuaires.com/global/gene/link.php?doc_id=16273&fg=1).
 
-### Installation
+2021/6/6:
+Now our paper won [Charles A. Hachemeister Prize](https://www.casact.org/about/awards-prizes-scholarships/charles-hachemeister-prize#:~:text=This%20prize%20was%20established%20in,between%20the%20CAS%20and%20ASTIN.).
+
+# Installation
 To install the latest version from `github` :
 ```r
 install.packages("devtools")
 devtools::install_github("kkondo1981/aglm")
 ```
 
-*Note:*
-Now aglm requires the newest version of R and glmnet, so please update versions of your local packages before installation.
+# Usage
+See the help as below after installing `aglm`.
 
-### Usage
-See https://github.com/kkondo1981/aglm/tree/master/examples
-
-### Release note
-
-#### version 0.3.2
-- Fixed to use R 4.0 and glmnet 4.0.
+```r
+library(aglm)
+?"aglm-package"
+```

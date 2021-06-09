@@ -1,24 +1,32 @@
 Package: aglm
 Type: Package
-Title: Accurate Generalized Linear Model (AGLM)
-Version: 0.3.2
-Author: Kenji Kondo, Kazuhisa Takahashi, others
-Maintainer: Kenji Kondo <kkondo.odnokk@gmail.com>
-Description: A handy tool for actuarial modeling, which is designed to achieve both accuracy and accountability.
-    AGLM is based on GLM but customized by expert actuaries for areas which require not only accuracy but also accountability.
+Title: Accurate Generalized Linear Model
+Version: 0.4.0
+Authors@R: c(
+    person("Kenji", "Kondo", role=c("aut", "cre", "cph"), email="kkondo.odnokk@gmail.com"),
+    person("Kazuhisa", "Takahashi", role=c("ctb")),
+    person("Hikari", "Banno", role=c("ctb"))
+    )
+Description: Provides functions to fit Accurate Generalized Linear Model (AGLM) models, visualize them, and predict for new data. AGLM is defined as a regularized GLM which applies a sort of feature transformations using a discretization of numerical features and specific coding methodologies of dummy variables. For more information on AGLM, see Suguru Fujita, Toyoto Tanaka, Kenji Kondo and Hirokazu Iwasawa (2020) <https://www.institutdesactuaires.com/global/gene/link.php?doc_id=16273&fg=1>.
+URL: https://github.com/kkondo1981/aglm
+BugReports: https://github.com/kkondo1981/aglm/issues
 License: GPL-2
 Encoding: UTF-8
-LazyData: true
+Language: en-US
 RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
 Depends:
-    R (>= 4.0.2),
+    R (>= 4.0.0),
 Imports:
     glmnet (>= 4.0.2),
-    assertthat
+    assertthat,
+    methods,
+    mathjaxr
 Suggests: 
     testthat,
     knitr,
     rmarkdown,
-    MASS
-VignetteBuilder: knitr
+    MASS,
+    faraway
+RdMacros:
+    mathjaxr

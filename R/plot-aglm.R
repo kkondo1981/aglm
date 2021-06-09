@@ -1,35 +1,98 @@
-# plotting function for AGLM
-# written by Kenji Kondo @ 2019/1/3
-
-#' Plot coefficients from an AccurateGLM object
+#' Plot contribution of each variable and residuals
 #'
-#' @param model An AccurateGLM object.
-#' @param vars An integer or character vectors (indices or names) specifying which variables should be plotted.
-#' @param verbose If TRUE, outputs details.
-#' @param s A numeric value specifying lambda value at which plotting is required.
-#'   Note that this function can't plot for multiple lambda values, so it allows only
-#'   single `s` value (which means `model` is trained with multiple lambda values and plot with one of them),
-#'   or `s=NULL` (which means `model` is trained with single lambda value and plot with that value).
-#' @param resid A boolean value which indicates to plot residuals,
-#'   or a character value which indicates residual type to be plotted (see the help of `residuals.AccurateGLM()`),
-#'   or a numerical vector which indicates residual values to be plotted.
-#'   Note that working residuals are used in the first case with `resid=TRUE`.
-#' @param smooth_resid A boolean value which indicates whether draws smoothing lines of residuals or not,
-#'   or a character value which is one of options below:
-#'     * `"both"` draws both balls and smoothing lines.
-#'     * `"smooth_only"` draws only smoothing line.
-#'   Note that smoothing lines are only drawn for quantitative variables.
-#'   The default value is `TRUE`.
-#' @param smooth_resid_fun A function to be used to smooth partial residual values.
-#' @param ask A boolean value which indicates ask if go to next plot.
-#' @param layout A pair of integer values which indicates how many plots are drawn rawwise and columnwise respectively,
-#' @param only_plot If `TRUE`, the function set no graphical parameters and no title.
-#' @param main A character value which indicates titles of panels.
-#' @param add_rug A boolean value which indicates draw rugplot for quantitative variables.
+#' @param x
+#'   A model object obtained from `aglm()` or `cv.aglm()`.
+#'
+#' @param vars
+#'   Used to specify variables to be plotted (`NULL` means all the variables).
+#'   This parameter may have one of the following classes:
+#'   * `integer`: specifying variables by index.
+#'   * `character`: specifying variables by name.
+#'
+#' @param verbose
+#'   Set to `FALSE` if textual outputs are not needed.
+#'
+#' @param s
+#'   A numeric value specifying \eqn{\lambda} at which plotting is required.
+#'   Note that plotting for multiple \eqn{\lambda}'s are not allowed and `s` always should be a single value.
+#'   When the model is trained with only a single \eqn{\lambda} value, just set it to `NULL` to plot for that value.
+#'
+#' @param resid
+#'   Used to display residuals in plots.
+#'   This parameter may have one of the following classes:
+#'   * `logical`(single value): If `TRUE`, working residuals are plotted.
+#'   * `character`(single value): type of residual to be plotted. See \link{residuals.AccurateGLM} for more details on types of residuals.
+#'   * `numerical`(vector): residual values to be plotted.
+#'
+#' @param smooth_resid
+#'   Used to display smoothing lines of residuals for quantitative variables.
+#'   This parameter may have one of the following classes:
+#'   * `logical`: If `TRUE`, smoothing lines are drawn.
+#'   * `character`:
+#'     * `smooth_resid="both"`: Balls and smoothing lines are drawn.
+#'     * `smooth_resid="smooth_only"`: Only smoothing lines are drawn.
+#'
+#' @param smooth_resid_fun
+#'   Set if users need custom smoothing functions.
+#'
+#' @param ask
+#'   By default, `plot()` stops and waits inputs each time plotting for each variable is completed.
+#'   Users can set `ask=FALSE` to avoid this.
+#'   It is useful, for example, when using devices as `bmp` to create image files.
+#'
+#' @param layout
+#'   Plotting multiple variables for each page is allowed.
+#'   To achieve this, set it to a pair of integer, which indicating number of rows and columns, respectively.
+#'
+#' @param only_plot
+#'   Set to `TRUE` if no automatic graphical configurations are needed.
+#'
+#' @param main
+#'   Used to specify the title of plotting.
+#'
+#' @param add_rug
+#'   Set to `TRUE` for rug plots.
+#'
+#' @param ...
+#'   Other arguments are currently not used and just discarded.
+#'
+#' @return
+#'   No return value, called for side effects.
+#'
+#'
+#' @example examples/predict-and-plot-1.R
+#'
+#'
+#' @author
+#'   * Kenji Kondo,
+#'   * Kazuhisa Takahashi and Hikari Banno (worked on L-Variable related features)
+#'
+#'
+#' @references Suguru Fujita, Toyoto Tanaka, Kenji Kondo and Hirokazu Iwasawa. (2020)
+#' \emph{AGLM: A Hybrid Modeling Method of GLM and Data Science Techniques}, \cr
+#' \url{https://www.institutdesactuaires.com/global/gene/link.php?doc_id=16273&fg=1} \cr
+#' \emph{Actuarial Colloquium Paris 2020}
+#'
 #'
 #' @export
 #' @importFrom assertthat assert_that
-plot.AccurateGLM <- function(model,
+#' @importFrom utils str
+#' @importFrom utils flush.console
+#' @importFrom stats getCall
+#' @importFrom stats residuals
+#' @importFrom stats coef
+#' @importFrom stats IQR
+#' @importFrom stats smooth.spline
+#' @importFrom stats ksmooth
+#' @importFrom graphics par
+#' @importFrom graphics points
+#' @importFrom graphics lines
+#' @importFrom graphics rug
+#' @importFrom graphics mtext
+#' @importFrom graphics boxplot
+#' @importFrom graphics barplot
+#' @importFrom grDevices devAskNewPage
+plot.AccurateGLM <- function(x,
                              vars=NULL,
                              verbose=TRUE,
                              s=NULL,
@@ -42,6 +105,12 @@ plot.AccurateGLM <- function(model,
                              main="",
                              add_rug=FALSE,
                              ...) {
+  # It's necessary to use same names for some arguments as the original methods,
+  # because devtools::check() issues warnings when using inconsistent names.
+  # As a result, we sometimes should accept uncomfortable argument names,
+  # but still have rights to use preferable names internally.
+  model <- x
+
   nvars <- length(model@vars_info)
 
   if (is.null(vars)) {
@@ -91,13 +160,15 @@ plot.AccurateGLM <- function(model,
 
   ## set par
   if (!only_plot) {
-    old.par <- par()
+    old.par <- par(no.readonly=TRUE)
+    on.exit(par(old.par), add=TRUE)
     par(oma=c(0, 0, 2, 0))
     if (length(inds) == 1) layout <- c(1,1)
     par(mfrow=layout)
   }
 
   ask.old <- devAskNewPage()
+  on.exit(devAskNewPage(ask.old), add=TRUE)
   devAskNewPage(FALSE)
 
   ## Plotting
@@ -279,11 +350,5 @@ plot.AccurateGLM <- function(model,
       devAskNewPage(ask)
       first <- FALSE
     }
-  }
-  devAskNewPage(ask.old)
-
-  if (!only_plot) {
-    if (!is.null(old.par$oma)) par(oma=old.par$oma)
-    if (!is.null(old.par$mfrow)) par(mfrow=old.par$mfrow)
   }
 }

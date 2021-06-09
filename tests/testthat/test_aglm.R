@@ -105,7 +105,7 @@ test_that("Check for logical features", {
   # Generates non-linear reponse
   y <- xor(x[, 1], x[, 2])
 
-  res <- cv.aglm(x, y, family=gaussian(), keep=TRUE)
+  res <- cv.aglm(x, y, family="gaussian", keep=TRUE)
 
   expect_true("AccurateGLM" %in% class(res))
   expect_true("glmnet" %in% class(res@backend_models[[1]]))
@@ -131,7 +131,7 @@ test_that("Check for binomial family", {
   nobs <- 1000
   x1 <- rnorm(nobs); x2 <- rnorm(nobs); x <- cbind(x1, x2)
   y <- 1 * ((atan(0.25 * x1 - 0.5 * x2) / pi + 0.5) > 0.5)
-  model <- aglm(x, y, family = binomial(), alpha = 1, lambda = 0.003)
+  model <- aglm(x, y, family="binomial", alpha=1, lambda=0.003)
 
   newx1 <- rnorm(100); newx2 <- rnorm(100); newx <- cbind(newx1, newx2)
   aglm.pred <- predict(model, newx)

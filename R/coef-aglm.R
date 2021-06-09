@@ -1,16 +1,50 @@
-# calculate deviances for AGLM
-# written by Kenji Kondo @ 2019/1/3
-
-#' Extract coefficients from an AccurateGLM object.
+#' Get coefficients
 #'
-#' @param model An AccurateGLM object.
-#' @param s  Value(s) of the penalty parameter `lambda` at which predictions are required.
-#'   Default is the entire sequence used to create the model.
-#' @param ... Other arguments are passed directly to `deviance` functions of `model@backend_models`.
+#' @param object
+#'   A model object obtained from `aglm()` or `cv.aglm()`.
+#'
+#' @param index
+#'   An integer value representing the index of variable whose coefficients are required.
+#'
+#' @param name
+#'   A string representing the name of variable whose coefficients are required.
+#'   Note that if both `index` and `name` are set, `index` is discarded.
+#'
+#' @param s
+#'   Same as in \link{coef.glmnet}.
+#'
+#' @param exact
+#'   Same as in \link{coef.glmnet}.
+#'
+#' @param ...
+#'   Other arguments are passed directly to `coef.glmnet()`.
+#'
+#' @return
+#'   If `index` or `name` is given, the function returns a list with the one or combination
+#'   of the following fields, consisting of coefficients related to the specified variable.
+#'   * `coef.linear`: A coefficient of the linear term. (If any)
+#'   * `coef.OD`: Coefficients of O-dummies. (If any)
+#'   * `coef.UD`: Coefficients of U-dummies. (If any)
+#'   * `coef.LV`: Coefficients of L-variables. (If any)
+#'
+#'   If both `index` and `name` are not given, the function returns entire coefficients
+#'   corresponding to the internal designed matrix.
+#'
+#'
+#' @author
+#' Kenji Kondo
+#'
 #'
 #' @importFrom assertthat assert_that
+#' @importFrom stats coef
 #' @export
-coef.AccurateGLM <- function(model, index=NULL, name=NULL, s=NULL, exact=FALSE, ...) {
+coef.AccurateGLM <- function(object, index=NULL, name=NULL, s=NULL, exact=FALSE, ...) {
+  # It's necessary to use same names for some arguments as the original methods,
+  # because devtools::check() issues warnings when using inconsistent names.
+  # As a result, we sometimes should accept uncomfortable argument names,
+  # but still have rights to use preferable names internally.
+  model <- object
+
   coefs <- coef(model@backend_models[[1]], s, exact, ...)
 
   # If `name` is set, `index` is overwritten.
