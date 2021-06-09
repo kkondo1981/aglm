@@ -6,19 +6,16 @@
 \usage{
 \method{predict}{AccurateGLM}(
   object,
-  newx = NULL,
+  newdata = NULL,
   s = NULL,
   type = c("link", "response", "coefficients", "nonzero", "class"),
   exact = FALSE,
-  newoffset,
+  newoffset = NULL,
   ...
 )
 }
 \arguments{
 \item{object}{A model object obtained from \code{aglm()} or \code{cv.aglm()}.}
-
-\item{newx}{A design matrix for new data.
-See the description of \code{x} in \link{aglm} for more details.}
 
 \item{s}{Same as in \link{predict.glmnet}.}
 
@@ -29,6 +26,9 @@ See the description of \code{x} in \link{aglm} for more details.}
 \item{newoffset}{Same as in \link{predict.glmnet}.}
 
 \item{...}{Other arguments are passed directly when calling \code{predict.glmnet()}.}
+
+\item{newx}{A design matrix for new data.
+See the description of \code{x} in \link{aglm} for more details.}
 }
 \value{
 The returned object depends on \code{type}.
