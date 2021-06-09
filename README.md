@@ -6,10 +6,13 @@ More details can be found in [our paper](https://www.institutdesactuaires.com/gl
 Now our paper won [Charles A. Hachemeister Prize](https://www.casact.org/about/awards-prizes-scholarships/charles-hachemeister-prize#:~:text=This%20prize%20was%20established%20in,between%20the%20CAS%20and%20ASTIN.).
 
 # Installation
-To install the latest version from `github` :
 ```r
-install.packages("devtools")
-devtools::install_github("kkondo1981/aglm")
+# The simplest way:
+install.packages("aglm")
+
+# Or the development version from GitHub:
+# install.packages("devtools")
+devtools::install_github("kkondo1981/aglm", ref="develop")
 ```
 
 # Usage
