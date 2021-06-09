@@ -120,7 +120,7 @@ colnames(xy)[ncol(xy)] <- "y" # Let medv be the objective variable, y.
 ## Split data into train and test
 n <- nrow(xy) # Sample size.
 set.seed(2018) # For reproducibility.
-test.id <- sample(n, round(n/4)) # ID numbders for test data.
+test.id <- sample(n, round(n/4)) # ID numbers for test data.
 test <- xy[test.id,] # test is the data.frame for testing.
 train <- xy[-test.id,] # train is the data.frame for training.
 y_true <- test$y
