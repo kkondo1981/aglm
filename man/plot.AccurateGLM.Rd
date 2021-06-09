@@ -72,6 +72,9 @@ To achieve this, set it to a pair of integer, which indicating number of rows an
 
 \item{...}{Other arguments are currently not used and just discarded.}
 }
+\value{
+No return value, called for side effects.
+}
 \description{
 Plot contribution of each variable and residuals
 }
@@ -128,6 +131,6 @@ Suguru Fujita, Toyoto Tanaka, Kenji Kondo and Hirokazu Iwasawa. (2020)
 \author{
 \itemize{
 \item Kenji Kondo,
-\item Kazuhisa Takahashi and Banno (worked on L-Variable related features)
+\item Kazuhisa Takahashi and Hikari Banno (worked on L-Variable related features)
 }
 }

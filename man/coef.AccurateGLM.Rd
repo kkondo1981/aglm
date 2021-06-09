@@ -20,6 +20,19 @@ Note that if both \code{index} and \code{name} are set, \code{index} is discarde
 
 \item{...}{Other arguments are passed directly to \code{coef.glmnet()}.}
 }
+\value{
+If \code{index} or \code{name} is given, the function returns a list with the one or combination
+of the following fields, consisting of coefficients related to the specified variable.
+\itemize{
+\item \code{coef.linear}: A coefficient of the linear term. (If any)
+\item \code{coef.OD}: Coefficients of O-dummies. (If any)
+\item \code{coef.UD}: Coefficients of U-dummies. (If any)
+\item \code{coef.LV}: Coefficients of L-variables. (If any)
+}
+
+If both \code{index} and \code{name} are not given, the function returns entire coefficients
+corresponding to the internal designed matrix.
+}
 \description{
 Get coefficients
 }

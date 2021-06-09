@@ -56,13 +56,16 @@
 #' @param ...
 #'   Other arguments are currently not used and just discarded.
 #'
+#' @return
+#'   No return value, called for side effects.
+#'
 #'
 #' @example examples/predict-and-plot-1.R
 #'
 #'
 #' @author
 #'   * Kenji Kondo,
-#'   * Kazuhisa Takahashi and Banno (worked on L-Variable related features)
+#'   * Kazuhisa Takahashi and Hikari Banno (worked on L-Variable related features)
 #'
 #'
 #' @references Suguru Fujita, Toyoto Tanaka, Kenji Kondo and Hirokazu Iwasawa. (2020)
@@ -157,13 +160,15 @@ plot.AccurateGLM <- function(x,
 
   ## set par
   if (!only_plot) {
-    old.par <- par()
+    old.par <- par(no.readonly=TRUE)
+    on.exit(par(old.par), add=TRUE)
     par(oma=c(0, 0, 2, 0))
     if (length(inds) == 1) layout <- c(1,1)
     par(mfrow=layout)
   }
 
   ask.old <- devAskNewPage()
+  on.exit(devAskNewPage(ask.old), add=TRUE)
   devAskNewPage(FALSE)
 
   ## Plotting
@@ -345,11 +350,5 @@ plot.AccurateGLM <- function(x,
       devAskNewPage(ask)
       first <- FALSE
     }
-  }
-  devAskNewPage(ask.old)
-
-  if (!only_plot) {
-    if (!is.null(old.par$oma)) par(oma=old.par$oma)
-    if (!is.null(old.par$mfrow)) par(mfrow=old.par$mfrow)
   }
 }

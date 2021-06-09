@@ -214,6 +214,6 @@ Suguru Fujita, Toyoto Tanaka, Kenji Kondo and Hirokazu Iwasawa. (2020)
 \author{
 \itemize{
 \item Kenji Kondo,
-\item Kazuhisa Takahashi and Banno (worked on L-Variable related features)
+\item Kazuhisa Takahashi and Hikari Banno (worked on L-Variable related features)
 }
 }

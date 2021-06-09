@@ -18,7 +18,7 @@ y <- train$vote
 newx <- test[, c("popul", "TVnews", "selfLR", "ClinLR", "DoleLR", "PID", "age", "educ", "income")]
 
 # NOTE: Codes bellow will take considerable time, so run it when you have time.
-\dontrun{
+\donttest{
 
 ## Fit the model
 cva_result <- cva.aglm(x, y, family="binomial")

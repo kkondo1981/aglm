@@ -32,7 +32,7 @@
 #'
 #' @author
 #'   * Kenji Kondo,
-#'   * Kazuhisa Takahashi and Banno (worked on L-Variable related features)
+#'   * Kazuhisa Takahashi and Hikari Banno (worked on L-Variable related features)
 #'
 #'
 #' @references Suguru Fujita, Toyoto Tanaka, Kenji Kondo and Hirokazu Iwasawa. (2020)

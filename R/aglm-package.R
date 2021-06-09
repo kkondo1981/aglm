@@ -1,9 +1,11 @@
 #' aglm: Accurate Generalized Linear Model
 #'
-#' Accurate Generalized Linear Model (AGLM) is defined as a regularized GLM which applying
-#' a sort of feature transformations using a discretization of numerical features and specific
-#' coding methodologies of dummy variables. More details can be found in
-#' \href{https://www.institutdesactuaires.com/global/gene/link.php?doc_id=16273&fg=1}{our paper}.
+#' Provides functions to fit Accurate Generalized Linear Model (AGLM) models,
+#' visualize them, and predict for new data. AGLM is defined as a regularized GLM
+#' which applies a sort of feature transformations using a discretization of numerical
+#' features and specific coding methodologies of dummy variables.
+#' For more information on AGLM, see
+#' \href{https://www.institutdesactuaires.com/global/gene/link.php?doc_id=16273&fg=1}{Suguru Fujita, Toyoto Tanaka, Kenji Kondo and Hirokazu Iwasawa (2020)}.
 #'
 #' The collection of functions provided by the `aglm` package has almost the same structure as the famous `glmnet` package,
 #' so users familiar with the `glmnet` package will be able to handle it easily.
@@ -66,7 +68,7 @@
 #'
 #' @author
 #'   * Kenji Kondo,
-#'   * Kazuhisa Takahashi and Banno (worked on L-Variable related features)
+#'   * Kazuhisa Takahashi and Hikari Banno (worked on L-Variable related features)
 #'
 #'
 #' @references Suguru Fujita, Toyoto Tanaka, Kenji Kondo and Hirokazu Iwasawa. (2020)

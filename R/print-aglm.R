@@ -9,6 +9,9 @@
 #' @param ...
 #'   Other arguments are passed directly to `print.glmnet()`.
 #'
+#' @return
+#'   No return value, called for side effects.
+#'
 #'
 #' @author
 #' Kenji Kondo

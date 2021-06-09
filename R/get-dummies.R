@@ -47,7 +47,7 @@ getUDummyMatForOneVec <- function(x_vec, levels=NULL, drop_last=TRUE, only_info=
 #' @param only_info If `TRUE`, only information fields of returned values are filled and no dummy matrix is returned.
 #' @param dummy_type Used to control the shape of linear combinations obtained by O-dummies for quantitative variables (deprecated).
 #'
-#' @return a list with the following fields:
+#' @return A list with the following fields:
 #' * `breaks`: Same as input
 #' * `dummy_mat`: The created O-dummy matrix (only if `only_info=FALSE`).
 #'
@@ -96,7 +96,7 @@ getODummyMatForOneVec <- function(x_vec, breaks=NULL, nbin.max=100, only_info=FA
 #' @param nbin.max The maximum number of bins (used only if `breaks=NULL`).
 #' @param only_info If `TRUE`, only information fields of returned values are filled and no dummy matrix is returned.
 #'
-#' @return a list with the following fields:
+#' @return A list with the following fields:
 #' * `breaks`: Same as input
 #' * `dummy_mat`: The created L-variable matrix (only if `only_info=FALSE`).
 #'

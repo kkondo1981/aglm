@@ -93,7 +93,7 @@ y <- train$vote
 newx <- test[, c("popul", "TVnews", "selfLR", "ClinLR", "DoleLR", "PID", "age", "educ", "income")]
 
 # NOTE: Codes bellow will take considerable time, so run it when you have time.
-\dontrun{
+\donttest{
 
 ## Fit the model
 model <- cv.aglm(x, y, family="binomial")
@@ -117,6 +117,6 @@ Suguru Fujita, Toyoto Tanaka, Kenji Kondo and Hirokazu Iwasawa. (2020)
 \author{
 \itemize{
 \item Kenji Kondo,
-\item Kazuhisa Takahashi and Banno (worked on L-Variable related features)
+\item Kazuhisa Takahashi and Hikari Banno (worked on L-Variable related features)
 }
 }

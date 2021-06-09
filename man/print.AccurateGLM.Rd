@@ -13,6 +13,9 @@
 
 \item{...}{Other arguments are passed directly to \code{print.glmnet()}.}
 }
+\value{
+No return value, called for side effects.
+}
 \description{
 Display textual information of the model
 }

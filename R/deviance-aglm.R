@@ -6,6 +6,9 @@
 #' @param ...
 #'   Other arguments are passed directly to `deviance.glmnet()`.
 #'
+#' @return
+#'   The value of deviance extracted from the object `object`.
+#'
 #'
 #' @author
 #' Kenji Kondo

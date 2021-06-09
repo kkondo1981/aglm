@@ -11,6 +11,9 @@
 
 \item{...}{Other arguments are passed directly to \code{deviance.glmnet()}.}
 }
+\value{
+The value of deviance extracted from the object \code{object}.
+}
 \description{
 Get deviance
 }

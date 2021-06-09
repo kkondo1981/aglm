@@ -19,6 +19,17 @@
 #' @param ...
 #'   Other arguments are passed directly to `coef.glmnet()`.
 #'
+#' @return
+#'   If `index` or `name` is given, the function returns a list with the one or combination
+#'   of the following fields, consisting of coefficients related to the specified variable.
+#'   * `coef.linear`: A coefficient of the linear term. (If any)
+#'   * `coef.OD`: Coefficients of O-dummies. (If any)
+#'   * `coef.UD`: Coefficients of U-dummies. (If any)
+#'   * `coef.LV`: Coefficients of L-variables. (If any)
+#'
+#'   If both `index` and `name` are not given, the function returns entire coefficients
+#'   corresponding to the internal designed matrix.
+#'
 #'
 #' @author
 #' Kenji Kondo

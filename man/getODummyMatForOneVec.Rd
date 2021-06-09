@@ -24,7 +24,7 @@ getODummyMatForOneVec(
 \item{dummy_type}{Used to control the shape of linear combinations obtained by O-dummies for quantitative variables (deprecated).}
 }
 \value{
-a list with the following fields:
+A list with the following fields:
 \itemize{
 \item \code{breaks}: Same as input
 \item \code{dummy_mat}: The created O-dummy matrix (only if \code{only_info=FALSE}).

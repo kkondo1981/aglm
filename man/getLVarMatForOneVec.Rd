@@ -16,7 +16,7 @@ getLVarMatForOneVec(x_vec, breaks = NULL, nbin.max = 100, only_info = FALSE)
 \item{only_info}{If \code{TRUE}, only information fields of returned values are filled and no dummy matrix is returned.}
 }
 \value{
-a list with the following fields:
+A list with the following fields:
 \itemize{
 \item \code{breaks}: Same as input
 \item \code{dummy_mat}: The created L-variable matrix (only if \code{only_info=FALSE}).
