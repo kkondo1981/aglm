@@ -37,6 +37,8 @@ Class for results of \code{aglm()} and \code{cv.aglm()}
 \item{\code{foldid}}{Same as in the result of \link{cv.glmnet}.}
 
 \item{\code{call}}{An object of class \code{call}, corresponding to the function call when this \code{AccurateGLM} object is created.}
+
+\item{\code{formula_info}}{A list to store information related to the formula object.}
 }}
 
 \author{

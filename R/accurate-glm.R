@@ -14,6 +14,7 @@
 #' @slot fit.preval Same as in the result of \link{cv.glmnet}.
 #' @slot foldid Same as in the result of \link{cv.glmnet}.
 #' @slot call An object of class `call`, corresponding to the function call when this `AccurateGLM` object is created.
+#' @slot formula_info A list to store information related to the formula object.
 #'
 #' @author Kenji Kondo
 #'
@@ -32,7 +33,8 @@ setClass("AccurateGLM",
                                        lambda.1se="numeric",
                                        fit.preval="matrix",
                                        foldid="integer",
-                                       call="ANY"))
+                                       call="ANY",
+                                       formula_info="ANY"))
 
 
 #' Class for results of `cva.aglm()`

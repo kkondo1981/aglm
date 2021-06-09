@@ -178,6 +178,9 @@ aglm <- function(formula,
                  xlev=NULL,
                  ...) {
   cl <- match.call(expand.dots=FALSE)
+  m <- match(c("formula", "data", "weights", "offset", "subset", "na.action", "drop.unused.levels", "xlev"),
+             names(cl), 0)
+  cl <- cl[c(1, m)]
   cl[[1]] <- quote(stats::model.frame)
   mf <- eval.parent(cl)
 
@@ -197,6 +200,8 @@ aglm <- function(formula,
                      offset=offset,
                      ...)
   model@call[[1]] <- match.call()
+  model@formula_info <- list(terms=attr(mf, "terms"),
+                             xlev=xlev)
 
   return(model)
 }
@@ -224,6 +229,7 @@ aglm.fit <- function(x, y,
   cl[[1]] <- quote(aglm.base)
   model <- eval(cl)
   model@call[[1]] <- match.call()
+  model@formula_info <- NULL
 
   return(model)
 }
