@@ -77,7 +77,7 @@ print(tm2) # with parallelization
 
 ## `cva.aglm()`
 
-We can set `parallel.alpha=TRUE` to parallelize the outer loop (the loop for \eqn{\alpha}).
+We can set `parallel.alpha=TRUE` to parallelize the outer loop (the loop for $\alpha$).
 
 ```{r, message=FALSE, warning=FALSE}
 registerDoParallel(detectCores())
@@ -96,7 +96,7 @@ tm2 <- system.time(cv2 <- test_fun(parallel=TRUE))
 stopImplicitCluster()
 ```
 
-To make sure that both results are identical, we will compare means of `cvm` for all \eqn{\alpha}.
+To make sure that both results are identical, we will compare means of `cvm` for all $\alpha$.
 
 ```{r}
 cvmm1 <- as.numeric(lapply(cv1@models_list, function(m){mean(m@cvm)}))
