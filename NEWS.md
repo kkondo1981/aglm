@@ -1,3 +1,11 @@
+# aglm 0.4.1 (in develop)
+
+- Now `cva.aglm()` supports parallel computation.
+  For more information, see our vignette as below:
+  ```r
+  vignette("parallel", "aglm")
+  ```
+
 # aglm 0.4.0
 - Updated all documents and examples.
 - Published in [CRAN](https://cran.r-project.org/package=aglm).
