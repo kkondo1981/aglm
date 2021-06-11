@@ -27,6 +27,9 @@ Suggests:
     knitr,
     rmarkdown,
     MASS,
-    faraway
+    faraway,
+    parallel,
+    doParallel
 RdMacros:
     mathjaxr
+VignetteBuilder: knitr

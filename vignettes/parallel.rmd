@@ -1,0 +1,112 @@
+---
+title: "Parallel computation for cross-validation"
+author: "Kenji Kondo"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Parallel computation for cross-validation}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+Sys.setenv(LANG="en")
+```
+
+The vignette introduce how to use parallel computation features with `aglm`.
+
+
+## `cv.aglm()`
+
+`cv.aglm()` uses `cv.glmnet()` as a backend, and passes unused parameters to `cv.glmnet()` directly.
+So, we can use the original parallelization option of `cv.glmnet()` by simply setting `parallel=TRUE`.
+Now we will illustrate this using 'freMTPL2freq' data in the `CASdatasets` package.
+
+
+```{r, message=FALSE, warning=FALSE}
+# install.packages("CASdatasets", repos = "http://cas.uqam.ca/pub/", type="source")
+library(CASdatasets)
+library(doParallel) # for parallelization of `glmnet()`
+library(parallel) # for `detectCores()`
+library(aglm)
+
+# Reads the data and discard policy ID
+data("freMTPL2freq")
+xy <- freMTPL2freq
+xy <- xy[-1]
+
+# Converts types
+xy$ClaimNb <- as.integer(xy$ClaimNb)
+xy$VehGas <- factor(xy$VehGas)
+xy$Area <- ordered(xy$Area)
+xy$VehBrand <- factor(substr(xy$VehBrand, 1, 2))
+xy$Region <- factor(substr(xy$Region, 1, 2))
+
+# For this is demo, use only a subset of the data.
+xy <- xy[1:1000,]
+
+# Creates x, y, offset
+x <- xy[-(1:2)]
+y <- xy$ClaimNb
+offset <- log(xy$Exposure)  # use log(Exposure) as offset
+
+registerDoParallel(detectCores())
+
+test_fun <- function(parallel) {
+  set.seed(20210611)  # Set seed for reproducibility.
+  return(cv.aglm(x, y, offset=offset,
+                 family="poisson",
+                 parallel=parallel))
+}
+
+tm1 <- system.time(cv1 <- test_fun(parallel=FALSE))
+tm2 <- system.time(cv2 <- test_fun(parallel=TRUE))
+
+stopImplicitCluster()
+```
+
+The results, both obtained without and with parallelization, are identical, but time elapsed are different.
+
+```{r}
+all(cv1@cvm == cv2@cvm)
+
+print(tm1) # without parallelization
+print(tm2) # with parallelization
+```
+
+
+## `cva.aglm()`
+
+We can set `parallel.alpha=TRUE` to parallelize the outer loop (the loop for \eqn{\alpha}).
+
+```{r, message=FALSE, warning=FALSE}
+registerDoParallel(detectCores())
+
+test_fun <- function(parallel) {
+  set.seed(20210611)  # Set seed for reproducibility.
+  return(cva.aglm(x, y, offset=offset,
+                  family="poisson",
+                  nfolds=3,
+                  parallel.alpha=parallel))
+}
+
+tm1 <- system.time(cv1 <- test_fun(parallel=FALSE))
+tm2 <- system.time(cv2 <- test_fun(parallel=TRUE))
+
+stopImplicitCluster()
+```
+
+To make sure that both results are identical, we will compare means of `cvm` for all \eqn{\alpha}.
+
+```{r}
+cvmm1 <- as.numeric(lapply(cv1@models_list, function(m){mean(m@cvm)}))
+cvmm2 <- as.numeric(lapply(cv2@models_list, function(m){mean(m@cvm)}))
+print(all(cvmm1 == cvmm2))
+```
+
+Of course, elapsed time is reduced.
+
+```{r}
+print(tm1) # without parallelization
+print(tm2) # with parallelization
+```

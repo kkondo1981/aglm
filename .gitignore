@@ -9,3 +9,5 @@ aglm*.tar.gz
 aglm*.tgz
 *.html
 *.rda
+/doc/
+/Meta/

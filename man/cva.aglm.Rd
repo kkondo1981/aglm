@@ -27,7 +27,8 @@ See \link{aglm} for more details.}
 \item{foldid}{An integer vector with the same length as observations.
 Each element should take a value from 1 to \code{nfolds}, identifying which fold it belongs.}
 
-\item{parallel.alpha}{(not used yet)}
+\item{parallel.alpha}{If \code{TRUE}, the outer-loop (the loop for \eqn{\alpha}) is parallelized.
+See \href{../doc/parallel.html}{vignette} for more details.}
 
 \item{...}{Other arguments are passed directly to \code{cv.aglm()}.}
 }

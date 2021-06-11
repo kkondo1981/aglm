@@ -21,7 +21,8 @@
 #'   Each element should take a value from 1 to `nfolds`, identifying which fold it belongs.
 #'
 #' @param parallel.alpha
-#'   (not used yet)
+#'   If `TRUE`, the outer-loop (the loop for \eqn{\alpha}) is parallelized.
+#'   See [vignette](../doc/parallel.html) for more details.
 #'
 #' @param ...
 #'   Other arguments are passed directly to `cv.aglm()`.
@@ -56,6 +57,10 @@ cva.aglm <- function(x, y,
                      ...) {
   nfolds <- as.integer(nfolds)
 
+  if (is.null(foldid)) {
+    foldid <- sample(rep(seq(nfolds), length=nrow(x)))
+  }
+
   ## The function called to search lambda
   .cvfunc <- function(a, x, y, nfolds, foldid, ...) {
     cv.aglm(x, y, alpha=a, nfolds=nfolds, foldid=foldid, ...)
@@ -63,7 +68,9 @@ cva.aglm <- function(x, y,
 
   ## Calculates for all alphas and lambdas
   if (parallel.alpha) {
-    assert_that(FALSE, msg="parallel computation is not implemented yet.")
+    modlist <- foreach(a=alpha) %dopar% {
+      .cvfunc(a=a, x=x, y=y, nfolds=nfolds, foldid=foldid, ...)
+    }
   } else {
     modlist <- lapply(alpha, .cvfunc, x=x, y=y, nfolds=nfolds, foldid=foldid, ...)
   }
