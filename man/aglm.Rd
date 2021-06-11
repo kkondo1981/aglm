@@ -2,9 +2,23 @@
 % Please edit documentation in R/aglm.R
 \name{aglm}
 \alias{aglm}
+\alias{aglm.fit}
 \title{Fit an AGLM model with no cross-validation}
 \usage{
 aglm(
+  formula,
+  data,
+  family = c("gaussian", "binomial", "poisson"),
+  weights = NULL,
+  offset = NULL,
+  subset = NULL,
+  na.action = getOption("na.action"),
+  drop.unused.levels = FALSE,
+  xlev = NULL,
+  ...
+)
+
+aglm.fit(
   x,
   y,
   qualitative_vars_UD_only = NULL,
@@ -25,6 +39,11 @@ aglm(
 )
 }
 \arguments{
+\item{family}{A \code{family} object or a string representing the type of the error distribution.
+Currently \code{aglm} supports \code{gaussian}, \code{binomial}, and \code{poisson}.}
+
+\item{...}{Other arguments are passed directly when calling \code{glmnet()}.}
+
 \item{x}{A design matrix.
 Usually a \code{data.frame} object is expected, but a \code{matrix} object is fine if all columns are of a same class.
 Each column may have one of the following classes, and \code{aglm} will automatically determine how to handle it:
@@ -77,11 +96,6 @@ You can set \code{add_linear_columns=FALSE} to drop linear effects.}
 \item{bins_list}{Used to set custom bins for variables with O-dummies.}
 
 \item{bins_names}{Used to set custom bins for variables with O-dummies.}
-
-\item{family}{A \code{family} object or a string representing the type of the error distribution.
-Currently \code{aglm} supports \code{gaussian}, \code{binomial}, and \code{poisson}.}
-
-\item{...}{Other arguments are passed directly when calling \code{glmnet()}.}
 }
 \value{
 A model object fitted to the data.
@@ -106,33 +120,30 @@ colnames(xy)[ncol(xy)] <- "y" # Let medv be the objective variable, y.
 ## Split data into train and test
 n <- nrow(xy) # Sample size.
 set.seed(2018) # For reproducibility.
-test.id <- sample(n, round(n/4)) # ID numbders for test data.
+test.id <- sample(n, round(n/4)) # ID numbers for test data.
 test <- xy[test.id,] # test is the data.frame for testing.
 train <- xy[-test.id,] # train is the data.frame for training.
-x <- train[-ncol(xy)]
-y <- train$y
-newx <- test[-ncol(xy)]
 y_true <- test$y
 
 ## Fit the model
-model <- aglm(x, y)  # alpha=1 (the default value)
+model <- aglm(y ~ ., data=train)  # alpha=1 (the default value)
 
 ## Predict for various alpha and lambda
 lambda <- 0.1
-y_pred <- predict(model, newx=newx, s=lambda)
+y_pred <- predict(model, newdata=test, s=lambda)
 rmse <- sqrt(mean((y_true - y_pred)^2))
 cat(sprintf("RMSE for lambda=\%.2f: \%.5f \n\n", lambda, rmse))
 
 lambda <- 1.0
-y_pred <- predict(model, newx=newx, s=lambda)
+y_pred <- predict(model, newdata=test, s=lambda)
 rmse <- sqrt(mean((y_true - y_pred)^2))
 cat(sprintf("RMSE for lambda=\%.2f: \%.5f \n\n", lambda, rmse))
 
 alpha <- 0
-model <- aglm(x, y, alpha=alpha)
+model <- aglm(y ~ ., data=train, alpha=alpha)
 
 lambda <- 0.1
-y_pred <- predict(model, newx=newx, s=lambda)
+y_pred <- predict(model, newdata=test, s=lambda)
 rmse <- sqrt(mean((y_true - y_pred)^2))
 cat(sprintf("RMSE for alpha=\%.2f and lambda=\%.2f: \%.5f \n\n", alpha, lambda, rmse))
 

@@ -47,11 +47,11 @@
 #' @importFrom methods new
 #' @importFrom stats predict
 predict.AccurateGLM <- function(object,
-                                newx=NULL,
+                                newdata=NULL,
                                 s=NULL,
                                 type=c("link","response","coefficients","nonzero","class"),
                                 exact=FALSE,
-                                newoffset,
+                                newoffset=NULL,
                                 ...) {
   # It's necessary to use same names for some arguments as the original methods,
   # because devtools::check() issues warnings when using inconsistent names.
@@ -61,6 +61,30 @@ predict.AccurateGLM <- function(object,
 
   # Check and set `type`
   type <- match.arg(type)
+
+  if (is.null(object@formula_info)) {
+    newx <- newdata
+  } else {
+    # Create the original design matrix from data and formula
+    formula_info <- object@formula_info
+    cl <- match.call(expand.dots=FALSE)
+    m <- match(c("subset", "na.action", "drop.unused.levels", "xlev"),
+               names(cl), 0)
+    cl <- cl[c(1, m)]
+    cl$formula <- delete.response(formula_info$terms)
+    cl$data <- newdata
+    cl$offset <- newoffset
+    cl$xlev <- formula_info$xlev
+    cl[[1]] <- quote(stats::model.frame)
+    mf <- eval.parent(cl)
+
+    # The intercept term is not necessary in the original design matrix.
+    tf <- attr(mf, "terms")
+    attr(tf, "intercept") <- 0
+
+    newx <- model.matrix(tf, mf)
+    newoffset <- model.offset(mf)
+  }
 
   # Create an input object
   if (class(newx)[1] != "data.frame") newx <- data.frame(newx)
