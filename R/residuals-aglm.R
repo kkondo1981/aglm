@@ -99,7 +99,7 @@ residuals.AccurateGLM <- function(object,
       resids <- resids / (yhat * (1 - yhat))  # binomial case
     else if ("glmnetfit" %in% cl) {  # general case
       family <- model@backend_models[[1]]$family
-      resids <- 1 / family$mu.eta(family$linkfun(yhat))
+      resids <- resids / family$mu.eta(family$linkfun(yhat))
     }
   } else if (type == "pearson") {
     yhat <- as.numeric(drop(predict(model, newx=x, newoffset=offset, s=s, type="response")))
@@ -108,6 +108,10 @@ residuals.AccurateGLM <- function(object,
       resids <- resids / sqrt(yhat) # Poisson case
     else if ("lognet" %in% cl)
       resids <- resids / sqrt(yhat * (1 - yhat)) # binomial case
+    else if ("glmnetfit" %in% cl) {  # general case
+      family <- model@backend_models[[1]]$family
+      resids <- resids / sqrt(family$variance(yhat))
+    }
   } else if (type == "deviance") {
     if ("fishnet" %in% cl){  # Poisson case
       yhat <- as.numeric(drop(predict(model, newx=x, newoffset=offset, s=s, type="response")))
@@ -117,6 +121,8 @@ residuals.AccurateGLM <- function(object,
       eta <- as.numeric(drop(predict(model, newx=x, newoffset=offset, s=s, type="link")))
       z <- 2 * (log(1 + exp(eta) - y * eta))
       resids <- sqrt(weights) * sign(z) * sqrt(abs(z))
+    } else if ("glmnetfit" %in% cl) {  # general case
+      assert_that(FALSE)  # not implemented yet
     } else {  # Gaussian case
       yhat <- as.numeric(drop(predict(model, newx=x, newoffset=offset, s=s, type="response")))
       resids <- sqrt(weights) * (y - yhat)
