@@ -97,6 +97,10 @@ residuals.AccurateGLM <- function(object,
       resids <- resids / yhat  # Poisson case
     else if ("lognet" %in% cl)
       resids <- resids / (yhat * (1 - yhat))  # binomial case
+    else if ("glmnetfit" %in% cl) {  # general case
+      family <- model@backend_models[[1]]$family
+      resids <- 1 / family$mu.eta(family$linkfun(yhat))
+    }
   } else if (type == "pearson") {
     yhat <- as.numeric(drop(predict(model, newx=x, newoffset=offset, s=s, type="response")))
     resids <- sqrt(weights) * (y - yhat)
