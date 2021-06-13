@@ -90,28 +90,22 @@ residuals.AccurateGLM <- function(object,
   # Calculate residuals
   cl <- class(model@backend_models[[1]])
 
+  if ("elnet" %in% cl)
+    family <- gaussian(link="identity")
+  else if ("fishnet" %in% cl)
+    family <- poisson(link="log")
+  else if ("lognet" %in% cl)
+    family <- binomial(link="logit")
+  else if ("glmnetfit" %in% cl) {  # general case
+    family <- model@backend_models[[1]]$family
+  }
+
   if (type == "working") {
     yhat <- as.numeric(drop(predict(model, newx=x, newoffset=offset, s=s, type="response")))
-    resids <- sqrt(weights) * (y - yhat)
-    if ("fishnet" %in% cl)
-      resids <- resids / yhat  # Poisson case
-    else if ("lognet" %in% cl)
-      resids <- resids / (yhat * (1 - yhat))  # binomial case
-    else if ("glmnetfit" %in% cl) {  # general case
-      family <- model@backend_models[[1]]$family
-      resids <- resids / family$mu.eta(family$linkfun(yhat))
-    }
+    resids <- sqrt(weights) * (y - yhat) / family$mu.eta(family$linkfun(yhat))
   } else if (type == "pearson") {
     yhat <- as.numeric(drop(predict(model, newx=x, newoffset=offset, s=s, type="response")))
-    resids <- sqrt(weights) * (y - yhat)
-    if ("fishnet" %in% cl)
-      resids <- resids / sqrt(yhat) # Poisson case
-    else if ("lognet" %in% cl)
-      resids <- resids / sqrt(yhat * (1 - yhat)) # binomial case
-    else if ("glmnetfit" %in% cl) {  # general case
-      family <- model@backend_models[[1]]$family
-      resids <- resids / sqrt(family$variance(yhat))
-    }
+    resids <- sqrt(weights) * (y - yhat) / sqrt(family$variance(yhat))
   } else if (type == "deviance") {
     if ("fishnet" %in% cl){  # Poisson case
       yhat <- as.numeric(drop(predict(model, newx=x, newoffset=offset, s=s, type="response")))
