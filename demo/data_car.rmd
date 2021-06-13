@@ -186,11 +186,15 @@ cv2 <- cv.aglm(x, y,
 
 # best alpha
 registerDoParallel(detectCores())
-cv3 <- cva.aglm(x, y,
-                family=Gamma(link="log"),
-                foldid=cv1@foldid,
-                parallel.alpha=TRUE)
+tm <- system.time(
+  cv3 <- cva.aglm(x, y,
+                  family=Gamma(link="log"),
+                  foldid=cv1@foldid,
+                  parallel.alpha=TRUE)
+)
 stopImplicitCluster()
+
+print(tm)
 
 cv3 <- cv3@models_list[[cv3@alpha.min.index]]
 ```
