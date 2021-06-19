@@ -114,7 +114,7 @@ aglm <- function(x, y,
                  nbin.max=NULL,
                  bins_list=NULL,
                  bins_names=NULL,
-                 family=c("gaussian","binomial","poisson"),
+                 family=c("gaussian", "binomial", "poisson", "multinomial"),
                  ...) {
   # Create an input object
   x <- newInput(x,
@@ -133,10 +133,10 @@ aglm <- function(x, y,
                 bins_names)
 
   # Check y
-  y <- drop(y)
-  y <- as.numeric(y)
-  #assert_that(class(y) == "integer" | class(y) == "numeric")
-  assert_that(length(y) == dim(x@data)[1])
+  if (!(family %in% c("binomial", "multinomial"))) {
+    y <- drop(y)
+    y <- as.numeric(y)
+  }
 
   # Check family
   if (is.character(family))
@@ -148,7 +148,11 @@ aglm <- function(x, y,
   # Data size
   nobs <- dim(x_for_backend)[1]
   nvars <- dim(x_for_backend)[2]
-  assert_that(length(y) == nobs)
+  if (!(family %in% c("binomial", "multinomial")) ||
+      !("matrix" %in% class(y)))
+    assert_that(length(y) == nobs)
+  else
+    assert_that(dim(y)[1] == nobs)
 
   # Call backend
   args <- list(x=x_for_backend,

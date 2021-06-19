@@ -96,7 +96,7 @@ cv.aglm <- function(x, y,
                     nbin.max=NULL,
                     bins_list=NULL,
                     bins_names=NULL,
-                    family=c("gaussian","binomial","poisson"),
+                    family=c("gaussian","binomial","poisson", "multinomial"),
                     keep=FALSE,
                     ...) {
   # Create an input object
@@ -116,10 +116,10 @@ cv.aglm <- function(x, y,
                 bins_names)
 
   # Check y
-  y <- drop(y)
-  #assert_that(class(y) == "integer" | class(y) == "numeric")
-  y <- as.numeric(y)
-  assert_that(length(y) == dim(x@data)[1])
+  if (!(family %in% c("binomial", "multinomial"))) {
+    y <- drop(y)
+    y <- as.numeric(y)
+  }
 
   # Check family
   if (is.character(family))
@@ -131,7 +131,11 @@ cv.aglm <- function(x, y,
   # Data size
   nobs <- dim(x_for_backend)[1]
   nvars <- dim(x_for_backend)[2]
-  assert_that(length(y) == nobs)
+  if (!(family %in% c("binomial", "multinomial")) ||
+      !("matrix" %in% class(y)))
+    assert_that(length(y) == nobs)
+  else
+    assert_that(dim(y)[1] == nobs)
 
   # Call backend
   args <- list(x=x_for_backend,
@@ -153,7 +157,7 @@ cv.aglm <- function(x, y,
              cvsd=cv.glmnet_result$cvsd,
              cvup=cv.glmnet_result$cvup,
              cvlo=cv.glmnet_result$cvlo,
-             nzero=cv.glmnet_result$nzero,
+             nzero=as.integer(cv.glmnet_result$nzero),
              name=cv.glmnet_result$name,
              lambda.min=cv.glmnet_result$lambda.min,
              lambda.1se=cv.glmnet_result$lambda.1se,
