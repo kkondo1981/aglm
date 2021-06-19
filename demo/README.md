@@ -30,7 +30,8 @@ Results of `cva.aglm()`, measured on the local PC of @kkondo1981 with the follow
   [17] evaluate_0.14     rmarkdown_2.8     compiler_4.0.2   
   ```
 
-| Dataset       | # of used rows | # of used variables | family              | elapsed time | CV mean |
-| ------------- |:--------------:|:-------------------:| ------------------- |:------------:|:-------:|
-| dataCar       | 4624           | 5                   | Gamma(link=log)     | 18.77        | 1.57807 |
-| freMTPL2      | 10000          | 9+offset            | Poisson(link=log)   | 359.86       | 0.31184 |
+| Dataset            | # of used rows | # of used variables | family              | elapsed time | CV mean |
+| ------------------ |:--------------:|:-------------------:| ------------------- |:------------:|:-------:|
+| dataCar            | 4624           | 5                   | Gamma(link=log)     | 19 sec.      | 1.57807 |
+| freMTPL2           | 10000          | 9+offset            | Poisson(link=log)   | 356 sec.     | 0.31184 |
+| MultinomialExample | 500            | 30                  | Multinomial         | 125 sec.     | 1.48745 |
