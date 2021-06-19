@@ -17,6 +17,7 @@
   only_plot = FALSE,
   main = "",
   add_rug = FALSE,
+  class = NULL,
   ...
 )
 }
@@ -69,6 +70,9 @@ To achieve this, set it to a pair of integer, which indicating number of rows an
 \item{main}{Used to specify the title of plotting.}
 
 \item{add_rug}{Set to \code{TRUE} for rug plots.}
+
+\item{class}{Used to specify which class to be plotted in the case of multinomial regression.
+\code{class=NULL} means plotting all classes.}
 
 \item{...}{Other arguments are currently not used and just discarded.}
 }
