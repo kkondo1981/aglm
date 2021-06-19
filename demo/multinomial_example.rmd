@@ -1,0 +1,132 @@
+---
+title: 'Multinomial regression with AGLM'
+author: "Kenji Kondo"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::readthedown:
+    highlight: kate
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(rmdformats)
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=TRUE,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75)
+par(ps=8)
+
+set.seed(20210619)
+```
+
+
+# What is the data?
+
+We will use the `MultinomialExample` dataset of `glmnet`.
+It is a simulated dataset, used in [glmnet example](https://glmnet.stanford.edu/articles/glmnet.html#multinomial-regression-family-multinomial-).
+
+# Read the data
+
+```{r}
+library(glmnet)
+data(MultinomialExample)
+
+x <- as.data.frame(x)
+
+print(dim(x))
+```
+
+```{r}
+table(y)
+```
+
+```{r}
+head(x)
+```
+
+
+# Fitting simple GLM identical (as in 'data_car.rmd')
+
+The following model is identical to one in [glmnet example](https://glmnet.stanford.edu/articles/glmnet.html#multinomial-regression-family-multinomial-).
+
+```{r}
+library(doParallel) # for parallelization of `glmnet()`
+library(parallel) # for `detectCores()`
+library(aglm)
+
+registerDoParallel(detectCores())
+
+cv1 <- cv.aglm(x, y,
+               family="multinomial",
+               nbin.max=2,
+               parallel=TRUE)
+
+stopImplicitCluster()
+
+s <- cv1@lambda.min
+plot(cv1,
+     s=s,
+     layout=c(3, 3),
+     verbose=FALSE,
+     ask=FALSE)
+```
+
+## Other ways to input `y`
+
+There are various ways to set the response variable for multinomial regressions.
+
+```{r}
+deviance(aglm(x, y, family="multinomial", lambda=0, nbin.max=2))
+```
+
+```{r}
+y2 <- as.factor(y)
+deviance(aglm(x, y2, family="multinomial", lambda=0, nbin.max=2))
+```
+
+```{r}
+y3 <- matrix(0, length(y), 3)
+for (i in seq(length(y))) y3[i, y[i]] <- 1
+deviance(aglm(x, y3, family="multinomial", lambda=0, nbin.max=2))
+```
+
+As deviances show, results are unchanged.
+
+# Fitting AGLM
+
+```{r}
+registerDoParallel(detectCores())
+
+tm <- system.time(cv2 <- cva.aglm(x, y,
+                                  family="multinomial",
+                                  parallel.alpha=TRUE))
+
+stopImplicitCluster()
+
+print(tm)
+```
+
+```{r}
+cv2 <- cv2@models_list[[cv2@alpha.min.index]]
+s <- cv2@lambda.min
+plot(cv2,
+     s=s,
+     layout=c(3, 3),
+     verbose=FALSE,
+     ask=FALSE)
+```
+
+
+# Cross-validation errors (mean deviance per sample)
+
+```{r}
+outf <- function(name, x) cat(sprintf("%s: %.5f\n", name, x))
+outf("glmnet             ", cv1@cvm[match(cv1@lambda.min, cv1@lambda)])
+outf("aglm(best alpha)   ", cv2@cvm[match(cv2@lambda.min, cv2@lambda)])
+```
+
+The results show that the simpler model is better.
+Since `MultinomialExample` is artificial data, it is possible that the true model is actually simple, or that the results may change when the sample size is increased.
