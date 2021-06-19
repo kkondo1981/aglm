@@ -49,7 +49,7 @@ coef.AccurateGLM <- function(object, index=NULL, name=NULL, s=NULL, exact=FALSE,
   model <- object
 
   coefs <- coef(model@backend_models[[1]], s, exact, ...)
-  if (model@call$family == "multinomial") {
+  if (!is.null(model@call$family) && model@call$family == "multinomial") {
     # for multinomial regression, coefficients are list of those of all classes.
     assert_that(!is.null(class))
     coefs <- coefs[[class]]

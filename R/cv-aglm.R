@@ -115,15 +115,15 @@ cv.aglm <- function(x, y,
                 bins_list,
                 bins_names)
 
+  # Check family
+  if (is.character(family))
+    family <- match.arg(family)
+
   # Check y
   if (!(family %in% c("binomial", "multinomial"))) {
     y <- drop(y)
     y <- as.numeric(y)
   }
-
-  # Check family
-  if (is.character(family))
-    family <- match.arg(family)
 
   # Create a design matrix which is passed to backend API
   x_for_backend <- getDesignMatrix(x)
