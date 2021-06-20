@@ -67,29 +67,8 @@ residuals.AccurateGLM <- function(object,
   # Check and set `type`
   type <- match.arg(type)
 
-  # Get x and y from model@call
-  call.orig <- getCall(model)
-  if (is.null(x)) {
-    x <- eval.parent(call.orig$x)
-    if (class(x)[1] != "data.frame") x <- data.frame(x)
-  }
-  if (is.null(y)) {
-    y <- as.numeric(drop(eval.parent(call.orig$y)))
-  }
-  if (!is.null(call.orig$offset) & is.null(offset)) {
-    offset <- as.numeric(drop(eval.parent(call.orig$offset)))
-  }
-  if (is.null(weights)) {
-    weights <- as.numeric(drop(eval.parent(call.orig$weights)))
-    if (is.null(weights) || length(weights) == 0) weights <- rep(1, length(y))
-  }
-  if (class(x)[1] != "data.frame") x <- data.frame(x)
-  assert_that(dim(x)[1] == length(y))
-  assert_that(length(y) == length(weights))
-
-  # Calculate residuals
+  # Get family
   cl <- class(model@backend_models[[1]])
-
   if ("elnet" %in% cl)
     family <- gaussian(link="identity")
   else if ("fishnet" %in% cl)
@@ -100,6 +79,50 @@ residuals.AccurateGLM <- function(object,
     family <- model@backend_models[[1]]$family
   }
 
+  # Get x and y from model@call
+  call.orig <- getCall(model)
+  if (is.null(x)) {
+    x <- eval.parent(call.orig$x)
+    if (class(x)[1] != "data.frame") x <- data.frame(x)
+  }
+  if (is.null(y)) {
+    y <- eval.parent(call.orig$y)
+    y_tot <- NULL
+    if (call.orig$family %in% c("binomial", "multinomial")) {
+      if (any(c("data.frame", "matrix") %in% class(y))) {
+        if (dim(y)[2] == 1)
+          y <- y[, 1]
+        else
+          y <- as.matrix(y)
+      }
+
+      if ("matrix" %in% class(y)) {
+        y_tot <- rowSums(y)
+        y_hit <- y[, 2]
+        y <- y_hit / y_tot
+      } else {
+        if (!is.factor(y))
+          y <- factor(y)
+        y <- as.integer(y == levels(y)[2])
+      }
+    } else {
+      y <- drop(y)
+      y <- as.numeric(y)
+    }
+  }
+  if (!is.null(call.orig$offset) & is.null(offset)) {
+    offset <- as.numeric(drop(eval.parent(call.orig$offset)))
+  }
+  if (is.null(weights)) {
+    weights <- as.numeric(drop(eval.parent(call.orig$weights)))
+    if (is.null(weights) || length(weights) == 0) weights <- rep(1, length(y))
+    if (!is.null(y_tot)) weights <- weights * y_tot ** 2
+  }
+  if (class(x)[1] != "data.frame") x <- data.frame(x)
+  assert_that(dim(x)[1] == length(y))
+  assert_that(length(y) == length(weights))
+
+  # Calculate residuals
   if (type == "working") {
     yhat <- as.numeric(drop(predict(model, newx=x, newoffset=offset, s=s, type="response")))
     resids <- sqrt(weights) * (y - yhat) / family$mu.eta(family$linkfun(yhat))
