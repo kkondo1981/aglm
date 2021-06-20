@@ -30,8 +30,12 @@ Results of `cva.aglm()`, measured on the local PC of @kkondo1981 with the follow
   [17] evaluate_0.14     rmarkdown_2.8     compiler_4.0.2   
   ```
 
-| Dataset            | # of used rows | # of used variables | family              | elapsed time | CV mean |
-| ------------------ |:--------------:|:-------------------:| ------------------- |:------------:|:-------:|
-| dataCar            | 4624           | 5                   | Gamma(link=log)     | 19 sec.      | 1.57807 |
-| freMTPL2           | 10000          | 9+offset            | Poisson(link=log)   | 356 sec.     | 0.31184 |
-| MultinomialExample | 500            | 30                  | Multinomial         | 125 sec.     | 1.48745 |
+| Dataset            | # of used rows | # of used variables | family                  | time for GLM | score for GLM | time for AGLM | score for AGLM |
+| ------------------ |:--------------:|:-------------------:| ----------------------- |:------------:|:-------------:|:-------------:|:--------------:|
+| dataCar            | 4624           | 5                   | Gamma(link=log)         | 13 sec.      | 1.58000       | 19 sec.       | 1.58130        |
+| freMTPL2           | 10000          | 9+offset            | Poisson(link=log)       | 11 sec.      | 0.31764       | 358 sec.      | 0.31206        |
+| Banknotes          | 1000           | 4                   | Binomial(link=logit)    | 2 sec.       | 0.03808       | 12 sec.       | 0.00259        |
+| MultinomialExample | 500            | 30                  | Multinomial(link=logit) | 4 sec.       | 1.41506       | 130 sec.      | 1.46170        |
+
+- Both GLM and AGLM, regularization terms and cross-validation to determine alpha and lambda are enabled.
+- Scores are mean CV deviances per sample.
