@@ -67,6 +67,7 @@ registerDoParallel(detectCores())
 tm <- system.time(cv1 <- cva.aglm(x, y,
                                   family="binomial",
                                   nbin.max=2,
+                                  keep=TRUE,  # to record `foldid` to use later
                                   parallel.alpha=TRUE))
 
 stopImplicitCluster()
@@ -97,6 +98,7 @@ registerDoParallel(detectCores())
 
 tm <- system.time(cv2 <- cva.aglm(x, y,
                                   family="binomial",
+                                  foldid=cv1@foldid,
                                   parallel.alpha=TRUE))
 
 stopImplicitCluster()
@@ -125,8 +127,8 @@ plot(cv2,
 
 ```{r}
 outf <- function(name, x) cat(sprintf("%s: %.5f\n", name, x))
-outf("glmnet(best alpha) ", cv1@cvm[match(cv1@lambda.min, cv1@lambda)])
-outf("aglm(best alpha)   ", cv2@cvm[match(cv2@lambda.min, cv2@lambda)])
+outf("simple GLM with CV ", cv1@cvm[match(cv1@lambda.min, cv1@lambda)])
+outf("AGLM with CV       ", cv2@cvm[match(cv2@lambda.min, cv2@lambda)])
 ```
 
 The results show `aglm` seems far better than the simpler model.
