@@ -67,20 +67,23 @@ residuals.AccurateGLM <- function(object,
   # Check and set `type`
   type <- match.arg(type)
 
+  # Get call
+  call.orig <- getCall(model)
+
   # Get family
-  cl <- class(model@backend_models[[1]])
-  if ("elnet" %in% cl)
-    family <- gaussian(link="identity")
-  else if ("fishnet" %in% cl)
-    family <- poisson(link="log")
-  else if ("lognet" %in% cl)
-    family <- binomial(link="logit")
-  else if ("glmnetfit" %in% cl) {  # general case
+  family0 <- call.orig$family
+  if (is.null(family0)) family0 <- "gaussian"
+  if (is.character(family0)) {
+    if (family0 == "gaussian") family <- gaussian(link="identity")
+    else if (family0 == "binomial") family <- binomial(link="logit")
+    else if (family0 == "poisson") family <- poisson(link="log")
+    else assert_that(FALSE)  # not implemented yet
+  } else {  # general case
+    family0 <- ""
     family <- model@backend_models[[1]]$family
   }
 
-  # Get x and y from model@call
-  call.orig <- getCall(model)
+  # Get x and y and so on from call
   if (is.null(x)) {
     x <- eval.parent(call.orig$x)
     if (class(x)[1] != "data.frame") x <- data.frame(x)
@@ -88,7 +91,7 @@ residuals.AccurateGLM <- function(object,
   if (is.null(y)) {
     y <- eval.parent(call.orig$y)
     y_tot <- NULL
-    if (call.orig$family %in% c("binomial", "multinomial")) {
+    if (family0 %in% c("binomial", "multinomial")) {
       if (any(c("data.frame", "matrix") %in% class(y))) {
         if (dim(y)[2] == 1)
           y <- y[, 1]
