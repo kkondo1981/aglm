@@ -120,7 +120,24 @@ cv.aglm <- function(x, y,
     family <- match.arg(family)
 
   # Check y
-  if (!(family %in% c("binomial", "multinomial"))) {
+  if (family %in% c("binomial", "multinomial")) {
+    if (any(c("data.frame", "matrix") %in% class(y))) {
+      if (dim(y)[2] == 1)
+        y <- y[, 1]
+      else
+        y <- as.matrix(y)
+    }
+
+    if ("matrix" %in% class(y)) {
+      nc <- dim(y)[2]
+    } else {
+      if (!is.factor(y))
+        y <- factor(y)
+      nc <- length(levels(y))
+    }
+    assert_that(family != "binomial" || nc == 2)
+    assert_that(family != "multinomial" || nc > 2)
+  } else {
     y <- drop(y)
     y <- as.numeric(y)
   }
@@ -131,11 +148,10 @@ cv.aglm <- function(x, y,
   # Data size
   nobs <- dim(x_for_backend)[1]
   nvars <- dim(x_for_backend)[2]
-  if (!(family %in% c("binomial", "multinomial")) ||
-      !("matrix" %in% class(y)))
-    assert_that(length(y) == nobs)
-  else
+  if ("matrix" %in% class(y))
     assert_that(dim(y)[1] == nobs)
+  else
+    assert_that(length(y) == nobs)
 
   # Call backend
   args <- list(x=x_for_backend,
