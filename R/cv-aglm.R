@@ -177,7 +177,7 @@ cv.aglm <- function(x, y,
              name=cv.glmnet_result$name,
              lambda.min=cv.glmnet_result$lambda.min,
              lambda.1se=cv.glmnet_result$lambda.1se,
-             fit.preval=cv.glmnet_result$fit.preval,
+             fit.preval=as.matrix(cv.glmnet_result$fit.preval),
              foldid=cv.glmnet_result$foldid,
              vars_info=x@vars_info,
              call=match.call()))
