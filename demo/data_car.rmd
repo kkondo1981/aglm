@@ -72,7 +72,7 @@ cat("Deviance/DF: ", model$deviance / model$df.residual, "\n")
 I got a slightly different result from them ("Deviance/DF" is 1.561 in their book but 1.565 above), but seems not so bad.
 
 
-# AGLM
+# Fitting simple GLM identical
 
 First we will try to emulate simple GLM fitted in the previous section.
 
@@ -88,8 +88,9 @@ cat(sprintf("Deviance: %.0f\n", deviance(model)))
 ```
 
 I won't bore you with the technical details, but setting `nbin.max=2` and `lambda=0` gives an AGLM model which is identical to simple GLM.
-You can see its deviance is equals to that of GLM, and quantitative variables effect linearly as below.
+The deviance of this model is equals to that of the model obtained by `glm()`, because they are essentially identical.
 
+Next, we will make component plots as following.
 
 ```{r}
 plot(model,
@@ -98,142 +99,104 @@ plot(model,
      ask=FALSE)
 ```
 
-Next, I would like to focus on the `agecat` variable, so plot only the variable again, with `resid=TRUE`.
-Note that some of the residuals are large, I will draw only the smoothed curve with `smooth_resid="smooth_only"`.
+You can see the effects of quantitative variables `agecat` and `agecat_x_gender` is linear.
 
-```{r}
-plot(model,
-     vars="agecat",
-     resid=TRUE,
-     smooth_resid="smooth_only",
-     verbose=FALSE,
-     ask=FALSE)
-```
+Of course, we can use regularization effects with searching best hyper-parameters using `cv.aglm()` or `cva.aglm()`.
 
-This plot seems to suggest non-linearity, so I would like to try fitting AGLM without `nbin.max=2` and with selecting appropriate `lambda`.
-(Another option not tried here is to use O-dummies for modeling `agecat`.)
-
-```{r}
-model <- cv.aglm(x, y,
-                 family=Gamma(link="log"))
-s <- model@lambda.min
-
-plot(model,
-     s=s,
-     vars="agecat",
-     resid=TRUE,
-     smooth_resid="smooth_only",
-     verbose=FALSE,
-     ask=FALSE)
-```
-
-Note that the deviance of this model is larger than that of simple GLM.
-But anyway, we will check their generalization performance later, by another way.
-
-```{r}
-cat(sprintf("Deviance: %.0f\n", deviance(model, s=s)))
-```
-
-Before leaving this section, I would like to examine searching $\alpha$ with `cva.aglm()` as below.
-I recommend that you consider setting `parallel.alpha=TRUE` or reducing `nfolds` when using `cva.aglm()`, because it's somewhat time-consuming.
+*NOTE: I recommend to set `parallel.alpha` to `TRUE` when using `cva.aglm()`, because it's somewhat time-consuming.*
 
 ```{r}
 library(doParallel) # for parallelization of `glmnet()`
 library(parallel) # for `detectCores()`
 
 registerDoParallel(detectCores())
-model <- cva.aglm(x, y,
-                  family=Gamma(link="log"),
-                  parallel.alpha=TRUE)
+
+tm <- system.time(cv1 <- cva.aglm(x, y,
+                                  family=Gamma(link="log"),
+                                  nbin.max=2,
+                                  keep=TRUE,  # to record `foldid` to use later
+                                  parallel.alpha=TRUE))
+
 stopImplicitCluster()
 
-model <- model@models_list[[model@alpha.min.index]]
-s <- model@lambda.min
+print(tm)
+```
 
-plot(model,
+```{r}
+cat(sprintf("best alpha: %.5f\n", cv1@alpha.min))
+cv1 <- cv1@models_list[[cv1@alpha.min.index]]
+
+cat(sprintf("best lambda: %.5f\n", cv1@lambda.min))
+s <- cv1@lambda.min
+
+plot(cv1,
      s=s,
-     vars="agecat",
-     resid=TRUE,
-     smooth_resid="smooth_only",
+     layout=c(2, 3),
      verbose=FALSE,
      ask=FALSE)
 ```
 
+
+# Fitting AGLM
+
+Let's draw component curves of the model fitted above again, but with smoothed residual curves using `resid=TRUE` and `smooth_resid="smooth_only"`.
+
 ```{r}
-cat(sprintf("Deviance: %.0f\n", deviance(model, s=s)))
+plot(cv1,
+     s=s,
+     resid=TRUE,
+     smooth_resid="smooth_only",
+     layout=c(2, 3),
+     verbose=FALSE,
+     ask=FALSE)
 ```
 
-
-# Cross-validation
-
-Now we can see cross-validation errors to check generalization performances of model.
-We would like to fit all the models again in order to use same folds for all.
+The blue dotted lines indicate smoothed curves of sample residuals (working residuals are used by default), and they seem to suggest non-linearity in `agecat` and `agecat_x_gender`, so I would like to try fitting AGLM without `nbin.max=2`.
+Note that we use the `foldid` used to fitting `cv1` again, because we will compare two models later, with same settings.
 
 ```{r}
-# GLM identical
-cv1 <- cv.aglm(x, y,
-               family=Gamma(link="log"),
-               nbin.max=2,
-               lambda=c(0, 1), # to avoid single-lambda error
-               keep=TRUE)  # to remember foldid
-
-
-# fixed alpha=1
-cv2 <- cv.aglm(x, y,
-               family=Gamma(link="log"),
-               foldid=cv1@foldid)
-
-
-# best alpha
 registerDoParallel(detectCores())
-tm <- system.time(
-  cv3 <- cva.aglm(x, y,
-                  family=Gamma(link="log"),
-                  foldid=cv1@foldid,
-                  parallel.alpha=TRUE)
-)
+
+tm <- system.time(cv2 <- cva.aglm(x, y,
+                                  family=Gamma(link="log"),
+                                  foldid=cv1@foldid,
+                                  parallel.alpha=TRUE))
+
 stopImplicitCluster()
 
 print(tm)
-
-cv3 <- cv3@models_list[[cv3@alpha.min.index]]
 ```
+
+```{r}
+cat(sprintf("best alpha: %.5f\n", cv2@alpha.min))
+cv2 <- cv2@models_list[[cv2@alpha.min.index]]
+
+cat(sprintf("best lambda: %.5f\n", cv2@lambda.min))
+s <- cv2@lambda.min
+
+plot(cv2,
+     s=s,
+     resid=TRUE,
+     smooth_resid="smooth_only",
+     layout=c(2, 3),
+     verbose=FALSE,
+     ask=FALSE)
+```
+
+As you can see, non-linearity of `agecat` and `agecat_x_gender` seems captured.
+
+
+# Cross-validation
 
 Now we can see the mean cross-validation errors for all the models as below.
 Note that 'error' means deviance for folds not used to fit and devided by sample sizes.
 
 ```{r}
 outf <- function(name, x) cat(sprintf("%s: %.5f\n", name, x))
-outf("glm             ", cv1@cvm[match(0, cv1@lambda)])
-outf("aglm(alpha=1)   ", cv2@cvm[match(cv2@lambda.min, cv2@lambda)])
-outf("aglm(best alpha)", cv3@cvm[match(cv3@lambda.min, cv3@lambda)])
+outf("simple GLM with CV ", cv1@cvm[match(cv1@lambda.min, cv1@lambda)])
+outf("AGLM with CV       ", cv2@cvm[match(cv2@lambda.min, cv2@lambda)])
 ```
-
-Judging from this metric, the last model is the best.
-From the following plots, the difference seems to come from how to handle `agecat` and `agecat_x_gender`.
-
-```{r}
-s <- cv2@lambda.min
-plot(cv2,
-     s=s,
-     layout=c(2, 3),
-     resid=TRUE,
-     smooth_resid="smooth_only",
-     verbose=FALSE,
-     ask=FALSE)
-```
-
-
-```{r}
-s <- cv3@lambda.min
-plot(cv3,
-     s=s,
-     layout=c(2, 3),
-     resid=TRUE,
-     smooth_resid="smooth_only",
-     verbose=FALSE,
-     ask=FALSE)
-```
+In this case, the metric doesn't improve by using AGLM unfortunately and seems that simple GLM with cross-validation is enough.
 
 
 # References

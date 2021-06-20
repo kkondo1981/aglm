@@ -82,13 +82,23 @@ library(aglm)
 
 registerDoParallel(detectCores())
 
-cv1 <- cv.aglm(x, y, offset=off,
-               family="poisson",
-               nbin.max=2,
-               lambda=c(0, 1),
-               parallel=TRUE)
+tm <- system.time(cv1 <- cva.aglm(x, y, offset=off,
+                                  family="poisson",
+                                  nbin.max=2,
+                                  keep=TRUE,  # to record `foldid` to use later
+                                  parallel=TRUE))
 
 stopImplicitCluster()
+
+print(tm)
+```
+
+```{r}
+cat(sprintf("best alpha: %.5f\n", cv1@alpha.min))
+cv1 <- cv1@models_list[[cv1@alpha.min.index]]
+
+cat(sprintf("best lambda: %.5f\n", cv1@lambda.min))
+s <- cv1@lambda.min
 
 plot(cv1,
      s=0,
@@ -105,6 +115,7 @@ registerDoParallel(detectCores())
 
 tm <- system.time(cv2 <- cva.aglm(x, y, offset=off,
                                   family="poisson",
+                                  foldid=cv1@foldid,
                                   parallel.alpha=TRUE))
 
 stopImplicitCluster()
@@ -113,10 +124,14 @@ print(tm)
 ```
 
 ```{r}
+cat(sprintf("best alpha: %.5f\n", cv2@alpha.min))
 cv2 <- cv2@models_list[[cv2@alpha.min.index]]
+
+cat(sprintf("best lambda: %.5f\n", cv2@lambda.min))
 s <- cv2@lambda.min
+
 plot(cv2,
-     s=s,
+     s=0,
      layout=c(3, 3),
      verbose=FALSE,
      ask=FALSE)
@@ -127,6 +142,6 @@ plot(cv2,
 
 ```{r}
 outf <- function(name, x) cat(sprintf("%s: %.5f\n", name, x))
-outf("glm                ", cv1@cvm[match(0, cv1@lambda)])
-outf("aglm(best alpha)   ", cv2@cvm[match(cv2@lambda.min, cv2@lambda)])
+outf("simple GLM with CV ", cv1@cvm[match(cv1@lambda.min, cv1@lambda)])
+outf("AGLM with CV       ", cv2@cvm[match(cv2@lambda.min, cv2@lambda)])
 ```
