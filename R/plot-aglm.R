@@ -181,203 +181,201 @@ plot.AccurateGLM <- function(x,
   ask.old <- devAskNewPage()
   on.exit(devAskNewPage(ask.old), add=TRUE)
 
-  for (cl in class) {
-    ## set par
-    if (!only_plot) {
-      par(oma=c(0, 0, 2, 0))
-      if (length(inds) == 1) layout <- c(1,1)
-      par(mfrow=layout)
+  ## set par
+  if (!only_plot) {
+    par(oma=c(0, 0, 2, 0))
+    if (length(inds) == 1) layout <- c(1,1)
+    par(mfrow=layout)
+  }
+
+  devAskNewPage(FALSE)
+
+  ## Plotting
+  for (i in inds) {
+    var_info <- model@vars_info[[i]]
+    if (var_info$type == "inter") break ## no plot for interactions
+
+    if (is_multinomial)
+      coefs <- coef(model, index=var_info$idx, s=s, class=cl)
+    else
+      coefs <- coef(model, index=var_info$idx, s=s)
+
+    if (resid) {
+      xlab <- var_info$name
+      ylab <- "Comp + Resid"
+    } else {
+      xlab <- var_info$name
+      ylab <- "Comp"
     }
 
-    devAskNewPage(FALSE)
+    first <- TRUE
+    if (var_info$type == "quan") {
+      # Plot for numeric features
 
-    ## Plotting
-    for (i in inds) {
-      var_info <- model@vars_info[[i]]
-      if (var_info$type == "inter") break ## no plot for interactions
+      ## Calculates range of x to be plotted
+      if (var_info$use_LV) {
+        breaks <- var_info$LV_info$breaks
+      } else {
+        breaks <- var_info$OD_info$breaks
+      }
+      breaks <- breaks[abs(breaks) < Inf]  # get rid of -Inf and Inf
+      x.min <- min(breaks)
+      x.max <- max(breaks)
+      x.d <- x.max - x.min
+      assert_that(x.d > 0)
 
-      if (is_multinomial)
-        coefs <- coef(model, index=var_info$idx, s=s, class=cl)
-      else
-        coefs <- coef(model, index=var_info$idx, s=s)
+      x.min <- x.min - 0.05 * x.d
+      x.max <- x.max + 0.05 * x.d
+      x.d <- x.max - x.min
+
+      ## Extract x values to be plotted
+      x <- x.min + (0:2000) / 2000 * x.d
+
+      ## Calculates component values of x
+      x.mat <- getMatrixRepresentationByVector(x, var_info)
+      if (var_info$use_LV) {
+        b <- matrix(c(coefs$coef.linear, coefs$coef.LV), ncol=1)
+      } else {
+        b <- matrix(c(coefs$coef.linear, coefs$coef.OD), ncol=1)
+      }
+      comp <- drop(x.mat %*% b)
+
+      ## Calculates component and residual values of samples
+      x.sample <- NULL
+      c_and_r.sample <- NULL
+      if (resid) {
+        x.sample <- x.orig[, var_info$data_column_idx]
+        x.sample.mat <- getMatrixRepresentationByVector(x.sample, var_info)
+        c_and_r.sample <- drop(x.sample.mat %*% b) + resids
+
+        if (draws_lines) {
+          ord <- order(x.sample)
+          f <- smooth_resid_fun
+          if (is.null(f)) {
+            if (length(unique(x.sample)) >= 4 & IQR(x.sample) > 0)
+              f <- smooth.spline
+            else
+              f <- ksmooth
+          }
+          smoothed_c_and_r.sample <- f(x.sample[ord], c_and_r.sample[ord])
+        }
+      }
+
+      ## Plotting
+      x.all <- c(x, x.sample)
+      xlim <- c(min(x.all), max(x.all))
+      xlim[1] <- xlim[1] - 0.05 * (xlim[2] - xlim[1])
+      xlim[2] <- xlim[2] + 0.05 * (xlim[2] - xlim[1])
+
+      y.all <- comp
+      if (resid) {
+        if (draws_balls)
+          y.all <- c(y.all, c_and_r.sample)
+        if (draws_lines)
+          y.all <- c(y.all, smoothed_c_and_r.sample$y[!is.na(smoothed_c_and_r.sample$y)])
+      }
+      ylim <- c(min(y.all), max(y.all))
+      ylim[1] <- ylim[1] - 0.05 * (ylim[2] - ylim[1])
+      ylim[2] <- ylim[2] + 0.05 * (ylim[2] - ylim[1])
+
+      plot(x=x,
+           y=comp,
+           type="n",
+           main=main,
+           xlab=xlab,
+           ylab=ylab,
+           xlim=xlim,
+           ylim=ylim)
 
       if (resid) {
-        xlab <- var_info$name
-        ylab <- "Comp + Resid"
+        if (draws_balls) {
+          points(x=x.sample,
+                 y=c_and_r.sample,
+                 pch=".")
+        }
+
+        if (draws_lines) {
+          lines(smoothed_c_and_r.sample,
+                col="blue",
+                lty=5)
+        }
+
+        if (add_rug) {
+          rug(x=x.sample,
+              col="gray")
+        }
+      }
+
+      lines(x=x,
+            y=comp)
+    } else if (var_info$type == "qual") {
+      # Plot for factorial features
+
+      ## All levels to be plotted
+      lv <- var_info$UD_info$levels
+      x <- if (var_info$use_OD) {
+        ordered(lv, levels=lv)
       } else {
-        xlab <- var_info$name
-        ylab <- "Comp"
+        factor(lv, levels=lv)
       }
 
-      first <- TRUE
-      if (var_info$type == "quan") {
-        # Plot for numeric features
+      ## Calculate component values of x
+      x.mat <- getMatrixRepresentationByVector(x, var_info)
+      b <- matrix(c(coefs$coef.OD, coefs$coef.UD), ncol=1)
+      comp <- drop(x.mat %*% b)
 
-        ## Calculates range of x to be plotted
-        if (var_info$use_LV) {
-          breaks <- var_info$LV_info$breaks
+      # Calculates component and residual values of samples
+      x.sample <- NULL
+      c_and_r.sample <- NULL
+      if (resid) {
+        x.sample <- x.orig[, var_info$data_column_idx]
+        x.sample <- if (var_info$use_OD) {
+          ordered(x.sample, levels=lv)
         } else {
-          breaks <- var_info$OD_info$breaks
+          factor(x.sample, levels=lv)
         }
-        breaks <- breaks[abs(breaks) < Inf]  # get rid of -Inf and Inf
-        x.min <- min(breaks)
-        x.max <- max(breaks)
-        x.d <- x.max - x.min
-        assert_that(x.d > 0)
-
-        x.min <- x.min - 0.05 * x.d
-        x.max <- x.max + 0.05 * x.d
-        x.d <- x.max - x.min
-
-        ## Extract x values to be plotted
-        x <- x.min + (0:2000) / 2000 * x.d
-
-        ## Calculates component values of x
-        x.mat <- getMatrixRepresentationByVector(x, var_info)
-        if (var_info$use_LV) {
-          b <- matrix(c(coefs$coef.linear, coefs$coef.LV), ncol=1)
-        } else {
-          b <- matrix(c(coefs$coef.linear, coefs$coef.OD), ncol=1)
-        }
-        comp <- drop(x.mat %*% b)
-
-        ## Calculates component and residual values of samples
-        x.sample <- NULL
-        c_and_r.sample <- NULL
-        if (resid) {
-          x.sample <- x.orig[, var_info$data_column_idx]
-          x.sample.mat <- getMatrixRepresentationByVector(x.sample, var_info)
-          c_and_r.sample <- drop(x.sample.mat %*% b) + resids
-
-          if (draws_lines) {
-            ord <- order(x.sample)
-            f <- smooth_resid_fun
-            if (is.null(f)) {
-              if (length(unique(x.sample)) >= 4 & IQR(x.sample) > 0)
-                f <- smooth.spline
-              else
-                f <- ksmooth
-            }
-            smoothed_c_and_r.sample <- f(x.sample[ord], c_and_r.sample[ord])
-          }
-        }
-
-        ## Plotting
-        x.all <- c(x, x.sample)
-        xlim <- c(min(x.all), max(x.all))
-        xlim[1] <- xlim[1] - 0.05 * (xlim[2] - xlim[1])
-        xlim[2] <- xlim[2] + 0.05 * (xlim[2] - xlim[1])
-
-        y.all <- comp
-        if (resid) {
-          if (draws_balls)
-            y.all <- c(y.all, c_and_r.sample)
-          if (draws_lines)
-            y.all <- c(y.all, smoothed_c_and_r.sample$y[!is.na(smoothed_c_and_r.sample$y)])
-        }
-        ylim <- c(min(y.all), max(y.all))
-        ylim[1] <- ylim[1] - 0.05 * (ylim[2] - ylim[1])
-        ylim[2] <- ylim[2] + 0.05 * (ylim[2] - ylim[1])
-
-        plot(x=x,
-             y=comp,
-             type="n",
-             main=main,
-             xlab=xlab,
-             ylab=ylab,
-             xlim=xlim,
-             ylim=ylim)
-
-        if (resid) {
-          if (draws_balls) {
-            points(x=x.sample,
-                   y=c_and_r.sample,
-                   pch=".")
-          }
-
-          if (draws_lines) {
-            lines(smoothed_c_and_r.sample,
-                  col="blue",
-                  lty=5)
-          }
-
-          if (add_rug) {
-            rug(x=x.sample,
-                col="gray")
-          }
-        }
-
-        lines(x=x,
-              y=comp)
-      } else if (var_info$type == "qual") {
-        # Plot for factorial features
-
-        ## All levels to be plotted
-        lv <- var_info$UD_info$levels
-        x <- if (var_info$use_OD) {
-          ordered(lv, levels=lv)
-        } else {
-          factor(lv, levels=lv)
-        }
-
-        ## Calculate component values of x
-        x.mat <- getMatrixRepresentationByVector(x, var_info)
-        b <- matrix(c(coefs$coef.OD, coefs$coef.UD), ncol=1)
-        comp <- drop(x.mat %*% b)
-
-        # Calculates component and residual values of samples
-        x.sample <- NULL
-        c_and_r.sample <- NULL
-        if (resid) {
-          x.sample <- x.orig[, var_info$data_column_idx]
-          x.sample <- if (var_info$use_OD) {
-            ordered(x.sample, levels=lv)
-          } else {
-            factor(x.sample, levels=lv)
-          }
-          x.sample.mat <- getMatrixRepresentationByVector(x.sample, var_info)
-          c_and_r.sample <- drop(x.sample.mat %*% b) + resids
-        }
-
-        if (resid) {
-          y.all <- c(comp, c_and_r.sample)
-
-          boxplot(c_and_r.sample ~ x.sample,
-                  main=main,
-                  xlab=xlab,
-                  ylab=ylab,
-                  outline=FALSE)
-        } else {
-          barplot(comp,
-                  names=lv,
-                  main=main,
-                  xlab=xlab,
-                  ylab=ylab)
-        }
+        x.sample.mat <- getMatrixRepresentationByVector(x.sample, var_info)
+        c_and_r.sample <- drop(x.sample.mat %*% b) + resids
       }
 
-      if (verbose) {
-        cat(sprintf("Plotting for %s", var_info$name))
-        if (is_multinomial)
-          cat(sprintf(", class=%s", cl))
-        cat("\n")
-        cat("Variable Informations:\n"); str(var_info); cat("\n")
-        cat("Coefficients:\n"); str(coefs); cat("\n")
+      if (resid) {
+        y.all <- c(comp, c_and_r.sample)
+
+        boxplot(c_and_r.sample ~ x.sample,
+                main=main,
+                xlab=xlab,
+                ylab=ylab,
+                outline=FALSE)
+      } else {
+        barplot(comp,
+                names=lv,
+                main=main,
+                xlab=xlab,
+                ylab=ylab)
       }
+    }
 
-      flush.console() # this makes sure that the display is current
+    if (verbose) {
+      cat(sprintf("Plotting for %s", var_info$name))
+      if (is_multinomial)
+        cat(sprintf(", class=%s", cl))
+      cat("\n")
+      cat("Variable Informations:\n"); str(var_info); cat("\n")
+      cat("Coefficients:\n"); str(coefs); cat("\n")
+    }
+
+    flush.console() # this makes sure that the display is current
 
 
-      if (first) {
-        if (!only_plot) {
-          if (resid) text <- "Component + Residual Plot"
-          else text <- "Component Plot"
-          if (is_multinomial) text <- paste0(text, " (class=", cl, ")")
-          mtext(line=0, outer=TRUE, text=text)
-        }
-        devAskNewPage(ask)
-        first <- FALSE
+    if (first) {
+      if (!only_plot) {
+        if (resid) text <- "Component + Residual Plot"
+        else text <- "Component Plot"
+        if (is_multinomial) text <- paste0(text, " (class=", cl, ")")
+        mtext(line=0, outer=TRUE, text=text)
       }
+      devAskNewPage(ask)
+      first <- FALSE
     }
   }
 }
