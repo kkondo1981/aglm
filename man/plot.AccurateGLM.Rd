@@ -18,6 +18,8 @@
   main = "",
   add_rug = FALSE,
   class = NULL,
+  use_legend = FALSE,
+  margin = rep(0.05, 4),
   ...
 )
 }
@@ -73,6 +75,13 @@ To achieve this, set it to a pair of integer, which indicating number of rows an
 
 \item{class}{Used to specify which class to be plotted in the case of multinomial regression.
 \code{class=NULL} means plotting all classes.}
+
+\item{use_legend}{Set to \code{TRUE} if a legend is needed.
+This parameter only works in multinomial cases.}
+
+\item{margin}{A numerical vector of the form \code{c(bottom, left, top, right)}.
+Each element means a rate that indicates how much plot areas should be extended
+in the specified direction.}
 
 \item{...}{Other arguments are currently not used and just discarded.}
 }
