@@ -61,6 +61,10 @@
 #'   Set to `TRUE` if a legend is needed.
 #'   This parameter only works in multinomial cases.
 #'
+#' @param col
+#'   Used to specify colors of contribution curves.
+#'   In the case of multinomial regression, specify colors for all classes by a vector.
+#'
 #' @param margin
 #'   A numerical vector of the form `c(bottom, left, top, right)`.
 #'   Each element means a rate that indicates how much plot areas should be extended
@@ -119,6 +123,7 @@ plot.AccurateGLM <- function(x,
                              add_rug=FALSE,
                              class=NULL,
                              use_legend=FALSE,
+                             col=NULL,
                              margin=rep(0.05, 4),
                              ...) {
   # It's necessary to use same names for some arguments as the original methods,
@@ -340,17 +345,27 @@ plot.AccurateGLM <- function(x,
         }
       }
 
+      if (is.null(col)) {
+        col1 <- rep("black", n_class)
+      } else {
+        col1 <- rep_len(col, n_class)
+      }
+
       for (class_ind in seq(n_class)) {
         ci <- comp_infos[[class_ind]]
-        lines(x=x, y=ci$comp, lty=class_ind)
+        lines(x=x,
+              y=ci$comp,
+              lty=class_ind,
+              col=col1[class_ind])
       }
 
       if (is_multinomial && use_legend)
-        legend(x = xlim[1] + 0.01 * xdelta,
-               y = ylim[2] - 0.01 * ydelta,
+        legend(x=xlim[1] + 0.01 * xdelta,
+               y=ylim[2] - 0.01 * ydelta,
                legend=class,
                cex=0.8,
                lty=seq(n_class),
+               col=col1,
                horiz=TRUE)
     } else if (var_info$type == "qual") {
       # Plot for factorial features
@@ -365,8 +380,16 @@ plot.AccurateGLM <- function(x,
 
       ## Calculate component values of x
       x.mat <- getMatrixRepresentationByVector(x, var_info)
-      b <- matrix(c(coefs$coef.OD, coefs$coef.UD), ncol=1)
-      comp <- drop(x.mat %*% b)
+      comp_infos <- vector(mode="list", n_class)
+      for (class_ind in seq(n_class)) {
+        if (is_multinomial)
+          coefs <- coef(model, index=var_info$idx, s=s, class=class[class_ind])
+        else
+          coefs <- coef(model, index=var_info$idx, s=s)
+        b <- matrix(c(coefs$coef.OD, coefs$coef.UD), ncol=1)
+        comp_infos[[class_ind]]$b <- b
+        comp_infos[[class_ind]]$comp <- drop(x.mat %*% b)
+      }
 
       # Calculates component and residual values of samples
       x.sample <- NULL
@@ -379,20 +402,85 @@ plot.AccurateGLM <- function(x,
           factor(x.sample, levels=lv)
         }
         x.sample.mat <- getMatrixRepresentationByVector(x.sample, var_info)
-        c_and_r.sample <- drop(x.sample.mat %*% b) + resids
+
+        for (class_ind in seq(n_class)) {
+          b <- comp_infos[[class_ind]]$b
+          comp_infos[[class_ind]]$c_and_r.sample <- drop(x.sample.mat %*% b) + resids
+        }
       }
 
-      if (resid) {
-        y.all <- c(comp, c_and_r.sample)
+      y.all <- NULL
+      for (class_ind in seq(n_class)) {
+        ci <- comp_infos[[class_ind]]
+        y.all <- c(y.all, ci$comp)
+        if (resid)
+          y.all <- c(y.all, ci$c_and_r.sample)
+      }
+      ylim <- c(min(y.all), max(y.all))
+      if (ylim[2] - ylim[1] < 1e-8) ylim <- c(-1, 1)
+      ydelta <- ylim[2] - ylim[1]
+      ylim[1] <- ylim[1] - margin[1] * ydelta
+      ylim[2] <- ylim[2] + margin[3] * ydelta
 
-        boxplot(c_and_r.sample ~ x.sample,
+      if (resid) {
+        # `resid` never get `TRUE` when multinomial case, so we can assume `n_class=1` here.
+        ci <- comp_infos[[1]]
+        boxplot(ci$c_and_r.sample ~ x.sample,
+                col=col,
                 main=main,
                 xlab=xlab,
                 ylab=ylab,
                 outline=FALSE)
       } else {
+        if (is_multinomial) {
+          beside <- TRUE
+          comp <- matrix(0, length(comp_infos), length(comp_infos[[1]]$comp))
+          for (class_ind in seq(n_class))
+            comp[class_ind, ] <- comp_infos[[class_ind]]$comp
+        } else {
+          beside <- FALSE
+          comp <- comp_infos[[1]]$comp
+        }
+
+        # Emulates the calculation of `xlim` in `barplot()` to apply `margin`.
+        # See the original codes by The R Core Team at the URL below for details:
+        # https://github.com/SurajGupta/r-source/blob/master/src/library/graphics/R/barplot.R
+        if (beside) {
+          nr <- nrow(comp)
+          nc <- ncol(comp)
+          space <- rep.int(c(1, rep.int(0, nr - 1)), nc)
+          width <- rep_len(1, nr)
+        } else {
+          space <- 0.2
+          width <- rep_len(1, length(comp))
+        }
+        bar.right <- cumsum(space + width)
+        bar.left <- bar.right - width
+        xlim <- c(min(bar.left), max(bar.right))
+        xdelta <- xlim[2] - xlim[1]
+        xlim[1] <- xlim[1] - margin[2] * xdelta
+        xlim[2] <- xlim[2] + margin[4] * xdelta
+
+        if (is_multinomial && use_legend) {
+          legend.text <- class
+          args.legend <- list(x=xlim[1] + 0.01 * xdelta,
+                              y=ylim[2] - 0.01 * ydelta,
+                              cex=0.8,
+                              xjust=0,
+                              horiz=TRUE)
+        } else {
+          legend.text <- NULL
+          args.legend <- NULL
+        }
+
         barplot(comp,
-                names=lv,
+                beside=beside,
+                names.arg=lv,
+                legend.text=legend.text,
+                args.legend=args.legend,
+                xlim=xlim,
+                ylim=ylim,
+                col=col,
                 main=main,
                 xlab=xlab,
                 ylab=ylab)

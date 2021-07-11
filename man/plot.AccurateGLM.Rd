@@ -19,6 +19,7 @@
   add_rug = FALSE,
   class = NULL,
   use_legend = FALSE,
+  col = NULL,
   margin = rep(0.05, 4),
   ...
 )
@@ -78,6 +79,9 @@ To achieve this, set it to a pair of integer, which indicating number of rows an
 
 \item{use_legend}{Set to \code{TRUE} if a legend is needed.
 This parameter only works in multinomial cases.}
+
+\item{col}{Used to specify colors of contribution curves.
+In the case of multinomial regression, specify colors for all classes by a vector.}
 
 \item{margin}{A numerical vector of the form \code{c(bottom, left, top, right)}.
 Each element means a rate that indicates how much plot areas should be extended
