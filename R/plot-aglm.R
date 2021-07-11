@@ -65,6 +65,15 @@
 #'   Used to specify colors of contribution curves.
 #'   In the case of multinomial regression, specify colors for all classes by a vector.
 #'
+#' @param resid_col
+#'   Used to specify the color of residuals.
+#'
+#' @param smooth_col
+#'   Used to specify the color of smoothing lines.
+#'
+#' @param rug_col
+#'   Used to specify the color of rugs.
+#'
 #' @param margin
 #'   A numerical vector of the form `c(bottom, left, top, right)`.
 #'   Each element means a rate that indicates how much plot areas should be extended
@@ -124,6 +133,9 @@ plot.AccurateGLM <- function(x,
                              class=NULL,
                              use_legend=FALSE,
                              col=NULL,
+                             resid_col="black",
+                             smooth_col="blue",
+                             rug_col="grey",
                              margin=rep(0.05, 4),
                              ...) {
   # It's necessary to use same names for some arguments as the original methods,
@@ -329,18 +341,19 @@ plot.AccurateGLM <- function(x,
           if (draws_balls) {
             points(x=x.sample,
                    y=ci$c_and_r.sample,
-                   pch=".")
+                   pch=".",
+                   col=resid_col)
           }
 
           if (draws_lines) {
             lines(ci$smoothed_c_and_r.sample,
-                  col="blue",
-                  lty=5)
+                  lty=5,
+                  col=smooth_col)
           }
 
           if (add_rug) {
             rug(x=x.sample,
-                col="gray")
+                col=rug_col)
           }
         }
       }

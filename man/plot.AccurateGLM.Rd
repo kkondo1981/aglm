@@ -20,6 +20,9 @@
   class = NULL,
   use_legend = FALSE,
   col = NULL,
+  resid_col = "black",
+  smooth_col = "blue",
+  rug_col = "grey",
   margin = rep(0.05, 4),
   ...
 )
@@ -82,6 +85,12 @@ This parameter only works in multinomial cases.}
 
 \item{col}{Used to specify colors of contribution curves.
 In the case of multinomial regression, specify colors for all classes by a vector.}
+
+\item{resid_col}{Used to specify the color of residuals.}
+
+\item{smooth_col}{Used to specify the color of smoothing lines.}
+
+\item{rug_col}{Used to specify the color of rugs.}
 
 \item{margin}{A numerical vector of the form \code{c(bottom, left, top, right)}.
 Each element means a rate that indicates how much plot areas should be extended
