@@ -24,6 +24,8 @@
 #'   * `character`(single value): type of residual to be plotted. See \link{residuals.AccurateGLM} for more details on types of residuals.
 #'   * `numerical`(vector): residual values to be plotted.
 #'
+#'   Note that this parameter is not valid in cases of multinomial regressions.
+#'
 #' @param smooth_resid
 #'   Used to display smoothing lines of residuals for quantitative variables.
 #'   This parameter may have one of the following classes:
@@ -191,6 +193,8 @@ plot.AccurateGLM <- function(x,
   }
 
   ## set flags for smoothing
+  if (is_multinomial)
+    resid <- FALSE
   if (resid) {
     if (is.character(smooth_resid)) {
       draws_balls <- smooth_resid == "both"

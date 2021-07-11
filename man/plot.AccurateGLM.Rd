@@ -49,7 +49,9 @@ This parameter may have one of the following classes:
 \item \code{logical}(single value): If \code{TRUE}, working residuals are plotted.
 \item \code{character}(single value): type of residual to be plotted. See \link{residuals.AccurateGLM} for more details on types of residuals.
 \item \code{numerical}(vector): residual values to be plotted.
-}}
+}
+
+Note that this parameter is not valid in cases of multinomial regressions.}
 
 \item{smooth_resid}{Used to display smoothing lines of residuals for quantitative variables.
 This parameter may have one of the following classes:
