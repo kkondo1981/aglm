@@ -1,0 +1,203 @@
+---
+title: 'Modeling vehicle insurance dataset with AGLM'
+author: "Kenji Kondo"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::readthedown:
+    highlight: kate
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(rmdformats)
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=TRUE,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75)
+par(ps=8)
+
+set.seed(20210612)
+```
+
+
+# What is the data?
+
+The 'dataCar' dataset in the 'insuranceData' package.
+
+```
+data Car
+Description
+This data set is based on one-year vehicle insurance policies taken out in 2004 or 2005. There are 67856 policies, of which 4624 (6.8
+```
+
+# Read the data
+
+```{r}
+library(insuranceData)
+data(dataCar)
+xy <- dataCar
+xy <- xy[xy$claimcst0 > 0, ]
+
+y <- xy$claimcst0
+x <- xy[c("agecat", "gender", "area", "veh_body")]
+x$agecat_x_gender <- x$agecat * as.integer(x$gender)
+x$veh_body <- factor(substr(x$veh_body, 1, 3))
+
+dim(xy)
+```
+
+```{r}
+hist(y, breaks=50)
+```
+```{r}
+head(x)
+```
+
+# GLM
+
+At first, let us try modeling with simple GLM, as in a textbook by De Jong P., Heller G.Z. (2008).
+
+```{r}
+model <- glm(y ~ agecat + gender + area + veh_body + agecat_x_gender,
+             data=cbind(y, x),
+             family=Gamma(link="log"))
+
+print(model)
+cat("Deviance/DF: ", model$deviance / model$df.residual, "\n")
+```
+
+I got a slightly different result from them ("Deviance/DF" is 1.561 in their book but 1.565 above), but seems not so bad.
+
+
+# Fitting simple GLM identical
+
+First we will try to emulate simple GLM fitted in the previous section.
+
+```{r}
+library(aglm)
+
+model <- aglm(x, y,
+              family=Gamma(link="log"),
+              nbin.max=2,
+              lambda=0)
+
+cat(sprintf("Deviance: %.0f\n", deviance(model)))
+```
+
+I won't bore you with the technical details, but setting `nbin.max=2` and `lambda=0` gives an AGLM model which is identical to simple GLM.
+The deviance of this model is equals to that of the model obtained by `glm()`, because they are essentially identical.
+
+Next, we will make component plots as following.
+
+```{r}
+plot(model,
+     layout=c(2, 3),
+     verbose=FALSE,
+     ask=FALSE)
+```
+
+You can see the effects of quantitative variables `agecat` and `agecat_x_gender` is linear.
+
+Of course, we can use regularization effects with searching best hyper-parameters using `cv.aglm()` or `cva.aglm()`.
+
+*NOTE: I recommend to set `parallel.alpha` to `TRUE` when using `cva.aglm()`, because it's somewhat time-consuming.*
+
+```{r}
+library(doParallel) # for parallelization of `glmnet()`
+library(parallel) # for `detectCores()`
+
+registerDoParallel(detectCores())
+
+tm <- system.time(cv1 <- cva.aglm(x, y,
+                                  family=Gamma(link="log"),
+                                  nbin.max=2,
+                                  keep=TRUE,  # to record `foldid` to use later
+                                  parallel.alpha=TRUE))
+
+stopImplicitCluster()
+
+print(tm)
+```
+
+```{r}
+cat(sprintf("best alpha: %.5f\n", cv1@alpha.min))
+cv1 <- cv1@models_list[[cv1@alpha.min.index]]
+
+cat(sprintf("best lambda: %.5f\n", cv1@lambda.min))
+s <- cv1@lambda.min
+
+plot(cv1,
+     s=s,
+     layout=c(2, 3),
+     verbose=FALSE,
+     ask=FALSE)
+```
+
+
+# Fitting AGLM
+
+Let's draw component curves of the model fitted above again, but with smoothed residual curves using `resid=TRUE` and `smooth_resid="smooth_only"`.
+
+```{r}
+plot(cv1,
+     s=s,
+     resid=TRUE,
+     smooth_resid="smooth_only",
+     layout=c(2, 3),
+     verbose=FALSE,
+     ask=FALSE)
+```
+
+The blue dotted lines indicate smoothed curves of sample residuals (working residuals are used by default), and they seem to suggest non-linearity in `agecat` and `agecat_x_gender`, so I would like to try fitting AGLM without `nbin.max=2`.
+Note that we use the `foldid` used to fitting `cv1` again, because we will compare two models later, with same settings.
+
+```{r}
+registerDoParallel(detectCores())
+
+tm <- system.time(cv2 <- cva.aglm(x, y,
+                                  family=Gamma(link="log"),
+                                  foldid=cv1@foldid,
+                                  parallel.alpha=TRUE))
+
+stopImplicitCluster()
+
+print(tm)
+```
+
+```{r}
+cat(sprintf("best alpha: %.5f\n", cv2@alpha.min))
+cv2 <- cv2@models_list[[cv2@alpha.min.index]]
+
+cat(sprintf("best lambda: %.5f\n", cv2@lambda.min))
+s <- cv2@lambda.min
+
+plot(cv2,
+     s=s,
+     resid=TRUE,
+     smooth_resid="smooth_only",
+     layout=c(2, 3),
+     verbose=FALSE,
+     ask=FALSE)
+```
+
+As you can see, non-linearity of `agecat` and `agecat_x_gender` seems captured.
+
+
+# Cross-validation
+
+Now we can see the mean cross-validation errors for all the models as below.
+Note that 'error' means deviance for folds not used to fit and devided by sample sizes.
+
+```{r}
+outf <- function(name, x) cat(sprintf("%s: %.5f\n", name, x))
+outf("simple GLM with CV ", cv1@cvm[match(cv1@lambda.min, cv1@lambda)])
+outf("AGLM with CV       ", cv2@cvm[match(cv2@lambda.min, cv2@lambda)])
+```
+In this case, the metric doesn't improve by using AGLM unfortunately and seems that simple GLM with cross-validation is enough.
+
+
+# References
+* De Jong P., Heller G.Z. (2008), Generalized linear models for insurance data, Cambridge University Press

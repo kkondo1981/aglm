@@ -35,7 +35,7 @@ A string representing type of deviance:
 \itemize{
 \item \code{"working"} get working residual
 \mjsdeqn{r^W_i = (y_i - \mu_i) \left(\frac{\partial \eta}{\partial \mu}\right)_{\mu=\mu_i},}
-where \eqn{y_i} is a response value, \eqn{\mu} is GLM mean, and \eqn{\eta=g^{-1}(\mu)} with the link function \eqn{g}.
+where \eqn{y_i} is a response value, \eqn{\mu} is GLM mean, and \eqn{\eta=g(\mu)} is a value of the link function \eqn{g}.
 \item \code{"pearson"} get Pearson residuals
 \mjsdeqn{r^P_i = \frac{y_i - \mu_i}{\sqrt{V(\mu_i)}},}
 where \eqn{V} is the variance function.
