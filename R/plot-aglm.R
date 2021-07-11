@@ -413,8 +413,13 @@ plot.AccurateGLM <- function(x,
       for (class_ind in seq(n_class)) {
         ci <- comp_infos[[class_ind]]
         y.all <- c(y.all, ci$comp)
-        if (resid)
-          y.all <- c(y.all, ci$c_and_r.sample)
+        if (resid) {
+          xvals <- unique(x.sample)
+          for (xval in xvals) {
+            yy <- ci$c_and_r.sample[x.sample == xval]
+            y.all <- c(y.all, boxplot.stats(yy)$stats)
+          }
+        }
       }
       ylim <- c(min(y.all), max(y.all))
       if (ylim[2] - ylim[1] < 1e-8) ylim <- c(-1, 1)
@@ -425,8 +430,18 @@ plot.AccurateGLM <- function(x,
       if (resid) {
         # `resid` never get `TRUE` when multinomial case, so we can assume `n_class=1` here.
         ci <- comp_infos[[1]]
+
+        # Emulates the calculation of `xlim` in `boxplot()` to apply `margin`.
+        # See the original codes by The R Core Team at the URL below for details:
+        # https://github.com/SurajGupta/r-source/blob/master/src/library/graphics/R/boxplot.R
+        xlim <- range(1:length(unique(x.sample)), finite=TRUE) + c(-0.5, 0.5)
+        xdelta <- xlim[2] - xlim[1]
+        xlim[1] <- xlim[1] - margin[2] * xdelta
+        xlim[2] <- xlim[2] + margin[4] * xdelta
+
         boxplot(ci$c_and_r.sample ~ x.sample,
                 col=col,
+                pars=list(xlim=xlim, ylim=ylim),
                 main=main,
                 xlab=xlab,
                 ylab=ylab,
