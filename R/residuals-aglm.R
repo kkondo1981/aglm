@@ -132,7 +132,7 @@ residuals.AccurateGLM <- function(object,
   # Check variables
   if (class(x)[1] != "data.frame") x <- data.frame(x)
   assert_that(dim(x)[1] == length(y))
-  assert_that(length(y) == length(offset))
+  if (!is.null(offset)) assert_that(length(y) == length(offset))
   assert_that(length(y) == length(weights))
 
   # Calculate residuals

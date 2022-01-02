@@ -34,12 +34,13 @@ It is a simulated dataset, used in [glmnet example](https://glmnet.stanford.edu/
 library(glmnet)
 data(MultinomialExample)
 
-x <- as.data.frame(x)
+x <- as.data.frame(MultinomialExample$x)
 
 print(dim(x))
 ```
 
 ```{r}
+y <- MultinomialExample$y
 table(y)
 ```
 
