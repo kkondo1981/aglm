@@ -16,6 +16,9 @@
 #' @param exact
 #'   Same as in \link{coef.glmnet}.
 #'
+#' @param class
+#'   Used to specify which class of coefficients to obtain in the case of multinomial regression.
+#'
 #' @param ...
 #'   Other arguments are passed directly to `coef.glmnet()`.
 #'
@@ -38,7 +41,7 @@
 #' @importFrom assertthat assert_that
 #' @importFrom stats coef
 #' @export
-coef.AccurateGLM <- function(object, index=NULL, name=NULL, s=NULL, exact=FALSE, ...) {
+coef.AccurateGLM <- function(object, index=NULL, name=NULL, s=NULL, exact=FALSE, class=NULL, ...) {
   # It's necessary to use same names for some arguments as the original methods,
   # because devtools::check() issues warnings when using inconsistent names.
   # As a result, we sometimes should accept uncomfortable argument names,
@@ -46,6 +49,11 @@ coef.AccurateGLM <- function(object, index=NULL, name=NULL, s=NULL, exact=FALSE,
   model <- object
 
   coefs <- coef(model@backend_models[[1]], s, exact, ...)
+  if (!is.null(model@call$family) && model@call$family == "multinomial") {
+    # for multinomial regression, coefficients are list of those of all classes.
+    assert_that(!is.null(class))
+    coefs <- coefs[[class]]
+  }
 
   # If `name` is set, `index` is overwritten.
   if (!is.null(name)) {

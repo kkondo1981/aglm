@@ -17,6 +17,13 @@
   only_plot = FALSE,
   main = "",
   add_rug = FALSE,
+  class = NULL,
+  use_legend = FALSE,
+  col = NULL,
+  resid_col = "black",
+  smooth_col = "blue",
+  rug_col = "grey",
+  margin = rep(0.05, 4),
   ...
 )
 }
@@ -42,7 +49,9 @@ This parameter may have one of the following classes:
 \item \code{logical}(single value): If \code{TRUE}, working residuals are plotted.
 \item \code{character}(single value): type of residual to be plotted. See \link{residuals.AccurateGLM} for more details on types of residuals.
 \item \code{numerical}(vector): residual values to be plotted.
-}}
+}
+
+Note that this parameter is not valid in cases of multinomial regressions.}
 
 \item{smooth_resid}{Used to display smoothing lines of residuals for quantitative variables.
 This parameter may have one of the following classes:
@@ -69,6 +78,25 @@ To achieve this, set it to a pair of integer, which indicating number of rows an
 \item{main}{Used to specify the title of plotting.}
 
 \item{add_rug}{Set to \code{TRUE} for rug plots.}
+
+\item{class}{Used to specify which class to be plotted in the case of multinomial regression.
+\code{class=NULL} means plotting all classes.}
+
+\item{use_legend}{Set to \code{TRUE} if a legend is needed.
+This parameter only works in multinomial cases.}
+
+\item{col}{Used to specify colors of contribution curves.
+In the case of multinomial regression, specify colors for all classes by a vector.}
+
+\item{resid_col}{Used to specify the color of residuals.}
+
+\item{smooth_col}{Used to specify the color of smoothing lines.}
+
+\item{rug_col}{Used to specify the color of rugs.}
+
+\item{margin}{A numerical vector of the form \code{c(bottom, left, top, right)}.
+Each element means a rate that indicates how much plot areas should be extended
+in the specified direction.}
 
 \item{...}{Other arguments are currently not used and just discarded.}
 }

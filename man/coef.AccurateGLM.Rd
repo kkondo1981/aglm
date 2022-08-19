@@ -4,7 +4,15 @@
 \alias{coef.AccurateGLM}
 \title{Get coefficients}
 \usage{
-\method{coef}{AccurateGLM}(object, index = NULL, name = NULL, s = NULL, exact = FALSE, ...)
+\method{coef}{AccurateGLM}(
+  object,
+  index = NULL,
+  name = NULL,
+  s = NULL,
+  exact = FALSE,
+  class = NULL,
+  ...
+)
 }
 \arguments{
 \item{object}{A model object obtained from \code{aglm()} or \code{cv.aglm()}.}
@@ -17,6 +25,8 @@ Note that if both \code{index} and \code{name} are set, \code{index} is discarde
 \item{s}{Same as in \link{coef.glmnet}.}
 
 \item{exact}{Same as in \link{coef.glmnet}.}
+
+\item{class}{Used to specify which class of coefficients to obtain in the case of multinomial regression.}
 
 \item{...}{Other arguments are passed directly to \code{coef.glmnet()}.}
 }

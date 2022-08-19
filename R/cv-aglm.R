@@ -96,7 +96,7 @@ cv.aglm <- function(x, y,
                     nbin.max=NULL,
                     bins_list=NULL,
                     bins_names=NULL,
-                    family=c("gaussian","binomial","poisson"),
+                    family=c("gaussian","binomial","poisson", "multinomial"),
                     keep=FALSE,
                     ...) {
   # Create an input object
@@ -115,15 +115,32 @@ cv.aglm <- function(x, y,
                 bins_list,
                 bins_names)
 
-  # Check y
-  y <- drop(y)
-  #assert_that(class(y) == "integer" | class(y) == "numeric")
-  y <- as.numeric(y)
-  assert_that(length(y) == dim(x@data)[1])
-
   # Check family
   if (is.character(family))
     family <- match.arg(family)
+
+  # Check y
+  if (family %in% c("binomial", "multinomial")) {
+    if (any(c("data.frame", "matrix") %in% class(y))) {
+      if (dim(y)[2] == 1)
+        y <- y[, 1]
+      else
+        y <- as.matrix(y)
+    }
+
+    if ("matrix" %in% class(y)) {
+      nc <- dim(y)[2]
+    } else {
+      if (!is.factor(y))
+        y <- factor(y)
+      nc <- length(levels(y))
+    }
+    assert_that(family != "binomial" || nc == 2)
+    assert_that(family != "multinomial" || nc > 2)
+  } else {
+    y <- drop(y)
+    y <- as.numeric(y)
+  }
 
   # Create a design matrix which is passed to backend API
   x_for_backend <- getDesignMatrix(x)
@@ -131,7 +148,10 @@ cv.aglm <- function(x, y,
   # Data size
   nobs <- dim(x_for_backend)[1]
   nvars <- dim(x_for_backend)[2]
-  assert_that(length(y) == nobs)
+  if ("matrix" %in% class(y))
+    assert_that(dim(y)[1] == nobs)
+  else
+    assert_that(length(y) == nobs)
 
   # Call backend
   args <- list(x=x_for_backend,
@@ -153,11 +173,11 @@ cv.aglm <- function(x, y,
              cvsd=cv.glmnet_result$cvsd,
              cvup=cv.glmnet_result$cvup,
              cvlo=cv.glmnet_result$cvlo,
-             nzero=cv.glmnet_result$nzero,
+             nzero=as.integer(cv.glmnet_result$nzero),
              name=cv.glmnet_result$name,
              lambda.min=cv.glmnet_result$lambda.min,
              lambda.1se=cv.glmnet_result$lambda.1se,
-             fit.preval=cv.glmnet_result$fit.preval,
+             fit.preval=as.matrix(cv.glmnet_result$fit.preval),
              foldid=cv.glmnet_result$foldid,
              vars_info=x@vars_info,
              call=match.call()))

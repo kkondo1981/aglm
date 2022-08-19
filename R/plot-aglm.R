@@ -24,6 +24,8 @@
 #'   * `character`(single value): type of residual to be plotted. See \link{residuals.AccurateGLM} for more details on types of residuals.
 #'   * `numerical`(vector): residual values to be plotted.
 #'
+#'   Note that this parameter is not valid in cases of multinomial regressions.
+#'
 #' @param smooth_resid
 #'   Used to display smoothing lines of residuals for quantitative variables.
 #'   This parameter may have one of the following classes:
@@ -52,6 +54,32 @@
 #'
 #' @param add_rug
 #'   Set to `TRUE` for rug plots.
+#'
+#' @param class
+#'   Used to specify which class to be plotted in the case of multinomial regression.
+#'   `class=NULL` means plotting all classes.
+#'
+#' @param use_legend
+#'   Set to `TRUE` if a legend is needed.
+#'   This parameter only works in multinomial cases.
+#'
+#' @param col
+#'   Used to specify colors of contribution curves.
+#'   In the case of multinomial regression, specify colors for all classes by a vector.
+#'
+#' @param resid_col
+#'   Used to specify the color of residuals.
+#'
+#' @param smooth_col
+#'   Used to specify the color of smoothing lines.
+#'
+#' @param rug_col
+#'   Used to specify the color of rugs.
+#'
+#' @param margin
+#'   A numerical vector of the form `c(bottom, left, top, right)`.
+#'   Each element means a rate that indicates how much plot areas should be extended
+#'   in the specified direction.
 #'
 #' @param ...
 #'   Other arguments are currently not used and just discarded.
@@ -104,6 +132,13 @@ plot.AccurateGLM <- function(x,
                              only_plot=FALSE,
                              main="",
                              add_rug=FALSE,
+                             class=NULL,
+                             use_legend=FALSE,
+                             col=NULL,
+                             resid_col="black",
+                             smooth_col="blue",
+                             rug_col="grey",
+                             margin=rep(0.05, 4),
                              ...) {
   # It's necessary to use same names for some arguments as the original methods,
   # because devtools::check() issues warnings when using inconsistent names.
@@ -127,6 +162,16 @@ plot.AccurateGLM <- function(x,
     assert_that(FALSE)
   }
 
+  ## For multinomial regressions, set which class should be plotted.
+  is_multinomial <- !is.null(model@call$family) && model@call$family == "multinomial"
+  if (is_multinomial) {
+    if (is.null(class))
+      class <- model@backend_models[[1]]$classnames
+  } else {
+    class <- 1  # only one iteration, the value is ignored.
+  }
+  n_class <- length(class)
+
   ## Calculates residuals
   use_x.orig <- if (is.logical(resid)) resid else TRUE
   if (use_x.orig) {
@@ -148,6 +193,8 @@ plot.AccurateGLM <- function(x,
   }
 
   ## set flags for smoothing
+  if (is_multinomial)
+    resid <- FALSE
   if (resid) {
     if (is.character(smooth_resid)) {
       draws_balls <- smooth_resid == "both"
@@ -162,21 +209,24 @@ plot.AccurateGLM <- function(x,
   if (!only_plot) {
     old.par <- par(no.readonly=TRUE)
     on.exit(par(old.par), add=TRUE)
+  }
+
+  ask.old <- devAskNewPage()
+  on.exit(devAskNewPage(ask.old), add=TRUE)
+
+  ## set par
+  if (!only_plot) {
     par(oma=c(0, 0, 2, 0))
     if (length(inds) == 1) layout <- c(1,1)
     par(mfrow=layout)
   }
 
-  ask.old <- devAskNewPage()
-  on.exit(devAskNewPage(ask.old), add=TRUE)
   devAskNewPage(FALSE)
 
   ## Plotting
   for (i in inds) {
     var_info <- model@vars_info[[i]]
     if (var_info$type == "inter") break ## no plot for interactions
-
-    coefs <- coef(model, index=var_info$idx, s=s)
 
     if (resid) {
       xlab <- var_info$name
@@ -211,12 +261,20 @@ plot.AccurateGLM <- function(x,
 
       ## Calculates component values of x
       x.mat <- getMatrixRepresentationByVector(x, var_info)
-      if (var_info$use_LV) {
-        b <- matrix(c(coefs$coef.linear, coefs$coef.LV), ncol=1)
-      } else {
-        b <- matrix(c(coefs$coef.linear, coefs$coef.OD), ncol=1)
+      comp_infos <- vector(mode="list", n_class)
+      for (class_ind in seq(n_class)) {
+        if (is_multinomial)
+          coefs <- coef(model, index=var_info$idx, s=s, class=class[class_ind])
+        else
+          coefs <- coef(model, index=var_info$idx, s=s)
+        if (var_info$use_LV) {
+          b <- matrix(c(coefs$coef.linear, coefs$coef.LV), ncol=1)
+        } else {
+          b <- matrix(c(coefs$coef.linear, coefs$coef.OD), ncol=1)
+        }
+        comp_infos[[class_ind]]$b <- b
+        comp_infos[[class_ind]]$comp <- drop(x.mat %*% b)
       }
-      comp <- drop(x.mat %*% b)
 
       ## Calculates component and residual values of samples
       x.sample <- NULL
@@ -224,7 +282,10 @@ plot.AccurateGLM <- function(x,
       if (resid) {
         x.sample <- x.orig[, var_info$data_column_idx]
         x.sample.mat <- getMatrixRepresentationByVector(x.sample, var_info)
-        c_and_r.sample <- drop(x.sample.mat %*% b) + resids
+        for (class_ind in seq(n_class)) {
+          b <- comp_infos[[class_ind]]$b
+          comp_infos[[class_ind]]$c_and_r.sample <- drop(x.sample.mat %*% b) + resids
+        }
 
         if (draws_lines) {
           ord <- order(x.sample)
@@ -235,29 +296,42 @@ plot.AccurateGLM <- function(x,
             else
               f <- ksmooth
           }
-          smoothed_c_and_r.sample <- f(x.sample[ord], c_and_r.sample[ord])
+          for (class_ind in seq(n_class)) {
+            c_and_r.sample <- comp_infos[[class_ind]]$c_and_r.sample
+            comp_infos[[class_ind]]$smoothed_c_and_r.sample <- f(x.sample[ord], c_and_r.sample[ord])
+          }
         }
       }
 
       ## Plotting
       x.all <- c(x, x.sample)
       xlim <- c(min(x.all), max(x.all))
-      xlim[1] <- xlim[1] - 0.05 * (xlim[2] - xlim[1])
-      xlim[2] <- xlim[2] + 0.05 * (xlim[2] - xlim[1])
+      if (xlim[2] - xlim[1] < 1e-8) xlim <- c(-1, 1)
+      xdelta <- xlim[2] - xlim[1]
+      xlim[1] <- xlim[1] - margin[2] * xdelta
+      xlim[2] <- xlim[2] + margin[4] * xdelta
 
-      y.all <- comp
-      if (resid) {
-        if (draws_balls)
-          y.all <- c(y.all, c_and_r.sample)
-        if (draws_lines)
-          y.all <- c(y.all, smoothed_c_and_r.sample$y[!is.na(smoothed_c_and_r.sample$y)])
+      y.all <- NULL
+      for (class_ind in seq(n_class)) {
+        ci <- comp_infos[[class_ind]]
+        y.all <- c(y.all, ci$comp)
+        if (resid) {
+          if (draws_balls)
+            y.all <- c(y.all, ci$c_and_r.sample)
+          if (draws_lines) {
+            tmp <- ci$smoothed_c_and_r.sample
+            y.all <- c(y.all, tmp$y[!is.na(tmp$y)])
+          }
+        }
       }
       ylim <- c(min(y.all), max(y.all))
-      ylim[1] <- ylim[1] - 0.05 * (ylim[2] - ylim[1])
-      ylim[2] <- ylim[2] + 0.05 * (ylim[2] - ylim[1])
+      if (ylim[2] - ylim[1] < 1e-8) ylim <- c(-1, 1)
+      ydelta <- ylim[2] - ylim[1]
+      ylim[1] <- ylim[1] - margin[1] * ydelta
+      ylim[2] <- ylim[2] + margin[3] * ydelta
 
-      plot(x=x,
-           y=comp,
+      plot(x=0,
+           y=0,
            type="n",
            main=main,
            xlab=xlab,
@@ -266,26 +340,50 @@ plot.AccurateGLM <- function(x,
            ylim=ylim)
 
       if (resid) {
-        if (draws_balls) {
-          points(x=x.sample,
-                 y=c_and_r.sample,
-                 pch=".")
-        }
+        for (class_ind in seq(n_class)) {
+          ci <- comp_infos[[class_ind]]
+          if (draws_balls) {
+            points(x=x.sample,
+                   y=ci$c_and_r.sample,
+                   pch=".",
+                   col=resid_col)
+          }
 
-        if (draws_lines) {
-          lines(smoothed_c_and_r.sample,
-                col="blue",
-                lty=5)
-        }
+          if (draws_lines) {
+            lines(ci$smoothed_c_and_r.sample,
+                  lty=5,
+                  col=smooth_col)
+          }
 
-        if (add_rug) {
-          rug(x=x.sample,
-              col="gray")
+          if (add_rug) {
+            rug(x=x.sample,
+                col=rug_col)
+          }
         }
       }
 
-      lines(x=x,
-            y=comp)
+      if (is.null(col)) {
+        col1 <- rep("black", n_class)
+      } else {
+        col1 <- rep_len(col, n_class)
+      }
+
+      for (class_ind in seq(n_class)) {
+        ci <- comp_infos[[class_ind]]
+        lines(x=x,
+              y=ci$comp,
+              lty=class_ind,
+              col=col1[class_ind])
+      }
+
+      if (is_multinomial && use_legend)
+        legend(x=xlim[1] + 0.01 * xdelta,
+               y=ylim[2] - 0.01 * ydelta,
+               legend=class,
+               cex=0.8,
+               lty=seq(n_class),
+               col=col1,
+               horiz=TRUE)
     } else if (var_info$type == "qual") {
       # Plot for factorial features
 
@@ -299,8 +397,16 @@ plot.AccurateGLM <- function(x,
 
       ## Calculate component values of x
       x.mat <- getMatrixRepresentationByVector(x, var_info)
-      b <- matrix(c(coefs$coef.OD, coefs$coef.UD), ncol=1)
-      comp <- drop(x.mat %*% b)
+      comp_infos <- vector(mode="list", n_class)
+      for (class_ind in seq(n_class)) {
+        if (is_multinomial)
+          coefs <- coef(model, index=var_info$idx, s=s, class=class[class_ind])
+        else
+          coefs <- coef(model, index=var_info$idx, s=s)
+        b <- matrix(c(coefs$coef.OD, coefs$coef.UD), ncol=1)
+        comp_infos[[class_ind]]$b <- b
+        comp_infos[[class_ind]]$comp <- drop(x.mat %*% b)
+      }
 
       # Calculates component and residual values of samples
       x.sample <- NULL
@@ -313,20 +419,100 @@ plot.AccurateGLM <- function(x,
           factor(x.sample, levels=lv)
         }
         x.sample.mat <- getMatrixRepresentationByVector(x.sample, var_info)
-        c_and_r.sample <- drop(x.sample.mat %*% b) + resids
+
+        for (class_ind in seq(n_class)) {
+          b <- comp_infos[[class_ind]]$b
+          comp_infos[[class_ind]]$c_and_r.sample <- drop(x.sample.mat %*% b) + resids
+        }
       }
 
-      if (resid) {
-        y.all <- c(comp, c_and_r.sample)
+      y.all <- NULL
+      for (class_ind in seq(n_class)) {
+        ci <- comp_infos[[class_ind]]
+        y.all <- c(y.all, ci$comp)
+        if (resid) {
+          xvals <- unique(x.sample)
+          for (xval in xvals) {
+            yy <- ci$c_and_r.sample[x.sample == xval]
+            y.all <- c(y.all, boxplot.stats(yy)$stats)
+          }
+        }
+      }
+      ylim <- c(min(y.all), max(y.all))
+      if (ylim[2] - ylim[1] < 1e-8) ylim <- c(-1, 1)
+      ydelta <- ylim[2] - ylim[1]
+      ylim[1] <- ylim[1] - margin[1] * ydelta
+      ylim[2] <- ylim[2] + margin[3] * ydelta
 
-        boxplot(c_and_r.sample ~ x.sample,
+      if (resid) {
+        # `resid` never get `TRUE` when multinomial case, so we can assume `n_class=1` here.
+        ci <- comp_infos[[1]]
+
+        # Emulates the calculation of `xlim` in `boxplot()` to apply `margin`.
+        # See the original codes by The R Core Team at the URL below for details:
+        # https://github.com/SurajGupta/r-source/blob/master/src/library/graphics/R/boxplot.R
+        xlim <- range(1:length(unique(x.sample)), finite=TRUE) + c(-0.5, 0.5)
+        xdelta <- xlim[2] - xlim[1]
+        xlim[1] <- xlim[1] - margin[2] * xdelta
+        xlim[2] <- xlim[2] + margin[4] * xdelta
+
+        boxplot(ci$c_and_r.sample ~ x.sample,
+                col=col,
+                pars=list(xlim=xlim, ylim=ylim),
                 main=main,
                 xlab=xlab,
                 ylab=ylab,
                 outline=FALSE)
       } else {
+        if (is_multinomial) {
+          beside <- TRUE
+          comp <- matrix(0, length(comp_infos), length(comp_infos[[1]]$comp))
+          for (class_ind in seq(n_class))
+            comp[class_ind, ] <- comp_infos[[class_ind]]$comp
+        } else {
+          beside <- FALSE
+          comp <- comp_infos[[1]]$comp
+        }
+
+        # Emulates the calculation of `xlim` in `barplot()` to apply `margin`.
+        # See the original codes by The R Core Team at the URL below for details:
+        # https://github.com/SurajGupta/r-source/blob/master/src/library/graphics/R/barplot.R
+        if (beside) {
+          nr <- nrow(comp)
+          nc <- ncol(comp)
+          space <- rep.int(c(1, rep.int(0, nr - 1)), nc)
+          width <- rep_len(1, nr)
+        } else {
+          space <- 0.2
+          width <- rep_len(1, length(comp))
+        }
+        bar.right <- cumsum(space + width)
+        bar.left <- bar.right - width
+        xlim <- c(min(bar.left), max(bar.right))
+        xdelta <- xlim[2] - xlim[1]
+        xlim[1] <- xlim[1] - margin[2] * xdelta
+        xlim[2] <- xlim[2] + margin[4] * xdelta
+
+        if (is_multinomial && use_legend) {
+          legend.text <- class
+          args.legend <- list(x=xlim[1] + 0.01 * xdelta,
+                              y=ylim[2] - 0.01 * ydelta,
+                              cex=0.8,
+                              xjust=0,
+                              horiz=TRUE)
+        } else {
+          legend.text <- NULL
+          args.legend <- NULL
+        }
+
         barplot(comp,
-                names=lv,
+                beside=beside,
+                names.arg=lv,
+                legend.text=legend.text,
+                args.legend=args.legend,
+                xlim=xlim,
+                ylim=ylim,
+                col=col,
                 main=main,
                 xlab=xlab,
                 ylab=ylab)
@@ -335,6 +521,9 @@ plot.AccurateGLM <- function(x,
 
     if (verbose) {
       cat(sprintf("Plotting for %s", var_info$name))
+      if (is_multinomial)
+        cat(sprintf(", class=%s", cl))
+      cat("\n")
       cat("Variable Informations:\n"); str(var_info); cat("\n")
       cat("Coefficients:\n"); str(coefs); cat("\n")
     }
@@ -344,8 +533,9 @@ plot.AccurateGLM <- function(x,
 
     if (first) {
       if (!only_plot) {
-        if (resid) mtext(line=0, outer=TRUE, text="Component + Residual Plot")
-        else mtext(line=0, outer=TRUE, text="Component Plot")
+        if (resid) text <- "Component + Residual Plot"
+        else text <- "Component Plot"
+        mtext(line=0, outer=TRUE, text=text)
       }
       devAskNewPage(ask)
       first <- FALSE

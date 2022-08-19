@@ -1,0 +1,147 @@
+---
+title: 'French Motor Third-Part Liability dataset with AGLM'
+author: "Kenji Kondo"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::readthedown:
+    highlight: kate
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(rmdformats)
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=TRUE,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75)
+par(ps=8)
+
+set.seed(20210612)
+```
+
+
+# What is the data?
+
+The 'freMTPL2' dataset in the 'CASdatasets' package.
+
+```
+French Motor Third-Part Liability datasets
+Description
+In the two datasets freMTPLfreq, freMTPLsev, risk features are collected for 413,169 motor third-part liability policies (observed mostly on one year). In addition, we have claim numbers by policy as well as the corresponding claim amounts. freMTPLfreq contains the risk features and the claim number while freMTPLsev contains the claim amount and the corresponding policy ID.
+
+In the two datasets freMTPL2freq, freMTPL2sev, risk features are collected for 677,991 motor third-part liability policies (observed mostly on one year). In addition, we have claim numbers by policy as well as the corresponding claim amounts. freMTPL2freq contains the risk features and the claim number while freMTPL2sev contains the claim amount and the corresponding policy ID.
+```
+
+# Read the data
+
+```{r}
+library(CASdatasets)
+data("freMTPL2freq")
+xy <- freMTPL2freq
+
+xy <- xy[-1]  # Discard policy ID's we don't use.
+xy$ClaimNb <- as.integer(xy$ClaimNb)  # Because it has `table` type by default.
+xy$VehGas <- factor(xy$VehGas)  # Convert strings into factor values.
+xy$Area <- ordered(xy$Area)  # Convert them into ordered factor values, because this variable has order.
+xy$VehBrand <- factor(substr(xy$VehBrand, 1, 2))  # Cut brand names to the first 2 letters, to plot them neatly
+xy$Region <- factor(substr(xy$Region, 1, 2))  # same as above
+
+print(dim(xy))
+
+xy <- xy[sample(nrow(xy), 10000), ]  # reduce data size for demo
+```
+
+```{r}
+y <- xy$ClaimNb
+off <- log(xy$Exposure)  # use log(Exposure) as offset
+x <- xy[-c(1:2)]  # drop y and off
+
+table(y)
+y[y > 4] <- 4  # truncate too large y
+```
+
+```{r}
+head(x)
+```
+
+```{r}
+plot(density(off))
+```
+Note that some values of offset is greater than 0, which means `Exposure > 1 yr`, but we decided to remain them here.
+
+
+# Fitting simple GLM identical (as in 'data_car.rmd')
+
+```{r}
+library(doParallel) # for parallelization of `glmnet()`
+library(parallel) # for `detectCores()`
+library(aglm)
+
+registerDoParallel(detectCores())
+
+tm <- system.time(cv1 <- cva.aglm(x, y, offset=off,
+                                  family="poisson",
+                                  nbin.max=2,
+                                  keep=TRUE,  # to record `foldid` to use later
+                                  parallel=TRUE))
+
+stopImplicitCluster()
+
+print(tm)
+```
+
+```{r}
+cat(sprintf("best alpha: %.5f\n", cv1@alpha.min))
+cv1 <- cv1@models_list[[cv1@alpha.min.index]]
+
+cat(sprintf("best lambda: %.5f\n", cv1@lambda.min))
+s <- cv1@lambda.min
+
+plot(cv1,
+     s=0,
+     layout=c(3, 3),
+     verbose=FALSE,
+     ask=FALSE)
+```
+
+
+# Fitting AGLM
+
+```{r}
+registerDoParallel(detectCores())
+
+tm <- system.time(cv2 <- cva.aglm(x, y, offset=off,
+                                  family="poisson",
+                                  foldid=cv1@foldid,
+                                  parallel.alpha=TRUE))
+
+stopImplicitCluster()
+
+print(tm)
+```
+
+```{r}
+cat(sprintf("best alpha: %.5f\n", cv2@alpha.min))
+cv2 <- cv2@models_list[[cv2@alpha.min.index]]
+
+cat(sprintf("best lambda: %.5f\n", cv2@lambda.min))
+s <- cv2@lambda.min
+
+plot(cv2,
+     s=0,
+     layout=c(3, 3),
+     verbose=FALSE,
+     ask=FALSE)
+```
+
+
+# Cross-validation errors (mean deviance per sample)
+
+```{r}
+outf <- function(name, x) cat(sprintf("%s: %.5f\n", name, x))
+outf("simple GLM with CV ", cv1@cvm[match(cv1@lambda.min, cv1@lambda)])
+outf("AGLM with CV       ", cv2@cvm[match(cv2@lambda.min, cv2@lambda)])
+```

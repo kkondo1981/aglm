@@ -1,0 +1,187 @@
+---
+title: 'Banknotes dataset with AGLM'
+author: "Kenji Kondo"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::readthedown:
+    highlight: kate
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(rmdformats)
+
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=TRUE,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75)
+par(ps=8)
+
+set.seed(20210619)
+```
+
+
+# What is the data?
+
+```
+Data extracted from images taken from genuine and forged banknotes, digitized into 400 x 400 arrays of pixels, and then summarised into four continuously valued summary statistics. For each banknote, the data set records whether the banknote was genuine or forged, along with the four numerical summaries of the image.
+```
+
+# Read the data
+
+```{r}
+# install.packages("MAS3907", repos="http://R-Forge.R-project.org")
+library(MAS3907)
+data("banknotes")
+
+train_idx <- sample(seq(dim(banknotes)[1]), 1000) # Use only 1000 samples for fitting
+
+x <- banknotes[train_idx, -5]
+y <- banknotes[train_idx, 5]
+
+print(dim(x))
+```
+
+```{r}
+table(y)
+```
+
+```{r}
+head(x)
+```
+
+
+# Fitting simple GLM identical (as in 'data_car.rmd')
+
+Note that we will search the best alpha and lambda for simple GLM, to compare true potentials with `AGLM`.
+
+```{r}
+library(doParallel) # for parallelization of `glmnet()`
+library(parallel) # for `detectCores()`
+library(aglm)
+
+registerDoParallel(detectCores())
+
+tm <- system.time(cv1 <- cva.aglm(x, y,
+                                  family="binomial",
+                                  nbin.max=2,
+                                  keep=TRUE,  # to record `foldid` to use later
+                                  parallel.alpha=TRUE))
+
+stopImplicitCluster()
+
+print(tm)
+```
+
+```{r}
+cat(sprintf("best alpha: %.5f\n", cv1@alpha.min))
+cv1 <- cv1@models_list[[cv1@alpha.min.index]]
+
+cat(sprintf("best lambda: %.5f\n", cv1@lambda.min))
+s <- cv1@lambda.min
+plot(cv1,
+     s=s,
+     resid=TRUE,
+     smooth_resid="smooth_only",
+     layout=c(3, 3),
+     verbose=FALSE,
+     ask=FALSE)
+```
+
+
+# Fitting AGLM
+
+```{r}
+registerDoParallel(detectCores())
+
+tm <- system.time(cv2 <- cva.aglm(x, y,
+                                  family="binomial",
+                                  foldid=cv1@foldid,
+                                  parallel.alpha=TRUE))
+
+stopImplicitCluster()
+
+print(tm)
+```
+
+```{r}
+cat(sprintf("best alpha: %.5f\n", cv2@alpha.min))
+cv2 <- cv2@models_list[[cv2@alpha.min.index]]
+
+cat(sprintf("best lambda: %.5f\n", cv2@lambda.min))
+s <- cv2@lambda.min
+
+plot(cv2,
+     s=s,
+     resid=TRUE,
+     smooth_resid="smooth_only",
+     layout=c(3, 3),
+     verbose=FALSE,
+     ask=FALSE)
+```
+
+
+# Cross-validation errors (mean deviance per sample)
+
+```{r}
+outf <- function(name, x) cat(sprintf("%s: %.5f\n", name, x))
+outf("simple GLM with CV ", cv1@cvm[match(cv1@lambda.min, cv1@lambda)])
+outf("AGLM with CV       ", cv2@cvm[match(cv2@lambda.min, cv2@lambda)])
+```
+
+The results show `aglm` seems far better than the simpler model.
+
+
+# Make predictions
+
+```{r}
+newx <- banknotes[-train_idx, -5]
+y_true <- banknotes[-train_idx, 5]
+y_true <- levels(y_true)[as.integer(y_true)]
+
+y_pred1 <- predict(cv1, newx, s=cv1@lambda.min, type="class")
+y_pred2 <- predict(cv2, newx, s=cv2@lambda.min, type="class")
+
+cat("")
+print(table(y_true, y_pred1))
+print(table(y_true, y_pred2))
+```
+
+Note that there is no prediction errors in the latter case.
+The reason for this may be due to the pattern-matching nature of the dataset, which allows for a clean separation of correct and incorrect samples.
+
+
+# Other ways to input `y`
+
+There are various ways to set the response variable for binomial regressions.
+
+```{r}
+show_model <- function(model) {
+  print(deviance(model))
+  plot(model,
+       resid=TRUE,
+       smooth_resid="smooth_only",
+       layout=c(3, 3),
+       verbose=FALSE,
+       ask=FALSE)
+}
+
+show_model(aglm(x, y, family="binomial", lambda=0, nbin.max=2))  # y is factors
+```
+
+```{r}
+y2 <- as.integer(y)
+model2 <- aglm(x, y2, family="binomial", lambda=0, nbin.max=2) # y is integers
+show_model(model2)
+```
+
+```{r}
+y3 <- matrix(0, length(y2), 2)
+for (i in seq(length(y2))) y3[i, y2[i]] <- 1
+model3 <- aglm(x, y3, family="binomial", lambda=0, nbin.max=2) # y is a count table
+show_model(model3)
+```
+
+As you can see, deviances are unchanged and plotting works well.

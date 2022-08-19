@@ -4,10 +4,12 @@
 \alias{deviance.AccurateGLM}
 \title{Get deviance}
 \usage{
-\method{deviance}{AccurateGLM}(object, ...)
+\method{deviance}{AccurateGLM}(object, s = NULL, ...)
 }
 \arguments{
 \item{object}{A model object obtained from \code{aglm()} or \code{cv.aglm()}.}
+
+\item{s}{A numeric value specifying \eqn{\lambda} at which deviance is calculated.}
 
 \item{...}{Other arguments are passed directly to \code{deviance.glmnet()}.}
 }
