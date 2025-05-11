@@ -9,3 +9,4 @@
 ^\.github$
 ^examples/*
 ^CRAN-RELEASE$
+^CRAN-SUBMISSION$
