@@ -65,6 +65,7 @@
 #'   * \link{createEqualFreqBins}
 #'   * \link{executeBinning}
 #'
+#' @import mathjaxr
 #'
 #' @author
 #'   * Kenji Kondo,
