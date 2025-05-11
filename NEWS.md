@@ -1,3 +1,6 @@
+# aglm 0.4.1
+- Fixed some notes on CRAN checks (without feature changes).
+
 # aglm 0.4.0
 - Updated all documents and examples.
 - Published in [CRAN](https://cran.r-project.org/package=aglm).

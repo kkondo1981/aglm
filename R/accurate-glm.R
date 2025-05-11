@@ -2,17 +2,17 @@
 #'
 #' @slot backend_models The fitted backend `glmnet` model is stored.
 #' @slot vars_info A list, each of whose element is information of one variable.
-#' @slot lambda Same as in the result of \link{cv.glmnet}.
-#' @slot cvm Same as in the result of \link{cv.glmnet}.
-#' @slot cvsd Same as in the result of \link{cv.glmnet}.
-#' @slot cvup Same as in the result of \link{cv.glmnet}.
-#' @slot cvlo Same as in the result of \link{cv.glmnet}.
-#' @slot nzero Same as in the result of \link{cv.glmnet}.
-#' @slot name Same as in the result of \link{cv.glmnet}.
-#' @slot lambda.min Same as in the result of \link{cv.glmnet}.
-#' @slot lambda.1se Same as in the result of \link{cv.glmnet}.
-#' @slot fit.preval Same as in the result of \link{cv.glmnet}.
-#' @slot foldid Same as in the result of \link{cv.glmnet}.
+#' @slot lambda Same as in the result of \link[glmnet]{cv.glmnet}.
+#' @slot cvm Same as in the result of \link[glmnet]{cv.glmnet}.
+#' @slot cvsd Same as in the result of \link[glmnet]{cv.glmnet}.
+#' @slot cvup Same as in the result of \link[glmnet]{cv.glmnet}.
+#' @slot cvlo Same as in the result of \link[glmnet]{cv.glmnet}.
+#' @slot nzero Same as in the result of \link[glmnet]{cv.glmnet}.
+#' @slot name Same as in the result of \link[glmnet]{cv.glmnet}.
+#' @slot lambda.min Same as in the result of \link[glmnet]{cv.glmnet}.
+#' @slot lambda.1se Same as in the result of \link[glmnet]{cv.glmnet}.
+#' @slot fit.preval Same as in the result of \link[glmnet]{cv.glmnet}.
+#' @slot foldid Same as in the result of \link[glmnet]{cv.glmnet}.
 #' @slot call An object of class `call`, corresponding to the function call when this `AccurateGLM` object is created.
 #'
 #' @author Kenji Kondo

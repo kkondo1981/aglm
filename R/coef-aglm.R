@@ -11,10 +11,10 @@
 #'   Note that if both `index` and `name` are set, `index` is discarded.
 #'
 #' @param s
-#'   Same as in \link{coef.glmnet}.
+#'   Same as in \link[glmnet]{coef.glmnet}.
 #'
 #' @param exact
-#'   Same as in \link{coef.glmnet}.
+#'   Same as in \link[glmnet]{coef.glmnet}.
 #'
 #' @param ...
 #'   Other arguments are passed directly to `coef.glmnet()`.

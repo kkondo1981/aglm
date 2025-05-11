@@ -20,19 +20,19 @@
 \item{newx}{A design matrix for new data.
 See the description of \code{x} in \link{aglm} for more details.}
 
-\item{s}{Same as in \link{predict.glmnet}.}
+\item{s}{Same as in \link[glmnet]{predict.glmnet}.}
 
-\item{type}{Same as in \link{predict.glmnet}.}
+\item{type}{Same as in \link[glmnet]{predict.glmnet}.}
 
-\item{exact}{Same as in \link{predict.glmnet}.}
+\item{exact}{Same as in \link[glmnet]{predict.glmnet}.}
 
-\item{newoffset}{Same as in \link{predict.glmnet}.}
+\item{newoffset}{Same as in \link[glmnet]{predict.glmnet}.}
 
 \item{...}{Other arguments are passed directly when calling \code{predict.glmnet()}.}
 }
 \value{
 The returned object depends on \code{type}.
-See \link{predict.glmnet} for more details.
+See \link[glmnet]{predict.glmnet} for more details.
 }
 \description{
 Make predictions for new data

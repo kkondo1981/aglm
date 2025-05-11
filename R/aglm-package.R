@@ -76,6 +76,5 @@
 #' \url{https://www.institutdesactuaires.com/global/gene/link.php?doc_id=16273&fg=1} \cr
 #' \emph{Actuarial Colloquium Paris 2020}
 #'
-#' @docType package
 #' @name aglm-package
-NULL
+"_PACKAGE"

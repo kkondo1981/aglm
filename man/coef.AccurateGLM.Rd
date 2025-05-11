@@ -14,9 +14,9 @@
 \item{name}{A string representing the name of variable whose coefficients are required.
 Note that if both \code{index} and \code{name} are set, \code{index} is discarded.}
 
-\item{s}{Same as in \link{coef.glmnet}.}
+\item{s}{Same as in \link[glmnet]{coef.glmnet}.}
 
-\item{exact}{Same as in \link{coef.glmnet}.}
+\item{exact}{Same as in \link[glmnet]{coef.glmnet}.}
 
 \item{...}{Other arguments are passed directly to \code{coef.glmnet()}.}
 }
