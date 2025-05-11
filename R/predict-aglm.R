@@ -8,23 +8,23 @@
 #'   See the description of `x` in \link{aglm} for more details.
 #'
 #' @param s
-#'   Same as in \link{predict.glmnet}.
+#'   Same as in \link[glmnet]{predict.glmnet}.
 #'
 #' @param type
-#'   Same as in \link{predict.glmnet}.
+#'   Same as in \link[glmnet]{predict.glmnet}.
 #'
 #' @param exact
-#'   Same as in \link{predict.glmnet}.
+#'   Same as in \link[glmnet]{predict.glmnet}.
 #'
 #' @param newoffset
-#'   Same as in \link{predict.glmnet}.
+#'   Same as in \link[glmnet]{predict.glmnet}.
 
 #' @param ...
 #'   Other arguments are passed directly when calling `predict.glmnet()`.
 #'
 #' @return
 #'   The returned object depends on `type`.
-#'   See \link{predict.glmnet} for more details.
+#'   See \link[glmnet]{predict.glmnet} for more details.
 #'
 #'
 #' @example examples/predict-and-plot-1.R

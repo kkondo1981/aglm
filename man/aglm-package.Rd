@@ -25,10 +25,10 @@ The \code{aglm} package provides three different fitting functions, depending on
 Because AGLM is based on regularized GLM, the regularization term of the loss function can be expressed as follows:
 \loadmathjax
 \mjsdeqn{
-R(\lbrace \beta_{jk} \rbrace; \lambda, \alpha)
-= \lambda \left\lbrace
-(1 - \alpha)\sum_{j=1}^{p} \sum_{k=1}^{m_j}|\beta_{jk}|^2 + \alpha \sum_{j=1}^{p} \sum_{k=1}^{m_j} |\beta_{jk}|
-\right\rbrace,
+  R(\lbrace \beta_{jk} \rbrace; \lambda, \alpha)
+   = \lambda \left\lbrace
+     (1 - \alpha)\sum_{j=1}^{p} \sum_{k=1}^{m_j}|\beta_{jk}|^2 + \alpha \sum_{j=1}^{p} \sum_{k=1}^{m_j} |\beta_{jk}|
+   \right\rbrace,
 }
 where \eqn{\beta_jk} is the k-th coefficient of auxiliary variables for the j-th column in data,
 \eqn{\alpha} is a weight which controls how L1 and L2 regularization terms are mixed,
@@ -93,6 +93,14 @@ Suguru Fujita, Toyoto Tanaka, Kenji Kondo and Hirokazu Iwasawa. (2020)
 \emph{AGLM: A Hybrid Modeling Method of GLM and Data Science Techniques}, \cr
 \url{https://www.institutdesactuaires.com/global/gene/link.php?doc_id=16273&fg=1} \cr
 \emph{Actuarial Colloquium Paris 2020}
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/kkondo1981/aglm}
+  \item Report bugs at \url{https://github.com/kkondo1981/aglm/issues}
+}
+
 }
 \author{
 \itemize{
