@@ -3,6 +3,8 @@
 ^aglm\.Rcheck$
 ^aglm.*\.tar\.gz$
 ^aglm.*\.tgz$
+^NEWS\.md$
+^README\.md$
 ^LICENSE\.md$
 ^cran-comments\.md
 ^\.github$

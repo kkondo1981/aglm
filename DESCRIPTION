@@ -1,7 +1,7 @@
 Package: aglm
 Type: Package
 Title: Accurate Generalized Linear Model
-Version: 0.4.0
+Version: 0.4.1
 Authors@R: c(
     person("Kenji", "Kondo", role=c("aut", "cre", "cph"), email="kkondo.odnokk@gmail.com"),
     person("Kazuhisa", "Takahashi", role=c("ctb")),
@@ -13,7 +13,7 @@ BugReports: https://github.com/kkondo1981/aglm/issues
 License: GPL-2
 Encoding: UTF-8
 Language: en-US
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Roxygen: list(markdown = TRUE)
 Depends:
     R (>= 4.0.0),
