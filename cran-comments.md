@@ -11,8 +11,27 @@
 
 # Results of `R CMD check --as-cran`
 
-Results are identical in all the environments.
+Got 2 notes as below, but I guess it's not so critical and acceptable ones.
 
+## local
+```
+* checking top-level files ... NOTE
+Files 'README.md' or 'NEWS.md' cannot be checked without 'pandoc' being installed.
+```
+
+## win-builer
+```
+* checking CRAN incoming feasibility ... [12s] NOTE
+Maintainer: 'Kenji Kondo <kkondo.odnokk@gmail.com>'
+
+Found the following (possibly) invalid URLs:
+  URL: https://www.casact.org/about/awards-prizes-scholarships/charles-hachemeister-prize#:~:text=This%20prize%20was%20established%20in,between%20the%20CAS%20and%20ASTIN.
+    From: README.md
+    Status: 403
+    Message: Forbidden
+```
+
+## others
 ```
 Status: OK
 ```
