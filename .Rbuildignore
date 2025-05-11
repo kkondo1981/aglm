@@ -7,6 +7,7 @@
 ^README\.md$
 ^LICENSE\.md$
 ^cran-comments\.md
+^cran-comments_old\.md
 ^\.github$
 ^examples/*
 ^CRAN-RELEASE$
